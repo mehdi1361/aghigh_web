@@ -1,0 +1,22 @@
+{% extends "apps/base.html" %}
+{% load static %}
+{% block page_header %}{% endblock %}
+{% block title %}سامانه عقیق | غیرفعال{% endblock %}
+{% block page_content %}
+    <div class="wrapper">
+        <div class="login-content body_min_height">
+            <div>
+                <div class="content text-center">
+                    <div>
+                        <h1 class="f-s-20 text-danger"  style="font-size: 25px; color: #fff;">این بخش سامانه موقتا غیرفعال است</h1>
+                        <br>
+                        <p  style="font-size: 19px;/*! text-align: right; */background-color: white;padding: 5px;color: #E91E63;" >{{ message_disable |default:"با عرض پوزش به دلیل بروزرسانی فنی این بخش از سامانه غیرفعال است" }}</p>
+                        <a class="btn btn-warning" href="/">رفتن به صفحه اصلی</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block page_footer %}{% endblock %}

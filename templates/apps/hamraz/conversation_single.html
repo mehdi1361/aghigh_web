@@ -1,0 +1,263 @@
+{% extends "apps/base.html" %}
+{% load static %}
+{% load date_to_persian %}
+{% load main_extra %}
+{% block title %}سامانه عقیق|سوالات{% endblock %}
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static "asset/style/star-rating.min.css" %}">
+    <link rel="stylesheet" href="{% static "asset/style/theme.min.css" %}">
+{% endblock %}
+{% block logo %}
+    {% if request.user.userbox.gender == 'male' %}
+        <img src="{% static "/asset/image/b5.png" %}" id="banner-image" alt="">
+    {% else %}
+        <img src="{% static "/asset/image_gr/b5.png" %}" id="banner-image" alt="">
+    {% endif %}
+{% endblock logo %}
+
+{% block page_content %}
+
+    <!--content-->
+    <div id="content" class="body_min_height">
+        <div class="container">
+            {% if response_code == 201 %}
+                <div class="alert alert-success">پرسش با موفقیت ثبت شد.</div>
+            {% endif %}
+            <div class="row">
+                <div class="col-md-3 col-xs-12 m-b-30 pull-left">
+                    <div class="hamraz-detail">
+                        <h3 class="title">اطلاعات سوال</h3>
+                        <ul>
+                            <li><span>حوزه</span><a class="name">{{ question.main_category.title }}</a></li>
+                            <li><span>زیر حوزه</span><a class="name">{{ question.category.title }}</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-9">
+                    <div class="hamraz-text m-b-20">
+                        <div class="top">
+                            <span class="name">شما</span>
+                            <span class="time">
+{#                                <span><i class="fa fa-calendar" ></i> <span class="persian_number" >96/4/5</span></span>#}
+                                <span>
+                                    <i class="fa fa-clock-o"></i>
+                                    <span class="persian_number">{{ question.create_datetime |date_to_persian }}</span>
+                                </span>
+                            </span>
+                        </div>
+                        <div class="text">
+                            <p>{{ question.body|linebreaks }}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="activity-file-list m-b-30">
+                        {% for question_file in question.files %}
+                            <div class="activity-file">
+                                <span class="name">{{ question_file.title }}</span>
+                                <span class="size persian_number">{{ question_file.size | filesizeformat }}</span>
+                                <a class="btn btn-warning" href="{{ file_item.file|server_public_url }}"> دانلود
+                                </a>
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    <hr class="divider">
+                    <h3 style="color: #0a0000">گفتگو ها:</h3>
+
+                    <hr class="divider">
+
+                    {% for answer_item in question.answers %}
+                        <div class="hamraz-text m-b-20">
+                            <div class="top">
+                                {% if answer_item.user_type == "student" %}
+                                    <span class="name">شما:<span></span></span>
+                                {% else %}
+                                    <span class="name-h">همراز:<span></span></span>
+                                    <div class="pull-right">
+                                        <div class="clearfix f-s-10">
+                                            <input class="rating" type="text"
+                                                   value="{{ answer_item.point|floatformat }}" title=""
+                                                   data-id="{{ answer_item.id|to_hash_id }}">
+                                        </div>
+                                    </div>
+                                {% endif %}
+                                <span class="time">
+                                    <span>
+                                        <i class="fa fa-clock-o"></i>
+                                        <span class="persian_number">{{ answer_item.create_datetime |date_to_persian }}</span>
+                                    </span>
+                                </span>
+                            </div>
+                            <div class="text">
+                                <p>{{ answer_item.body | linebreaksbr }}
+                                </p>
+                            </div>
+                            <div class="activity-file-list m-b-30 m-t-35">
+                                {% for answer_item_file in answer_item.files %}
+                                    <div class="activity-file">
+                                        <span class="name">{{ answer_item_file.title }}</span>
+                                        <span class="size persian_number">{{ answer_item_file.size | filesizeformat }}</span>
+                                        <a class="btn btn-warning" href="{{ answer_item_file.file|server_public_url }}">
+                                            دانلود
+                                        </a>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <hr class="divider">
+                    {% endfor %}
+
+                    {% if question.code_state == "42" %}
+                        <div class="row">
+                            <div class="col-lg-6 col-md-8 col-sm-6 col-ps-10 col-xs-12 pull-left">
+                                <div class="row">
+                                    <div class="col-ps-6">
+                                        <a class="btn btn-success fit-width m-b-20"
+                                           onclick="solvedQuestion('{{ question.id|to_hash_id }}', 'solved')">به جواب
+                                            رسیدم</a>
+                                    </div>
+                                    <div class="col-ps-6">
+                                        <a data-toggle="collapse" data-target="#other_options"
+                                           class="btn btn-warning fit-width m-b-20">مفید نبود</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="button-group-gray m-b-30 collapse" id="other_options">
+                            <div class="row">
+                                <div class="col-sm-4 col-xs-12">
+                                    <a class="btn btn-gray fit-width btn-sm m-b-10"
+                                       onclick="solvedQuestion('{{ question.id|to_hash_id }}', 'not_solved')">منصرف
+                                        شدم</a>
+                                </div>
+                                <div class="col-sm-4 col-xs-12">
+                                    <a class="btn btn-gray fit-width btn-sm m-b-10"
+                                       onclick="solvedQuestion('{{ question.id|to_hash_id }}', 'disinterested')">دریافت
+                                        پاسخ از مشاور دیگر
+                                    </a>
+                                </div>
+                                <div class="col-sm-4 col-xs-12">
+                                    <a class="btn btn-gray fit-width btn-sm m-b-10" data-toggle="collapse"
+                                       data-target="#another_question">ادامه
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="collapse" id="another_question">
+                            <form action="{% url 'hamraz_conversation_single' conversation_id=question.id|to_hash_id %}"
+                                  method="post"
+                                  enctype="multipart/form-data">
+                                {% csrf_token %}
+                                <div class="form-group style-1 fix-label m-b-30">
+                                    <label for="">
+                                        سوال خود را بطور کامل و واضح وارد نمایید *
+                                    </label>
+                                    <div class="input">
+                                        <textarea rows="4" name="question_body" class="form-control"
+                                                  required></textarea>
+                                    </div>
+                                </div>
+
+                                <!--file-->
+                                <div class="section-title style-1">
+                                    <h3 class="title">
+                                        <span>فایل های سوال:</span>
+                                    </h3>
+                                </div>
+                                <div class="multi-file-content" data-name="files" data-type="activity-file">
+                                    <div class="activity-file-list m-b-30"></div>
+                                    <p class="text-center m-b-40">
+                                        <button type="button" class="btn btn-primary multi-file-choose">
+                                            افزودن فایل
+                                        </button>
+                                    </p>
+                                </div>
+                                <!--end file-->
+                                <button type="submit" class="btn btn-primary">ارسال</button>
+                            </form>
+
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--end content-->
+{% endblock %}
+
+{% block js_plugins %}
+    <!--for this page only-->
+    <script type="text/javascript" src="{% static "asset/script/plugin/bootstrap-select.js" %}"></script>
+    <script type="text/javascript" src="{% static "asset/script/plugin/star-rating.min.js" %}"></script>
+    <script type="text/javascript" src="{% static "asset/script/plugin/theme.min.js" %}"></script>
+{% endblock %}
+{% block js_code %}
+    <script>
+        // rating
+        $('.rating').rating({
+            'theme': 'krajee-fa',
+            'showCaption': false,
+            'rtl': true,
+            'animate': false,
+            'showClear': false,
+            'disabled': false,
+            'stars': '5',
+            'min': '0',
+            'max': '5',
+            'step': '1',
+            'size': 'xs',
+            // 'starCaptions': {0: 'status:nix', 1: 'status:wackelt', 2: 'status:geht', 3: 'status:laeuft'}
+        });
+
+        // rating
+        $('.rating-stars').click(function () {
+            var question_id = $(this).children('.rating').data('id');
+            var point = $(this).children('.rating').val();
+
+            $.ajax({
+                url: '{% url 'question_score' %}',
+                type: 'post',
+                data: {
+                    "question_id": question_id,
+                    "point": point,
+                    "csrfmiddlewaretoken": '{{ csrf_token }}'
+                },
+                success: function (data) {
+                    var message = data["status"];
+                    if (message === 200) {
+                        toastr.success('امتیاز شما با موفقیت ثبت شد');
+                    }
+                }
+            });
+        });
+
+        // solved function
+        function solvedQuestion(question_id, status) {
+            if (confirm('آیا اطمینان دارید؟')) {
+                var point = $("#answer_state option:selected").val();
+                var question_data = {
+                    "question_id": question_id,
+                    "status": status,
+                    "point": point,
+                    "csrfmiddlewaretoken": '{{ csrf_token }}'
+                };
+
+                $.ajax({
+                    url: '{% url 'question_status' %}',
+                    type: 'post',
+                    data: question_data,
+                    success: function (data) {
+                        var message = data["status"];
+                        if (message === 200) {
+                            location.reload();
+                        } else {
+                            console.log(data);
+                            toastr.error('خطایی رخ داده است');
+                        }
+                    }
+                });
+            }
+        }
+    </script>
+{% endblock %}

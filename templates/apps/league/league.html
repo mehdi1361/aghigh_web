@@ -1,0 +1,75 @@
+{% extends "apps/base.html" %}
+{% load static %}
+{% load main_extra %}
+{% block title %}سامانه عقیق|لیگ{% endblock %}
+{% block logo %}
+    <img src="{% static "/asset/image/b6.png" %}" id="banner-image" alt="">
+{% endblock logo %}
+
+{% block page_content %}
+
+
+    <!--content-->
+    <div id="content" class="body_min_height">
+        <section>
+            <div class="container">
+                <div class="row search-list-row">
+
+                    <div class="col-md-12 col-xs-12">
+
+                        {% if messages.message %}
+                            <div class="alert alert-danger">
+                                {% if messages.message  == "forbiden" %}
+                                    امتیاز شما برای دیدن این بخش کافی نیست
+                                {% endif %}
+                            </div>
+                        {% endif %}
+                        <ul class="nav nav-tabs m-b-25" role="tablist">
+                            {% for tab_item in tabs.results %}
+                                <li role="presentation" {% if tab_item.query_type == query_type %}
+                                    class="active"
+                                {% endif %}>
+                                    {% if tab_item.locked %}
+                                        <a>{{ tab_item.title }} <i class="fa fa-lock"></i></a></li>
+                                    {% else %}
+                                        <a data-target="#{{ tab_item.query_type }}"
+                                           aria-controls="{{ tab_item.query_type }}"
+                                           role="tab" data-toggle="tab">{{ tab_item.title }}</a></li>
+                                    {% endif %}
+                            {% endfor %}
+                        </ul>
+                        <div class="tab-content">
+                            {% for tab_item in tabs.results %}
+                                <div role="tabpanel" class="tab-pane {% if forloop.counter == 1 %}active{% endif %}"
+                                     id="{{ tab_item.query_type }}">
+                                </div>
+                            {% endfor %}
+                        </div>
+                        <div class="league-list">
+                            {% for school_item in league.results %}
+                                {% include "blocks/league_item.html" with school=school_item %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    <!--end content-->
+{% endblock %}
+
+{% block js_code %}
+    <!--for this page only-->
+    <script type="text/javascript" src="{% static "asset/script/plugin/bootstrap-select.js" %}"></script>
+    <script type="text/javascript" src="{% static "asset/script/plugin/range.js" %}"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+                var target = $(e.target).attr("aria-controls");
+                if (target != undefined) {
+                    location.href = '?query_type=' + target;
+                }
+            });
+        });
+    </script>
+{% endblock %}

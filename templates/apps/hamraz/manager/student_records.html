@@ -1,0 +1,55 @@
+{% extends "apps/base.html" %}
+{% load static %}
+{% block title %}سامانه عقیق|سوالات{% endblock %}
+{% load date_to_persian %}
+{% load main_extra %}
+{% block logo %}
+    {% if request.user.userbox.gender == 'male' %}
+        <img src="{% static "/asset/image/b5.png" %}" id="banner-image" alt="">
+    {% else %}
+        <img src="{% static "/asset/image_gr/b5.png" %}" id="banner-image" alt="">
+    {% endif %}
+{% endblock logo %}
+
+{% block page_content %}
+    <!--content-->
+    <div id="content" class="body_min_height">
+        <div class="container">
+            <div class="tab-content">
+                <div role="tabpanel" class="tab-pane"></div>
+            </div>
+            <div class="row search-list-row">
+                <div class="col-md-12 col-xs-12">
+                    {% for question in questions.results %}
+                        <a href="{% url "one_question" question_id=question.id|to_hash_id %}" class="notification-item direct_link">
+                            <div>
+                                <div class="top">
+                                    <h4 class="title">{{ question.subject }}</h4>
+                                    <time class="persian_number">{{ question.create_datetime | date_to_persian }}</time>
+                                </div>
+                                <div class="detail">
+                                    <span>حوزه: {{ question.main_category.title }}</span>
+                                    <span>زیر حوزه: {{ question.category.title }}</span>
+                                </div>
+                                <p class="text">
+                                    {{ question.question }}
+                                </p>
+                            </div>
+                        </a>
+                    {% endfor %}
+
+                    {% include "blocks/pagination.html" with pagination_data=pagination_data %}
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--end content-->
+{% endblock %}
+
+{% block js_code %}
+    <!--for this page only-->
+    <script type="text/javascript" src="{% static "asset/script/plugin/bootstrap-select.js" %}"></script>
+    <script type="text/javascript" src="{% static "asset/script/plugin/range.js" %}"></script>
+    <script type="text/javascript" src="{% static "js/question.js" %}"></script>
+{% endblock %}

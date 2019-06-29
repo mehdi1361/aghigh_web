@@ -1,0 +1,161 @@
+{% extends "apps/base.html" %}
+{% load static %}
+{% load rand_bar_color %}
+{% load main_extra %}
+{% block title %}سامانه عقیق|مدرسه ها{% endblock %}
+{% block logo %}
+    <img src="{% static "/asset/image/b7.png" %}" id="banner-image" alt="">
+{% endblock logo %}
+
+{% block page_content %}
+
+    <!--content-->
+    <div id="content" class="body_min_height">
+        <section>
+            <div class="container">
+                {% if top_level == 'country' or top_level == 'province' or top_level == 'county' or top_level == 'province_m' or top_level == 'province_f' %}
+                    <div class="search-detail">
+                        <form method="get">
+                            {% if top_level == 'country' %}
+                                <div class="col-sm-3 col-xs-12">
+                                    <label for="county">استان ها :</label>
+                                    <div class="form-group">
+                                        <select name="province" id="province_select" class="select_wait">
+                                            <option value="">همه استان ها</option>
+
+                                            {% for province_db in provinces %}
+                                                <option {% if province_db.id == province %} selected {% endif %}
+                                                                                            value="{{ province_db.id }}">{{ province_db.title }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                            {% endif %}
+                            {% if top_level != "county" %}
+                                <div class="col-sm-3 col-xs-12">
+                                    <label for="county">شهرها :</label>
+                                    <div class="form-group">
+                                        <select name="county" id="county_select" class="select_wait">
+                                            <option value="">همه شهرها</option>
+
+                                            {% for county_db in counties %}
+                                                <option {% if county_db.id == county %} selected {% endif %} value="{{ county_db.id }}">{{ county_db.title }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                            {% endif %}
+                            <div class="col-sm-3 col-xs-12">
+                                <div class="form-group">
+                                    <label for="camp">قرارگاه ها :</label>
+                                    <select name="camp" id="camp_select" class="select_wait">
+                                        <option value="">همه قرارگاه ها</option>
+                                        <option value="without_camp" {% if camp == "without_camp" %} selected {% endif %}>بدون قرارگاه</option>
+                                        {% for camp_db in camps %}
+                                            <option {% if camp_db.id == camp %} selected {% endif %}
+                                                                                value="{{ camp_db.id }}">{{ camp_db.title }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-sm-2 col-xs-12 pull-left">
+                                <button class="btn btn-warning" type="submit">اعمال</button>
+                            </div>
+                        </form>
+                    </div>
+                {% endif %}
+                {% if schools.results %}
+                    <div class="row search-list-row">
+                        <div class="col-md-12 col-xs-12">
+                            <div class="league-list">
+                                {% for school_item in schools.results %}
+                                    {% include "blocks/teacher_school.html" with school=school_item %}
+                                {% endfor %}
+                            </div>
+                            {% include "blocks/pagination.html" with pagination_data=pagination_data %}
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="row">
+                        <div class="col-md-3 text-center col-md-offset-5" style="border: silver 1px solid; padding: 50px;">
+                            <span> هنوز مدرسه ای در زیر مجموعه شما قرار ندارد.</span>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </section>
+    </div>
+    <!--end content-->
+{% endblock %}
+
+{% block js_plugins %}
+    <!--for this page only-->
+    <script type="text/javascript" src="{% static "asset/script/plugin/bootstrap-select.js" %}"></script>
+    <script type="text/javascript" src="{% static "asset/script/plugin/range.js" %}"></script>
+
+    <script>
+        $("#county_select").on('change', function () {
+            $.ajax({
+                url: '{% url "main_camps" "123456789" %}'.replace("123456789", $(this).val()),
+                type: "GET"
+            }).done(function (data) {
+                var camps = data["camps"];
+                var i;
+                var camp_item = {};
+                var data_len = camps.length;
+                $("#camp_select").find('option').remove();
+
+                var camp_select = document.getElementById("camp_select");
+                var option = document.createElement("option");
+                option.text = "همه قرارگاه ها";
+                option.value = "";
+                camp_select.add(option);
+
+                option = document.createElement("option");
+                option.text = "بدون قرارگاه";
+                option.value = "without_camp";
+                camp_select.add(option);
+
+                for (i = 0; i < data_len; i++) {
+                    camp_item = camps[i];
+                    option = document.createElement("option");
+                    option.text = camp_item["title"];
+                    option.value = camp_item["id"];
+                    camp_select.add(option);
+                }
+                $("#camp_select").selectpicker("refresh");
+            });
+        });
+
+        $("#province_select").on('change', function () {
+            $.ajax({
+                url: '{% url "main_cities" "123456789" %}'.replace("123456789", $(this).val()),
+                type: "GET"
+            }).done(function (data) {
+                var camps = data["cities"];
+                var i;
+                var camp_item = {};
+                var data_len = camps.length;
+                var county_select = document.getElementById("county_select");
+
+                $("#county_select").find('option').remove();
+
+                var option = document.createElement("option");
+                option.text = "همه شهرها";
+                option.value = "";
+                county_select.add(option);
+
+                for (i = 0; i < data_len; i++) {
+                    camp_item = camps[i];
+                    option = document.createElement("option");
+                    option.text = camp_item["title"];
+                    option.value = camp_item["id"];
+                    county_select.add(option);
+                }
+                $("#county_select").selectpicker("refresh");
+            });
+        })
+
+
+    </script>
+{% endblock %}

@@ -1,0 +1,107 @@
+{% extends "apps/base.html" %}
+{% load static %}
+{% block title %}سامانه عقیق|سوالات{% endblock %}
+{% block logo %}
+    {% if request.user.userbox.gender == 'male' %}
+        <img src="{% static "/asset/image/b5.png" %}" id="banner-image" alt="">
+    {% else %}
+        <img src="{% static "/asset/image_gr/b5.png" %}" id="banner-image" alt="">
+    {% endif %}
+{% endblock logo %}
+
+{%  block page_content %}
+    <!--content-->
+    <div id="content" class="body_min_height">
+        <div class="container" >
+            <div class="row">
+                <div class="col-md-3 col-xs-12 m-b-30 pull-left">
+                    <div class="hamraz-detail">
+                        <h3 class="title">اطلاعات سوال</h3>
+                        <ul>
+                            <li><span>حوزه</span><a class="name"  >{{ faq_question.category.title }}</a></li>
+                            <li><span>زیر حوزه</span><a class="name"  >{{ faq_question.sub_category }}</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-9">
+                    <div class="hamraz-text">
+                        <div class="top">
+                            <span class="name">پرسش</span>
+                            <span class="time">
+                                <span><i class="fa fa-calendar" ></i> <span class="persian_number" >96/4/5</span></span>
+                                <span><i class="fa fa-clock-o" ></i> <span class="persian_number" >18:00</span></span>
+                            </span>
+                        </div>
+                        <div class="text">
+                            <p>
+                                {{ faq_question.question }}
+                            </p>
+                        </div>
+                    </div>
+                    <div class="section-title style-1 m-t-30">
+                        <h3 class="title" >
+                            <span>فایل های پرسش:</span>
+                        </h3>
+                    </div>
+                    <div class="activity-file-list m-b-30">
+                        <div class="activity-file">
+                            <span class="name">عنوان فایل در اینجا</span>
+                            <span class="size persian_number">260 kb</span>
+                            <button class="btn btn-warning">
+                                دانلود
+                            </button>
+                        </div>
+                        <div class="activity-file">
+                            <span class="name">عنوان فایل در اینجا</span>
+                            <span class="size persian_number">260 kb</span>
+                            <button class="btn btn-warning">
+                                دانلود
+                            </button>
+                        </div>
+                    </div>
+                    <hr class="divider">
+
+                    <div class="hamraz-text m-b-20">
+                        <div class="top">
+                            <span class="name">پاسخ</span>
+
+                        </div>
+                        <div class="text">
+                            <p>
+                                {{ faq_question.answer }}
+                            </p>
+                        </div>
+                    </div>
+                    <div class="section-title style-1 m-t-30">
+                        <h3 class="title" >
+                            <span>فایل های پاسخ:</span>
+                        </h3>
+                    </div>
+
+                    <div class="activity-file-list m-b-30">
+                        <div class="activity-file">
+                            <span class="name">عنوان فایل در اینجا</span>
+                            <span class="size persian_number">260 kb</span>
+                            <button class="btn btn-warning">
+                                دانلود
+                            </button>
+                        </div>
+                        <div class="activity-file">
+                            <span class="name">عنوان فایل در اینجا</span>
+                            <span class="size persian_number">260 kb</span>
+                            <button class="btn btn-warning">
+                                دانلود
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--end content-->
+{% endblock %}
+
+{% block js_plugins %}
+<!--for this page only-->
+<script type="text/javascript" src="{% static "asset/script/plugin/bootstrap-select.js" %}" ></script>
+{% endblock %}

@@ -1,0 +1,559 @@
+{% load static %}
+{% load notification_extras %}
+{% load announcements_extras %}
+{% load main_extra %}
+<!doctype html>
+<html lang="fa">
+<head>
+    <meta charset="utf-8">
+    <title>{% block title %}{% endblock %}</title>
+    <meta http-equiv="Content-Language" content="fa">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <!--public-->
+
+    <link rel="stylesheet" href="{% static "asset/style/plugin.css" %}">
+    <link rel="stylesheet" href="{% static "asset/style/style.css" %}">
+    {% if request.user.userbox.gender == 'female' %}
+        <link rel="stylesheet" href="{% static "asset/style/style_gr.css" %}">
+    {% endif %}
+    <link rel="stylesheet" href="{% static "js/toastr/toastr.min.css" %}">
+    <link rel="stylesheet" href="{% static "asset/style/bootstrap-tour.css" %}">
+
+    {% block extra_css %} {% endblock %}
+
+    <script type="text/javascript" src='{% static "asset/calendar/lib/jquery/dist/jquery.js" %}'></script>
+    <script type="text/javascript" src="{% static "asset/player/jwplayer.js" %}" id="player"></script>
+    <script type="text/javascript">
+        var image_load = function (el, load) {
+            $(el).removeClass('hide').parents('.image_loader').addClass(load ? 'load' : 'no-load');
+            $(el).siblings('.image-loader').remove();
+
+            var target = $(el).data('target');
+            if (target === undefined) return;
+            var set = null;
+            if (target === 'parent') set = $(el).parent();
+            else {
+                if (target === 'image_set') set = $(el).siblings('.image_set');
+                else set = $(target);
+            }
+            var src = $(el).attr('src');
+            set.attr('style', 'background-image:url("' + src + '")');
+        };
+    </script>
+    <!-- Matomo -->
+    {% if request.user.is_authenticated %}
+        <script type="text/javascript">
+            var _paq = _paq || [];
+            /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
+            _paq.push(['trackPageView']);
+            _paq.push(['enableLinkTracking']);
+            (function () {
+                var u = "//matomo.iryad.ir/";
+                _paq.push(['setTrackerUrl', u + 'piwik.php']);
+                _paq.push(['setSiteId', '2']);
+                _paq.push(['setUserId', '{{ request.user.userbox.user_type }}-{{ request.user.userbox.api_user_id }}']);
+                var d = document, g = d.createElement('script'), s = d.getElementsByTagName('script')[0];
+                g.type = 'text/javascript';
+                g.async = true;
+                g.defer = true;
+                g.src = u + 'piwik.js';
+                s.parentNode.insertBefore(g, s);
+            })();
+        </script>
+        <!-- End Matomo Code -->
+    {% endif %}
+</head>
+
+<body>
+<div class="wrapper">
+    {% block page_header %}
+        <!--header-->
+        <header>
+            <div>
+                <div class="aside"></div>
+                <div class="container">
+                    <div class="row">
+                        <div class="header-banner pull-left">
+                            <div class="">
+                                {% block logo %}{% endblock logo %}
+                            </div>
+                        </div>
+                        <div class="content pull-right" style="z-index: 2">
+                            <div class="top">
+                                <a href="{% url "main_index" %}" id="logo">
+                                    <img src="{% static "/asset/image/logo.png" %}" alt="">
+                                </a>
+                            </div>
+                            <div class="navigation">
+                                <nav role="navigation" id="navigation">
+                                    <!--main menu-->
+                                    {% with request|user_permission as user_permission %}
+                                        {#                                      {% with {{ app_list_disable }} as app_list_disable %}#}
+                                        <ul class="main-nav" data-copy="#menu_modal_content">
+
+                                            {% if "main_index" in user_permission %}
+                                                <li id="main_index">
+                                                    <a href="{% url "main_index" %}">خانه</a>
+                                                </li>
+                                            {% endif %}
+
+                                            {% if "teacher_schools" in user_permission %}
+                                                <li id="teacher_schools">
+                                                    <a href="{% url "teacher_schools" %}">مدرسه های من</a>
+                                                </li>
+                                            {% endif %}
+
+                                            {% if "my_school_index" in user_permission %}
+                                                <li id="my_school_index">
+                                                    <a href="{% url "my_school_index" %}">مدرسه من</a>
+                                                </li>
+                                            {% endif %}
+                                            {% if "league_index" in user_permission %}
+                                                {% if not "league_index" in app_list_disable %}
+                                                    <li id="league_index">
+                                                        <a href="{% url "league_index" %}">لیگ</a>
+                                                    </li>
+                                                {% endif %}
+                                            {% endif %}
+
+                                            {#                                        {% if request|has_perm:"hamraz_qa_index" %}#}
+                                            {#                                            <li {% if "/hamraz/" in request.path %}class="active"{% endif %}>#}
+                                            {#                                                <a href="{% url "hamraz_qa_index" %}">همراز</a>#}
+                                            {#                                            </li>#}
+                                            {#                                        {% endif %}#}
+                                            {% if "activity_index" in user_permission %}
+                                                <li id="activity_index">
+                                                    <a href="{% url "activity_index" %}">
+                                                        {% if not "activity_index" in app_list_disable %}
+                                                            {% if request.user.userbox.user_type == "student" %}
+                                                                امتیاز بده بگیر
+                                                            {% else %}
+                                                                فعالیت های ثبت شده
+                                                            {% endif %}
+                                                        {% endif %}
+                                                    </a>
+                                                </li>
+                                            {% endif %}
+
+                                            {% if "pick_question" in user_permission %}
+                                                {% if not "pick_question" in app_list_disable %}
+                                                    <li id="pick_question">
+                                                        <a href="{% url "pick_question" %}">انتخاب سوال</a>
+                                                    </li>
+                                                {% endif %}
+                                            {% endif %}
+
+                                            {% if "workspace_question" in user_permission %}
+                                                <li id="workspace_question">
+                                                    <a href="{% url "workspace_question" %}">میز کار من</a>
+                                                </li>
+                                            {% endif %}
+
+                                            {% if "confirm_question" in user_permission %}
+                                                <li id="confirm_question">
+                                                    <a href="{% url "confirm_question" %}">تایید سوالات</a>
+                                                </li>
+                                            {% endif %}
+
+                                            {% if "faq_manager_question" in user_permission %}
+                                                <li id="faq_manager_question">
+                                                    <a href="{% url "faq_manager_question" %}">سوالات متداول</a>
+                                                </li>
+                                            {% endif %}
+
+                                            {% if "products" in user_permission %}
+                                                {% if not "products" in app_list_disable %}
+                                                    <li id="products">
+                                                        <a href="{% url "products" %}">فروشگاه</a>
+                                                    </li>
+                                                {% endif %}
+                                            {% endif %}
+
+                                            {% with request|get_count_sub_menu as count_sub_menu %}
+                                                {% if count_sub_menu > 1 %}
+                                                    <li class="have-sub-menu">
+                                                        <a>
+                                                            امور مدیریتی
+                                                            <span class="fa fa-sort-down"></span>
+                                                        </a>
+                                                        <div class="sub-menu-box">
+                                                            <ul class="sub-menu">
+                                                                {% if request|has_perm:"workspace_index" %}
+                                                                    {% if not "workspace_index" in app_list_disable %}
+                                                                        <li {% if url_name  == 'workspace_index' %}class="active"{% endif %}>
+                                                                            <a href="{% url "workspace_index" %}">بررسی
+                                                                                فعالیت
+                                                                                ها </a>
+                                                                        </li>
+                                                                    {% endif %}
+                                                                {% endif %}
+
+                                                                {% if request|has_perm:"index_report" %}
+                                                                    {% if not "index_report" in app_list_disable %}
+                                                                        <li {% if url_name  == 'index_report' %}class="active"{% endif %}>
+                                                                            <a href="{% url "index_report" %}">گزارش ها </a>
+                                                                        </li>
+                                                                    {% endif %}
+                                                                {% endif %}
+
+                                                                {% if request|has_perm:"product_index_manager" %}
+
+                                                                    <li {% if url_name  == 'product_index_manager' %}class="active"{% endif %}>
+                                                                        <a href="{% url "product_list_manager" %}">مدیریت فروشگاه </a>
+                                                                    </li>
+                                                                {% endif %}
+
+                                                                {% if "posted_announcement" in user_permission %}
+                                                                    {% if not "posted_announcement" in app_list_disable %}
+                                                                        <li id="posted_announcement">
+                                                                            <a href="{% url "posted_announcement" %}">ارسال اطلاعیه</a>
+                                                                        </li>
+                                                                    {% endif %}
+                                                                {% endif %}
+                                                                {% if "all_report_abuses" in user_permission %}
+                                                                    {% if not "all_report_abuses" in app_list_disable %}
+                                                                        <li id="all_report_abuses">
+                                                                            <a href="{% url "all_report_abuses" %}">گزارش های تخلف</a>
+                                                                        </li>
+                                                                    {% endif %}
+                                                                {% endif %}
+
+                                                            </ul>
+                                                        </div>
+                                                    </li>
+                                                {% else %}
+                                                    {% if request|has_perm:"workspace_index" %}
+                                                        {% if not "workspace_index" in app_list_disable %}
+                                                            <li {% if url_name  == 'workspace_index' %}class="active"{% endif %}>
+                                                                <a href="{% url "workspace_index" %}">بررسی
+                                                                    فعالیت
+                                                                    ها </a>
+                                                            </li>
+                                                        {% endif %}
+                                                    {% endif %}
+
+                                                    {% if request|has_perm:"index_report" %}
+                                                        {% if not "index_report" in app_list_disable %}
+                                                            <li {% if url_name  == 'index_report' %}class="active"{% endif %}>
+                                                                <a href="{% url "index_report" %}">گزارش ها </a>
+                                                            </li>
+                                                        {% endif %}
+                                                    {% endif %}
+
+                                                    {% if request|has_perm:"product_index_manager" %}
+                                                        {% if not "product_index_manager" in app_list_disable %}
+                                                            <li {% if url_name  == 'product_index_manager' %}class="active"{% endif %}>
+                                                                <a href="{% url "product_list_manager" %}">مدیریت فروشگاه </a>
+                                                            </li>
+                                                        {% endif %}
+                                                    {% endif %}
+
+                                                    {% if "posted_announcement" in user_permission %}
+                                                        {% if not "posted_announcement" in app_list_disable %}
+                                                            <li id="posted_announcement">
+                                                                <a href="{% url "posted_announcement" %}">ارسال اطلاعیه</a>
+                                                            </li>
+                                                        {% endif %}
+                                                    {% endif %}
+                                                    {% if "all_report_abuses" in user_permission %}
+                                                        {% if not "all_report_abuses" in app_list_disable %}
+                                                            <li id="all_report_abuses">
+                                                                <a href="{% url "all_report_abuses" %}">گزارش های تخلف</a>
+                                                            </li>
+                                                        {% endif %}
+                                                    {% endif %}
+                                                {% endif %}
+                                            {% endwith %}
+
+                                            {% if request.user.userbox.user_type == "student" %}
+                                                {% if "calendar_index" in user_permission %}
+                                                    {% if not "calendar_index" in app_list_disable %}
+                                                        <li id="calendar_index">
+                                                            <a href="{% url "calendar_index" %}">تقویم </a>
+                                                        </li>
+                                                    {% endif %}
+                                                {% endif %}
+                                                {% if not "hamraz_qa_index" in app_list_disable %}
+                                                    <li id="hamraz_qa_index">
+                                                        <a href="{% url 'hamraz_qa_index' %}">همراز </a>
+                                                    </li>
+                                                {% endif %}
+                                                <li id="user_profile">
+                                                    <a href="{% url "user_profile" %}">
+                                                        <i class="fa fa-user"></i>
+                                                        <span>{{ user.userbox.full_name }}</span>
+                                                    </a>
+                                                </li>
+                                            {% else %}
+                                                {% if request.user.userbox.role_select == "country" %}
+                                                    {% if not "hamraz_faq_index" in app_list_disable %}
+                                                        <li id="hamraz_faq_index">
+                                                            <a href="{% url 'hamraz_faq_index' %}">مشاوره های متداول </a>
+                                                        </li>
+                                                    {% endif %}
+                                                {% endif %}
+                                                {% with request|get_levels as levels %}
+                                                    {% if levels|length > 1 or request|has_perm_both_gender %}
+
+                                                        <li>
+                                                            <a href="#" data-toggle="modal" data-target="#changeRole">
+                                                                <span>تغییر نقش</span>
+                                                            </a>
+                                                        </li>
+                                                    {% endif %}
+                                                {% endwith %}
+                                                <li>
+                                                    <a href="{% url "user_profile" %}">
+                                                        <i class="fa fa-user"></i>
+                                                        <span>{{ user.userbox.full_name }}</span>
+                                                    </a>
+                                                </li>
+                                            {% endif %}
+                                        </ul>
+                                        {#                                      {% endwith %}#}
+                                    {% endwith %}
+                                    <!--end main menu-->
+                                </nav>
+                                <!--user menu-->
+                                <ul class="user-nav">
+                                    <li class="navigation-toggle">
+                                        <a data-toggle="modal" data-target="#menuModal">
+                                            <i class="fa fa-navicon"></i>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="{% url "access_logout" %}" data-toggle="tooltip"
+                                           data-placement="bottom" title="خروج">
+                                            <i class="fa fa-sign-out" style="font-size: 18px"></i>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        {% with request|get_count_announcements as announcement_count %}
+                                            {% if not "announcements_index" in app_list_disable %}
+                                                <a id="envelope" href="{% url "announcements_index" %}" data-toggle="tooltip"
+                                                   data-placement="bottom" title="اطلاعیه و محتوا">
+                                                    <i class="fa fa-envelope"></i>
+                                                    {% if announcement_count %}
+                                                        <span class="number">{{ announcement_count }}</span>
+                                                    {% endif %}
+                                                </a>
+                                            {% endif %}
+                                        {% endwith %}
+                                    </li>
+                                    <li>
+                                        {% with request|get_count_notifications as notify_count %}
+                                            {% if not "notification" in app_list_disable %}
+                                                <a id="bell" href="{% url "notification_index" %}" data-toggle="tooltip"
+                                                   data-placement="bottom" title="پیغام ها">
+                                                    <i class="fa fa-bell"></i>
+                                                    {% if notify_count %}
+                                                        <span class="number" id="notification-count" data-value="{{ notify_count }}">{{ notify_count }}</span>
+                                                    {% endif %}
+                                                </a>
+                                            {% endif %}
+                                        {% endwith %}
+                                    </li>
+                                </ul>
+                                <!--end user menu-->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="aside"></div>
+            </div>
+        </header>
+        <!--end header-->
+    {% endblock %}
+
+    {% block page_content %} {% endblock %}
+
+    {% block page_footer %}
+        <!--footer-->
+        <footer>
+            <div class="container">
+                <div class="row footer-row">
+                    <div class="footer-text pull-right">
+                        {#                        <div>#}
+                        {#                            <h3 class="footer-title">درباره سامانه</h3>#}
+                        {#                            <p>لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ و با استفاده از طراحان گرافیک#}
+                        {#                                است.#}
+                        {#                                چاپگرها و متون بلکه روزنامه و مجله در ستون و سطرآنچنان که لازم است و برای شرایط فعلی#}
+                        {#                                تکنولوژی مورد نیاز و کاربردهای متنوع با هدف بهبود ابزارهای کاربردی می باشد.</p>#}
+                        {#                        </div>#}
+                    </div>
+                    <div class="footer-link pull-right">
+                        <div>
+                            {#                            <h3 class="footer-title">لینک های مفید</h3>#}
+                            {#                            <ul class="footer-nav">#}
+                            {#                                <li>#}
+                            {#                                    <a class="btn btn-warning" href="{{ ""|get_app_link_student }}" download>#}
+                            {#                                        دانلود اپلیکیشن دانش آموز#}
+                            {#                                    </a>#}
+                            {#                                </li>#}
+                            {#                                <li>#}
+                            {#                                    <a class="btn btn-warning" href="{{ ""|get_app_link_teacher }}" download>#}
+                            {#                                        دانلود اپلیکیشن مربی#}
+                            {#                                    </a>#}
+                            {#                                </li>#}
+
+                            {#                                <li><a>لینک نمونه شماره دو</a></li>#}
+                            {#                                <li><a>لینک نمونه شماره دو</a></li>#}
+                            {#                                <li><a>لینک نمونه شماره دو</a></li>#}
+                            {#                                <li><a>لینک نمونه شماره دو</a></li>#}
+                            {#                                <li><a>لینک نمونه شماره دو</a></li>#}
+                            {#                            </ul>#}
+                            {#                            <ul class="social-footer-nav">#}
+                            {#                                <li><a><i class="fa fa-facebook-square"></i></a></li>#}
+                            {#                                <li><a><i class="fa fa-twitter-square"></i></a></li>#}
+                            {#                                <li><a><i class="fa fa-telegram"></i></a></li>#}
+                            {#                                <li><a><i class="fa fa-linkedin-square"></i></a></li>#}
+                            {#                                <li><a><i class="fa fa-snapchat-square"></i></a></li>#}
+                            {#                            </ul>#}
+                        </div>
+                    </div>
+                    <div class="footer-logo pull-left">
+                        <ul class="footer-logo-content">
+                            <li><a><img src="{% static "/asset/image/f1.png" %}" alt=""></a></li>
+                            <li><a><img src="{% static "/asset/image/f2.png" %}" alt=""></a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </footer>
+        <!--end footer-->
+    {% endblock %}
+
+</div>
+
+{% if request.user.is_authenticated %}
+    <!--modal menu for responsive-->
+    {% with request|get_levels as levels %}
+        {% if levels|length > 1 or request|has_perm_both_gender %}
+            <div class="modal fade" id="changeRole" tabindex="-1" role="dialog" aria-labelledby="changeRoleModalLabel">
+                <div class="modal-dialog modal-sm" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">×</span>
+                            </button>
+                            <h5 class="modal-title">تغییر نقش</h5>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label for="gender">نقش:</label>
+                                <select name="role" class="select_wait" id="role_select">
+                                    {% for level in levels %}
+                                        <option value="{{ level.id }}"
+                                                {% if request.user.userbox.role_select == level.id %}selected{% endif %}>
+                                            {{ level.presentation }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            {% if request|has_perm_both_gender %}
+                                <div class="form-group">
+                                    <label for="gender">جنسیت:</label>
+                                    <select name="gender" id="gender_select" class="select_wait">
+                                        <option {% if request.user.userbox.gender_select == "male" %}
+                                            selected {% endif %} value="male">پسرانه
+                                        </option>
+                                        <option {% if request.user.userbox.gender_select == "female" %}
+                                            selected {% endif %} value="female">دخترانه
+                                        </option>
+                                    </select>
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" onclick="changeRole()">اعمال</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    {% endwith %}
+{% endif %}
+
+<div class="modal fade" id="menuModal" tabindex="-1" role="dialog" aria-labelledby="menuModalLabel">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+                <h4 class="modal-title" id="menuModalLabel">منو سایت</h4>
+            </div>
+            <div class="modal-body">
+                <ul class="modal-menu" id="menu_modal_content"></ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">بستن پنجره</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% if request.user.is_authenticated %}
+    <div class="loading-box">
+        <div class="loading">
+            <img src="{% static "asset/image/loading.svg" %}">
+            <p>در حال بارگذاری</p>
+        </div>
+    </div>
+{% endif %}
+
+{% block base_js_codes %}
+
+    <script type="text/javascript" src="{% static "js/toastr/toastr.min.js" %}"></script>
+    <script type="text/javascript" src="{% static "asset/script/plugin/bootstrap-select.js" %}"></script>
+    <script type="text/javascript" src="{% static "asset/script/script.js" %}"></script>
+    <script type="text/javascript" src="{% static "asset/script/plugin/bootstrap.js" %}"></script>
+    <script type="text/javascript" src="{% static "asset/script/tour_info.js" %}"></script>
+    <script type="text/javascript" src="{% static "js/base.js" %}"></script>
+    <script type="text/javascript" src="{% static "js/bootstrap-tour.js" %}"></script>
+
+    <script>
+        var site_address = '{% get_site_address %}';
+        {% if request.user.is_authenticated %}
+            $("#" + '{{ request.resolver_match.url_name }}').addClass("active");
+            {% with request|get_levels as levels %}
+                {% if levels|length > 1 or request|has_perm_both_gender %}
+                    function changeRole() {
+                        $.ajax({
+                            url: '{% url 'change_role_and_gender' %}',
+                            type: 'post',
+                            data: {
+                                "gender_select": $("#gender_select").val(),
+                                "role_select": $("#role_select").val(),
+                                "csrfmiddlewaretoken": '{{ csrf_token }}'
+                            },
+                            success: function (data) {
+                                if (data["message"] === "success") {
+                                    toastr.success('اعمال با موفقیت صورت گرفت.');
+                                    window.location.reload();
+                                } else {
+                                    toastr.error('لطفا بعدا سعی کنید.');
+                                }
+                            }
+                        });
+                    }
+                {% endif %}
+            {% endwith %}
+        {% endif %}
+        // Instance the tour
+        var tour = new Tour({
+            steps: get_tour_steps('{{ request.user.userbox.user_type }}'),
+            storage: window.localStorage,
+            backdrop: true,
+            backdropPadding: 5,
+        });
+    </script>
+{% endblock %}
+
+
+{% block js_plugins %} {% endblock %}
+{% block js_code %} {% endblock %}
+
+</body>
+</html>

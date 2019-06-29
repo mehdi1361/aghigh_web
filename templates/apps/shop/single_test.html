@@ -1,0 +1,250 @@
+{% extends "apps/base.html" %}
+{% load static %}
+{% load main_extra %}
+{% block title %}{{ product.title }}{% endblock %}
+{% block logo %}
+    {% if request.user.userbox.gender == 'male' %}
+        <img src="{% static "/asset/image/b2.png" %}" id="banner-image" alt="">
+    {% else %}
+        <img src="{% static "/asset/image_gr/b2.png" %}" id="banner-image" alt="">
+    {% endif %}
+{% endblock logo %}
+{% block page_content %}
+    <!--content-->
+    <div id="content" class="body_min_height">
+        <a class="btn btn-blue btn-circle btn-fix">
+            {% with request|get_count_product_in_basket as basket_count %}
+                <span id="basket_count" class="number persian_number"
+                      data-val="{{ basket_count }}">{{ basket_count }}</span>
+            {% endwith %}
+            <i class="fa fa-shopping-cart"></i>
+        </a>
+        <section>
+            <div class="container">
+                <div class="row row-min m-b-45">
+                    <div class="col-lg-6 m-b-20">
+                        <!--slide-->
+                        <div class="slide-min slide-2">
+                            <div class="owl-carousel single-activity-slider">
+                                <div class="item">
+                                    <img src="{% static "/asset/image/shop_2.jpg" %}" alt="" height="400">
+                                </div>
+                                <div class="item">
+                                    <img src="{% static "/asset/image/shop_1.jpg" %}" alt="" height="400">
+                                </div>
+                            </div>
+                        </div>
+                        <!--end slide-->
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="product-detail">
+                            <h3 class="title">
+                                آموزش احکام جوانان
+                            </h3>
+                            <ul class="product-info-1">
+                                <li><i class="fa fa-heart"></i> <span class="persian_number">4000</span></li>
+                                <li><i class="fa fa-eye"></i> <span class="persian_number">150</span></li>
+                            </ul>
+                            <ul class="product-info-2 m-b-40">
+                                <li class="price fit-width">
+                                    <i class="fa fa-credit-card"></i>
+                                    <span class="subject">قیمت:</span>
+                                    <span class="persian_number">۲۰۰۰ ت</span>
+                                </li>
+                                {#                                <li><i class="fa fa-bank"></i> <span class="subject">فروشنده:</span> <a><span>دسته بندی محصول</span></a></li>#}
+                                <li><i class="fa fa-database"></i> <span class="subject">دسته بندی:</span>
+                                    <a><span>جزوه</span></a></li>
+                            </ul>
+                            <div class="row">
+
+                                <div class="col-lg-6 col-md-3 col-sm-6 col-xs-12 pull-left">
+                                    <button class="btn btn-warning fit-width">
+                                        <span>
+                                            <i class="fa fa-shopping-cart"></i>
+                                            افزودن به سبد خرید
+                                        </span>
+                                    </button>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section>
+            <div class="container">
+                <div class="section-title style-1 m-b-10">
+                    <h3 class="title">
+                        <span>توضیحات محصول:</span>
+                    </h3>
+                </div>
+                <div class="product-text m-b-60">
+                    <p>
+                        شرح اجمالی احکام مبتلابه جوانان
+                    </p>
+                </div>
+            </div>
+        </section>
+        <section>
+            <div class="container">
+                <div>
+
+                    <!-- Nav tabs -->
+                    <ul class="nav nav-tabs" role="tablist">
+                        <li role="presentation" class="active">
+                            <a data-target="#product_info"
+                               aria-controls="product_info" role="tab"
+                               data-toggle="tab">اطلاعات محصول</a>
+                        </li>
+                        {#                        <li role="presentation"><a data-target="#product_comment" aria-controls="product_comment" role="tab" data-toggle="tab">نظرات</a></li>#}
+                    </ul>
+                    <!-- Tab panes -->
+                    <div class="tab-content">
+                        <div role="tabpanel" class="tab-pane active" id="product_info">
+                            <div class="product-info-3">
+                                <div class="row additionalfields-title">
+                                    <div>مشخصات جزوه</div>
+                                </div>
+                                <div class="row">
+                                    <div class="subject">
+                                        <div>نویسنده</div>
+                                    </div>
+                                    <div class="text">
+                                        <div></div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="subject">
+                                        <div>تعداد صفحات</div>
+                                    </div>
+                                    <div class="text">
+
+                                        <div>18</div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="subject">
+                                        <div>نام جزوه</div>
+                                    </div>
+                                    <div class="text">
+                                        <div>آموزش احکام</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <div class="modal fade" id="commentModal" tabindex="-1" role="dialog" aria-labelledby="commentModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+
+                    <h4 class="modal-title" id="commentModalLabel">ثبت نظر</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group style-1 fix-label m-b-60">
+                        <label for="">
+                            متن *
+                        </label>
+                        <div class="input">
+                            <textarea rows="4" class="form-control"></textarea>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-ps-3">
+
+                                <label class="m-b-10" for="">معیار 1</label>
+                            </div>
+                            <div class="col-ps-9">
+                                <div class="slider-input" value="0" from="0" to="100" step="5" type="single"
+                                     name="sort3"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-ps-3">
+
+                                <label class="m-b-10" for="">معیار 1</label>
+                            </div>
+                            <div class="col-ps-9">
+                                <div class="slider-input" value="0" from="0" to="100" step="5" type="single"
+                                     name="sort3"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-ps-3">
+
+                                <label class="m-b-10" for="">معیار 1</label>
+                            </div>
+                            <div class="col-ps-9">
+                                <div class="slider-input" value="0" from="0" to="100" step="5" type="single"
+                                     name="sort3"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer no-border">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">انصراف</button>
+                    <button type="button" class="btn btn-warning">ثبت</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--end content-->
+{% endblock %}
+
+{% block js_code %}
+    <!--for this page only-->
+    <script type="text/javascript" src="{% static 'asset/script/plugin/owl.carousel.js' %}"></script>
+    <script type="text/javascript" src="{% static 'asset/script/plugin/range.js' %}"></script>
+
+    <script type="text/javascript">
+
+        function addToBasket(product_id, e) {
+            $.ajax({
+                url: '{% url 'shopping_basket' %}',
+                type: 'POST',
+                data: {
+                    "product_id": product_id,
+                    "csrfmiddlewaretoken": '{{ csrf_token }}'
+                },
+                success: function (data) {
+                    if (data["message"] === "success") {
+                        toastr.success('محصول اضافه شد.');
+                        $(e).removeClass('btn-warning');
+                        $(e).attr('disabled', 'disabled');
+                        $("#basket_count").html(parseInt($("#basket_count").attr('data-val')) + 1)
+                        set_persian();
+
+                    } else {
+                        toastr.error('محصول اضافه نشد.');
+                    }
+                },
+                error: function (data) {
+                    toastr.error('لطفا بعدا سعی کنید.');
+                }
+            })
+        }
+
+        // Initialize the tour
+        tour.init();
+
+        // Start the tour
+        tour.start();
+
+    </script>
+{% endblock %}

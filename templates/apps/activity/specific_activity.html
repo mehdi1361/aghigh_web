@@ -1,0 +1,94 @@
+{% extends "apps/base.html" %}
+{% load static %}
+{% load main_extra %}
+
+{% block title %}سامانه عقیق|جستجوی فعالیت{% endblock %}
+
+{% block logo %}
+    <img src="{% static "/asset/image/medal.png" %}" id="banner-image" alt="">
+{% endblock logo %}
+{% block page_content %}
+    <!--content-->
+    <div id="content" class="body_min_height">
+        <section>
+            <div class="container">
+                <div class="row text-center" style="color: #FFAD17">
+                    <h3 class="title">
+                        <i class="fa fa-trophy"></i>
+                        <span>{{ activities.title }}</span>
+                    </h3>
+                </div>
+                <hr>
+                {% if activities.results %}
+                    <div class="row">
+                        <div class="col-md-2"></div>
+                        <div class="col-md-8">
+                            <ul class="timeline">
+                                {% for activity in activities.results %}
+                                    <li class="{% cycle 'timeline-inverted' '' %}">
+                                        <div class="timeline-badge danger persian_number">{{ forloop.counter }}<i
+                                                class="glyphicon glyphicon-check"></i></div>
+                                        <div class="timeline-panel">
+                                            <div class="activity-item"
+                                                 style="box-shadow: none !important; margin-bottom: 0 !important;">
+                                                <a href="{% url "single_activity" activity_id=activity.id|to_hash_id %}"
+                                                   class="image image_loader set_activity">
+
+                                                    {% if activity.school.id == request.user.userbox.school_id %}
+                                                        <span class="green">مدرسه من</span>
+                                                    {% endif %}
+                                                    <div class="image_set"></div>
+                                                    <img data-src="{{ activity.image|server_public_url:"711x400" }}"
+                                                         data-target="image_set"
+                                                         onload="image_load(this,true)"
+                                                         onerror="image_load(this,false)">
+                                                </a>
+                                                <div class="content">
+                                                    <a href="{% url "single_activity" activity_id=activity.id|to_hash_id %}">
+                                                        <h4 class="title">{{ activity.title }}</h4>
+                                                    </a>
+
+                                                    <ul>
+                                                        <li style="width: 100%;margin: 0;"><a
+                                                                href="{% url "league_single_school" school_id=activity.school.id|to_hash_id %}"><i
+                                                                class="fa fa-bank"></i><span>{{ activity.school.name }}</span></a>
+                                                        </li>
+                                                        <li style="width: 100%;margin: 0;"><p><i
+                                                                class="fa fa-map-marker"></i><span>{{ activity.location }}</span>
+                                                        </p></li>
+                                                        <li><i class="fa fa-eye"></i><span
+                                                                class="persian_number">{{ activity.view_count }}</span>
+                                                        </li>
+                                                        <li><i class="fa fa-trophy"></i> <span
+                                                                class="persian_number">{{ activity.point_star.sum }}</span>
+                                                        </li>
+                                                        <li><i class="fa fa-user"></i> <span
+                                                                class="persian_number">{{ activity.point_star.count }}</span>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="pull-left">
+                        <a href="{% url 'search_activity' %}?order=point_high"
+                           class="btn btn-sm btn-warning">بیشتر</a>
+                    </div>
+                {% else %}
+                    <div class="row text-center">
+                        <h4>هیچ فعالیتی نیست. تو می تونی فعالیت خودت رو اینجا ببینی</h4>
+                    </div>
+                {% endif %}
+            </div>
+        </section>
+    </div>
+    <!--end content-->
+{% endblock %}
+
+{% block js_plugins %}
+{% endblock %}
+

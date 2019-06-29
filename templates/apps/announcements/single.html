@@ -1,0 +1,96 @@
+{% extends "apps/base.html" %}
+{% load static %}
+{% load main_extra %}
+{% load date_to_persian %}
+{% block title %}سامانه عقیق|اطلاعیه ها{% endblock %}
+{% block logo %}
+    {% if request.user.userbox.gender == 'male' %}
+        <img src="{% static "/asset/image/b3.png" %}" id="banner-image" alt="">
+    {% else %}
+        <img src="{% static "/asset/image_gr/b3.png" %}" id="banner-image" alt="">
+    {% endif %}
+{% endblock logo %}
+
+{% block page_content %}
+    <!--content-->
+    <div id="content" class="body_min_height">
+        <section>
+            <div class="container">
+                <div class="row row-min m-b-45">
+                    {% if announcement_item.image %}
+                        <div class="col-lg-6 m-b-20" style="margin-top: 18px">
+                            <div class="item">
+                                <a class="slide-item style-2">
+                                    <img src="{{ announcement_item.image |server_public_url }}" alt="">
+                                </a>
+                            </div>
+                        </div>
+                    {% endif %}
+                    <div class="col-lg-6">
+                        <div class="">
+                            <h3 class="title m-b-50">{{ announcement_item.title }}</h3>
+                            <ul class="product-info-2 m-b-40">
+                                <li>
+                                    <i class="fa fa-calendar"></i> <span class="subject">تاریخ ارسال:</span>
+                                    <span class="persian_number">
+                                        {{ announcement_item.created_at |date_to_persian }}
+                                    </span>
+                                </li>
+                                <li><i class="fa fa-user-circle"></i> <span class="subject">توسط:</span>
+                                    <span>
+                                        مدیر سامانه
+                                    </span>
+                                </li>
+                                <li><i class="fa fa-eye"></i> <span class="subject">بازدید:</span>
+                                    <span>
+                                        {{ announcement_item.view_count }}
+                                    </span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section>
+            <div class="container">
+                <div class="section-title style-1 m-b-10">
+                    <h3 class="title">
+                        <span>توضیحات اطلاعیه:</span>
+                    </h3>
+                </div>
+                <div class="product-text m-b-60">
+                    {{ announcement_item.description  | safe | linebreaksbr }}
+                </div>
+            </div>
+        </section>
+        {% if announcement_item.files %}
+            <section>
+                <div class="container">
+                    <div class="section-title style-1 m-b-10">
+                        <h3 class="title">
+                            <span>فایل های پیوست:</span>
+                        </h3>
+                    </div>
+                    <div class="activity-file-list m-b-30">
+                        {% for file_item in announcement_item.files %}
+                            <div class="activity-file">
+                                <span class="name">{{ file_item.title }}</span>
+                                <span class="size persian_number">{{ file_item.size|filesizeformat }}</span>
+                                <a class="btn btn-warning" href="{{ file_item.file|server_public_url }}"
+                                   download>دانلود</a>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </section>
+        {% endif %}
+    </div>
+    <!--end content-->
+{% endblock %}
+
+{% block js_plugins %}
+    <!--for this page only-->
+    <script type="text/javascript" src="{% static "asset/script/plugin/owl.carousel.js" %}"></script>
+    <script type="text/javascript" src="{% static "asset/script/plugin/range.js" %}"></script>
+{% endblock %}

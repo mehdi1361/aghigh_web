@@ -1,0 +1,68 @@
+{% extends "apps/base.html" %}
+{% load static %}
+{% load main_extra %}
+{% block logo %}
+    {% if request.user.userbox.gender == 'male' %}
+        <img src="{% static "/asset/image/b2.png" %}" id="banner-image" alt="">
+    {% else %}
+        <img src="{% static "/asset/image_gr/b2.png" %}" id="banner-image" alt="">
+    {% endif %}
+{% endblock logo %}
+{% block page_content %}
+    <!--content-->
+    <div id="content" class="body_min_height">
+        <a href="{% url 'shopping_invoice' %}" type="button" class="btn btn-blue btn-circle btn-fix">
+            <i class="fa fa-plus"></i>
+        </a>
+        <section>
+            <div class="container">
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th scope="col">ردیف</th>
+                        <th scope="col">کد فاکتور</th>
+                        <th scope="col">پرداخت شده</th>
+                        <th scope="col">عملیات</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for invoice in invoices.results %}
+                        <tr>
+                            <th class="persian_number" scope="row">{{ forloop.counter }}</th>
+                            <td>{{ invoice.code }}</td>
+                            <td>
+                                {% if invoice.paid %}
+                                    <i class="fa fa-check" style="color: #409900"
+                                       aria-hidden="true"></i>
+                                {% else %}
+                                    <i class="fa fa-times" style="color: #FF004E"
+                                       aria-hidden="true"></i>
+                                {% endif %}
+
+                            </td>
+                            <td class="">
+                                <a class="btn btn-small btn-success" href="{% url 'single_invoice' %}?code={{ invoice.code }}">
+                                    نمایش فاکتور
+                                </a>
+                                {% if not invoice.paid %}
+                                    <a class="btn btn-small btn-danger" href="{% url "shopping_final" %}?code={{ invoice.code }}">
+                                        پرداخت
+                                    </a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+                {% include "blocks/pagination.html" with pagination_data=pagination_data %}
+
+            </div>
+        </section>
+    </div>
+    <!--end content-->
+{% endblock %}
+
+{% block js_code %}
+
+    <!--for this page only-->
+{% endblock %}

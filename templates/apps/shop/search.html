@@ -1,0 +1,165 @@
+{% extends "apps/base.html" %}
+{% load static %}
+{% load main_extra %}
+{% block logo %}
+    {% if request.user.userbox.gender == 'male' %}
+        <img src="{% static "/asset/image/b2.png" %}" id="banner-image" alt="">
+    {% else %}
+        <img src="{% static "/asset/image_gr/b2.png" %}" id="banner-image" alt="">
+    {% endif %}
+{% endblock logo %}
+{% block page_content %}
+    <!--content-->
+    <div id="content" class="body_min_height">
+        <a href="{% url 'shopping_basket' %}" class="btn btn-blue btn-circle btn-fix">
+            {% with request|get_count_product_in_basket as basket_count %}
+                <span id="basket_count" class="number persian_number" data-val="{{ basket_count }}">{{ basket_count }}</span>
+            {% endwith %}
+            <i class="fa fa-shopping-cart"></i>
+        </a>
+        <section>
+            <div class="container">
+                <form action="{% url "search_product" %}" method="get" class="search-form">
+                    <div class="search-detail">
+                        <div class="detail">
+                            <p class="result-text">
+                                {% if query_params %}
+                                    <span class="persian_number">{{ products.count }}</span>
+                                    <span>نتیجه یافت شده برای جستجو</span>
+                                    {% if query_params.text %}
+                                        "<span>{{ query_params.text }}</span>"
+                                    {% endif %}
+                                {% endif %}
+                            </p>
+                        </div>
+                        <div class="search">
+                            <input type="text" name="text" value="{{ query_params.text|default_if_none:"" }}"
+                                   placeholder="جستجو ..." class="form-control style-1">
+                        </div>
+                    </div>
+                    <div class="">
+                        <div class="col-md-3 col-xs-12 pull-left m-b-40">
+                            <h4 class="aside-title style-1">فیلتر</h4>
+                            <div class="form-group">
+                                <label for="price">بر اساس قیمت</label>
+                                <div>
+                                    <div id="slider-price"></div>
+                                    <input type="hidden" name="price" id="slider-price-val">
+                                    <div class="range-detail">
+                                        <span class="range-detail-start" id="start_price"></span>
+                                        <span class="range-detail-end" id="end_price"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="category">بر اساس دسته بندی محصول</label>
+                                <select name="category" id="category" class="select_wait">
+                                    <option value="0">همه</option>
+                                    {% for category in categories %}
+                                        {% if not category.parent %}
+                                            <option value="{{ category.id }}">{{ category.title }}</option>
+                                        {% endif %}
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="check-ps big fit-width">
+                                    <input type="checkbox" name="has_discount" {% if query_params.has_discount == 1 %}checked{% endif %}>
+                                    <span></span>
+                                    <span>دارای تخفیف ها</span>
+                                </label>
+                            </div>
+                            <div class="form-group">
+                                <h4 class="aside-title style-1">مرتب سازی</h4>
+                                <label class="check-ps fit-width big m-b-10">
+                                    <input type="radio" name="order"
+                                           {% if query_params.order == "newest" %}checked{% endif %}
+                                           value="newest">
+                                    <span></span>
+                                    <span>جدیدترین ها</span>
+                                </label>
+                                <label class="check-ps fit-width big m-b-10">
+                                    <input type="radio" name="order"
+                                           {% if query_params.order == "price_high" %}checked{% endif %}
+                                           value="price_high">
+                                    <span></span>
+                                    <span>بیشترین قیمت</span>
+                                </label>
+                                <label class="check-ps fit-width big">
+                                    <input type="radio" name="order"
+                                           {% if query_params.order == "price_low" %}checked{% endif %}
+                                           value="price_low">
+                                    <span></span>
+                                    <span>کمترین قیمت</span>
+                                </label>
+
+                            </div>
+                            <div class="form-button">
+                                <button type="submit" class="btn btn-warning">اعمال</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                <div class="col-md-9 col-xs-12">
+                    <div class="row">
+                        {% for product_item in products.results %}
+                            <div class="col-lg-4 col-ps-6 col-xs-12">
+                                {% include "blocks/product_item.html" with product=product_item %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                    {% include "blocks/pagination.html" with pagination_data=pagination_data %}
+
+                </div>
+            </div>
+        </section>
+    </div>
+    <!--end content-->
+{% endblock %}
+
+{% block js_code %}
+
+    <!--for this page only-->
+    <script type="text/javascript" src="{% static 'asset/script/plugin/bootstrap-select.js' %}"></script>
+    <script type="text/javascript" src="{% static 'asset/script/plugin/range.js' %}"></script>
+    <script type="text/javascript">
+        var slider = document.getElementById('slider-price');
+        var price_start = 0;
+        var price_end = 1000000;
+        if (!isNaN(parseInt('{{ query_params.price_start }}', 10))) {
+            price_start = parseInt('{{ query_params.price_start }}')
+        }
+
+        if (!isNaN(parseInt('{{ query_params.price_end }}', 10))) {
+            price_end = parseInt('{{ query_params.price_end }}')
+        }
+
+        noUiSlider.create(slider, {
+            start: [price_start, price_end],
+            connect: true,
+            range: {
+                'min': 0,
+                'max': 1000000
+            }
+        });
+        var nodes = [
+            document.getElementById('start_price'), // 0
+            document.getElementById('end_price')  // 1
+        ];
+
+        // Display the slider value and how far the handle moved
+        // from the left edge of the slider.
+        slider.noUiSlider.on('update', function (values, handle, unencoded, isTap, positions) {
+            nodes[handle].innerHTML = getArabicNumbers(parseInt(values[handle]));
+            $("#slider-price-val").val(parseInt(values[0]).toString() + ',' + parseInt(values[1]).toString());
+        });
+
+        $('#search_term').on('keypress', function () {
+
+            var search_term = $(this).val();
+            $('#search_text').val(search_term);
+        });
+
+    </script>
+
+{% endblock %}

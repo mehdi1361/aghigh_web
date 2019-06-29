@@ -1,0 +1,85 @@
+{% extends "apps/base.html" %}
+{% load static date_to_persian %}
+{% block logo %}
+    <img src="{% static "/asset/image/b2.png" %}" id="banner-image" alt="">
+{% endblock logo %}
+{% block page_content %}
+    <!--content-->
+    <div id="content" class="body_min_height">
+        <a href="{% url 'product_insert_manager' %}" type="button" class="btn btn-blue btn-circle btn-fix">
+            <i class="fa fa-plus"></i>
+        </a>
+        <section>
+            <div class="container">
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th scope="col" class="text-center">ردیف</th>
+                        <th scope="col" class="text-center">نام محصول</th>
+                        <th scope="col" class="text-center">ایجاد کننده</th>
+                        <th scope="col" class="text-center">تاریخ ایجاد</th>
+                        <th scope="col" class="text-center">آخرین ویرایش کننده</th>
+                        <th scope="col" class="text-center">تاریخ ویرایش</th>
+                        <th scope="col" class="text-center">منتشر شده/
+                            <br>
+                            منتشر نشده
+                        </th>
+                        <th scope="col">عملیات</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for product in products.results %}
+                        <tr>
+                            <th class="persian_number" scope="row">{{ forloop.counter }}</th>
+                            <td class="text-center">
+                                {% if product.title|length > 25 %}
+                                    <p data-toggle="tooltip" data-placement="bottom" title="" data-original-title="{{ product.title }}">
+                                    {{ product.title|slice:":25" }} ...
+                                    </p>
+
+                                {% else %}
+                                    {{ product.title }}
+                                {% endif %}
+                            </td>
+                            <td class="text-center">{{ product.creator.first_name }} {{ product.creator.last_name }}</td>
+                            <td class="text-center">{{ product.created_at|date_to_persian }}</td>
+                            <td class="text-center">{{ product.editor.first_name }} {{ product.editor.last_name }}</td>
+                            <td class="text-center">{{ product.updated_at|date_to_persian }}</td>
+                            <td class="text-center" class="text-center">
+                                {% if product.published %}
+                                    <i class="fa fa-check" style="color: #409900" aria-hidden="true"></i>
+                                {% else %}
+                                    <i class="fa fa-times" style="color: #FF004E" aria-hidden="true"></i>
+                                {% endif %}
+                            </td>
+                            <td class="text-center">
+                                <a class="btn btn-small btn-success" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="ویرایش" href="{% url 'product_insert_manager' %}?id={{ product.id }}" style="padding: 5px 10px;text-align: center;">
+                                    <i class="fa fa-edit" style="font-size: 20px;line-height: 20px;vertical-align: middle;"></i>
+                                </a>
+                                <a class="btn btn-small btn-danger" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="حذف" onclick="deleteProduct('{{ product.id }}')" style="padding: 5px 10px;text-align: center;">
+                                    <i class="fa fa-trash" style="font-size: 20px;line-height: 20px;vertical-align: middle;"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+                {% include "blocks/pagination.html" with pagination_data=pagination_data %}
+
+            </div>
+        </section>
+    </div>
+    <!--end content-->
+{% endblock %}
+
+{% block js_code %}
+    <script>
+        function deleteProduct(p_id) {
+            var r = confirm("آیا مطمین هستید!");
+            if (r === true) {
+                window.location.href = '{% url 'product_delete_manager' %}?id=' + p_id
+            }
+        }
+    </script>
+    <!--for this page only-->
+{% endblock %}

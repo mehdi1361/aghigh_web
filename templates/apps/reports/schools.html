@@ -1,0 +1,252 @@
+{% extends "apps/base.html" %}
+{% load static %}
+{% load date_to_persian %}
+{% load main_extra %}
+{% block title %}سامانه عقیق|رتبه بندی استان ها{% endblock %}
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'amcharts/plugins/export/export.css' %}" type="text/css" media="all"/>
+    <link rel="stylesheet" href="{% static 'iranmap/map.css' %}" type="text/css" media="all"/>
+{% endblock %}
+
+{% block page_content %}
+    <!--content-->
+    <div id="content" class="body_min_height">
+        <div class="container">
+            <h3 class="text-center ea-mar-t-0 ea-mar-b-20">رتبه بندی استان ها</h3>
+            <div class="alert alert-info" role="alert">
+                <div class="row">
+                    <div class="col-sm-11">
+                        <span>5 استان برتر را نشان می دهد(برای مشخص شدن برترین استان ها ابتدا امتیاز هر یک از مدارس آنها حساب شده و تقسیم بر تعداد کل مدارس می شود) </span>
+                    </div>
+                    <div class="col-sm-1 text-center">
+                        <i class="fa fa-info-circle" style="font-size: 30px"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <form id="province_filter_form" class="search-form col-md-4 col-md-offset-4 ">
+                    <div class="row search-list-row">
+                        <div class="col-xs-8">
+                            <div class="form-group">
+                                <label for="county">بر اساس جنسیت</label>
+                                <select name="gender" id="gender_select" class="select_wait">
+                                    <option {% if gender == "male" %} selected {% endif %} value="male">پسرانه</option>
+                                    <option {% if gender == "female" %} selected {% endif %} value="female">دخترانه
+                                    </option>
+                                <option {% if gender == "both" %} selected {% endif %} value="both">هر دو</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-button pull-left col-xs-4 ea-mar-t-30">
+                            <button id="search_btn" type="submit" class="btn btn-warning">اعمال</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="row">
+                <div class="col-xs-12" id="table_top_province_info">
+
+                </div>
+            </div>
+            <div class="alert alert-info" role="alert">
+                <div class="row">
+                    <div class="col-sm-11">
+                        <span>با کلیک کردن بر روی هر یک از استان ها تعداد مدارس فعال،تعداد کل مدارس و میانگین امتیاز(امتیاز همه مدارس حساب شده و تقسیم بر تعداد کل مدارس می شود) نشان داده میشود. </span>
+                    </div>
+                    <div class="col-sm-1 text-center">
+                        <i class="fa fa-info-circle" style="font-size: 30px"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    <div id="province_chart" style="width: 100%;height: 550px; direction: ltr"></div>
+                </div>
+                <div class="col-md-8">
+                    <div class="svg-wrapper">
+                        {% include "blocks/iran_svg.html" %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--end content-->
+{% endblock %}
+{% block js_plugins %}
+    <!--for this page only-->
+    <script type="text/javascript" src='{% static "asset/script/plugin/bootstrap-select.js" %}'></script>
+    <script src="{% static 'amcharts/amcharts.js' %}"></script>
+    <script src="{% static 'amcharts/serial.js' %}"></script>
+    <script src="{% static 'amcharts/plugins/export/export.min.js' %}"></script>
+    <script src="{% static 'amcharts/light.js' %}"></script>
+{% endblock %}
+
+{% block js_code %}
+    <script>
+        let data_report_province = [];
+
+        {% for item in  province_ranking %}
+            data_report_province.push({
+                "province": " {{ item.province_name }}",
+                "point": parseFloat("{{ item.point }}"),
+                "count_all_school": parseFloat("{{ item.count_all_school }}"),
+                "count_school_active": parseInt("{{ item.count_school_active }}"),
+                "province_code": "{{ item.province_code }}"
+            });
+        {% endfor %}
+        // click event on map
+        $('.map-link').click(function () {
+            let name = $(this).attr('data-name');
+            let code = $(this).attr('data-code');
+            let title = "اطلاعات استان " + name;
+
+            for (let i = 0; i < data_report_province.length; i++) {
+                let info_province = data_report_province[i];
+                if (code === info_province['province_code']) {
+                    AmCharts.makeChart("province_chart", {
+                        "theme": "light",
+                        "type": "serial",
+                        "startDuration": 1,
+                        "export": {
+                            "enabled": true
+                        },
+                        "dataProvider": [
+                            {
+                                "category_field": "میانگین امتیاز",
+                                "value_count": parseFloat(info_province['point'])
+                            },
+                            {
+                                "category_field": "تعداد کل مدارس",
+                                "value_count": parseInt(info_province['count_all_school'])
+                            },
+                            {
+                                "category_field": "تعداد مدارس فعال",
+                                "value_count": parseInt(info_province['count_school_active'])
+                            }
+                        ],
+                        "valueAxes": [{
+                            "position": "left",
+                            "title": title,
+                            "integersOnly": true
+
+                        }],
+                        "chartCursor": {
+                            "categoryBalloonEnabled": false,
+                            "cursorAlpha": 0,
+                            "zoomable": false
+                        },
+                        "categoryField": "category_field",
+                        "categoryAxis": {
+                            "gridPosition": "start",
+                            "labelRotation": 90
+                        },
+                        "rotate": false,
+                        "trendLines": [],
+                        "graphs": [
+                            {
+                                "balloonText": "<b class='persian_chart_number'>مقدار دقیق:[[value]]</b>",
+                                "fillAlphas": 0.8,
+                                "id": "AmGraph-1",
+                                "lineAlpha": 0.2,
+                                "type": "column",
+                                "valueField": "value_count"
+                            }
+                        ]
+                    });
+                    $('tspan').each(function () {
+                        $(this).html(getArabicNumbers($(this).html()));
+                    });
+                    break;
+                }
+            }
+        });
+        // exist province report list
+        if (data_report_province.length > 0) {
+            // default value to map for show province
+            let province_code = data_report_province[0]['province_code'];
+            $('.map-link[data-code*="' + province_code + '"]').click();
+            // show five top province in table
+            let str = "";
+            str += '<table class="table table-striped">' +
+                '<thead><tr> <th>رتبه استان</th> <th>نام استان</th> <th>امتیاز</th>' +
+                '<th>کل مدارس</th> <th>مدارس فعال</th> </tr> </thead>' +
+                '<tbody>';
+            for (let ii = 0; ii < data_report_province.length && ii < 5; ii++) {
+                let province_info = data_report_province[ii];
+                str += '<tr>' +
+                    '<td>' + (ii + 1) + '</td>' +
+                    '<td>' + province_info['province'] + '</td>' +
+                    '<td>' + province_info['point'] + '</td>' +
+                    '<td>' + province_info['count_all_school'] + '</td>' +
+                    '<td>' + province_info['count_school_active'] + '</td>' +
+                    '</tr>';
+            }
+            str += '<tr>' +
+                '<td colspan="5">' +
+                '<a class="btn btn-warning pull-left" onclick="downloadCSV()" >دانلود فایل اکسل همه گزارشات</a>' +
+                '<div id="container" style="display:none;"></div>' +
+                '</td>' +
+                '</tr>';
+            str += '</tbody> </table>';
+            $("#table_top_province_info").html(str);
+        }
+    </script>
+    <script type="text/javascript">
+
+        function convertArrayOfObjectsToCSV(args) {
+            let result, ctr, dict_keys, columnDelimiter, lineDelimiter, data;
+
+            data = args.data || null;
+            if (data === null || !data.length) {
+                return null;
+            }
+
+            columnDelimiter = args.columnDelimiter || ',';
+            lineDelimiter = args.lineDelimiter || '\n';
+
+            dict_keys = Object.keys(data[0]);
+
+            result = '';
+            {#            result += keys.join(columnDelimiter);#}
+            result += ["نام استان", "امتیاز", "کل مدارس", "مدارس فعال", "کد استان"].join(columnDelimiter);
+            result += lineDelimiter;
+
+            data.forEach(function (item) {
+                ctr = 0;
+                dict_keys.forEach(function (dict_key) {
+                    if (ctr > 0) result += columnDelimiter;
+
+                    result += item[dict_key];
+                    ctr++;
+                });
+                result += lineDelimiter;
+            });
+
+            return result;
+        }
+        function downloadCSV() {
+            let filename = "province_information.csv";
+            let data, hiddenElement;
+            let csv = convertArrayOfObjectsToCSV({
+                data: data_report_province
+            });
+            if (csv === null) return;
+
+            filename = filename || 'export.csv';
+
+            {#            if (!csv.match(/^data:text\/csv/i)) {#}
+            {#                csv = 'data:text/csv;charset=utf-8,' + csv;#}
+            {#            }#}
+            {#            data = encodeURI(csv);#}
+            var universalBOM = "\uFEFF";
+            data = 'data:text/csv;charset=UTF-8,' + encodeURIComponent(universalBOM + csv);
+
+            hiddenElement = document.createElement('a');
+            hiddenElement.setAttribute('href', data);
+            hiddenElement.setAttribute('download', filename);
+            document.getElementById('container').appendChild(hiddenElement);
+            hiddenElement.click();
+        }
+    </script>
+{% endblock %}
+

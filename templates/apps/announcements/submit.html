@@ -1,0 +1,359 @@
+{% extends "apps/base.html" %}
+{% load static %}
+{% load i18n %}
+{% load rand_bar_color %}
+{% load main_extra %}
+{% load date_to_persian %}
+{% block title %}سامانه عقیق|ثبت اطلاعیه و محتوا{% endblock %}
+{% block logo %}
+    {% if request.user.userbox.gender == 'male' %}
+        <img src="{% static "/asset/image/b3.png" %}" id="banner-image" alt="">
+    {% else %}
+        <img src="{% static "/asset/image_gr/b3.png" %}" id="banner-image" alt="">
+    {% endif %}
+{% endblock logo %}
+
+{% block page_content %}
+
+    <!--content-->
+    <div id="content" class="body_min_height">
+        <section>
+            <div class="container">
+                {% for error in errors %}
+                    <div class="alert alert-danger">
+                        {% if error == "title" %}عنوان اطلاعیه را وارد کنید.
+                        {% elif error == "description" %}توضیحات مربوط به اطلاعیه را وارد کنید.
+                        {% elif error == "receivers" %}دریافت کنندگان اطلاعیه را مشخص کنید.
+                        {% elif error == "temp_has_date" %}تاریخ را وارد کنید.
+                        {% elif error == "server_error" %}خطایی در سامانه رخ داده لطفا بعدا تلاش کنید.
+                        {% endif %}
+                    </div>
+                {% endfor %}
+                <div class="search-detail">
+                    <form action="{% url 'create_announcement' %}" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <!--top field-->
+                        <input name="receivers" type="hidden" value="[]">
+                        <div class="row m-b-15">
+                            <div class="col-sm-3 col-xs-12">
+                                <div class="form-group style-1">
+                                    <label for="">عنوان *</label>
+                                    <div class="input">
+                                        <input required value="{{ announcement.title }}" type="text" id="title"
+                                               name="title"
+                                               class="form-control"
+                                               oninvalid="setCustomValidity('عنوان اجباری است')"
+                                               oninput="setCustomValidity('')">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!--end top field-->
+
+                        <!--text field-->
+                        <div class="form-group style-1 fix-label m-b-40">
+                            <label for="">
+                                توضیحات *
+                            </label>
+                            <div class="input">
+                                <textarea required oninvalid="setCustomValidity('توضیحات اجباری است')"
+                                          oninput="setCustomValidity('')" rows="4" class="form-control"
+                                          name="description">{{ announcement.description }}</textarea>
+                            </div>
+                        </div>
+                        <!--end text field-->
+
+                        <!--check field-->
+                        <div class="row m-b-15">
+                            <div class="col-sm-3 col-xs-12">
+                                <div class="form-group form-check">
+                                    <label class="form-check-label" for="calender_check">در تقویم قرار گیرد؟</label>
+                                    <input type="checkbox" class="form-check-input"
+                                           id="calender_check" name="has_date"
+                                            {% if announcement.has_date %}
+                                           checked
+                                            {% endif %}>
+                                </div>
+                            </div>
+                        </div>
+{#                        <div class="row m-b-15">#}
+{#                            <div id="select_date" class="col-sm-3 col-xs-12#}
+{#                            {% if not announcement.has_date %} ea-dis-none#}
+{#                            {% endif %}">#}
+{#                                <div class="form-group style-1 form-picker">#}
+{#                                    <label for="">تاریخ</label>#}
+{#                                    <div class="input">#}
+{#                                        <input type="text"#}
+{#                                               readonly data-time="true"#}
+{#                                               class="form-control input-picker datepicker_ps" name="date">#}
+{#                                    </div>#}
+{#                                    <button type="button" class="btn-picker">#}
+{#                                        <i class="fa fa-calendar"></i>#}
+{#                                    </button>#}
+{#                                </div>#}
+{#                            </div>#}
+{#                        </div>#}
+                        <!--check field-->
+
+                        <!--date field-->
+                        <div class="row m-b-15">
+                            <div class="col-sm-3 col-xs-12">
+                                <div class="form-group style-1 form-picker">
+                                    <label for="">تاریخ انتشار</label>
+                                    <div class="input">
+                                        <input type="text"
+                                               readonly data-time="true"
+                                               class="form-control input-picker datepicker_ps" name="release_time">
+                                    </div>
+                                    <button type="button" class="btn-picker">
+                                        <i class="fa fa-calendar"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <!--date field-->
+
+                        <!--select option field-->
+                        <div class="section-title style-1">
+                            <h3 class="title">
+                                <span>دریافت کنندگان:</span>
+                            </h3>
+                        </div>
+                        <div class="row m-b-30">
+                            <div class="col-sm-3 col-xs-12">
+                                <div class="form-group">
+                                    <label>گیرنده :</label>
+                                    <select name="user_type" class="select_wait">
+                                        {% for level in sub_levels %}
+                                            <option value="{{ level.name }}">{{ level.display_name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            {% if request|has_perm_both_gender %}
+                                <div class="col-sm-3 col-xs-12">
+                                    <div class="form-group">
+                                        <label>جنسیت :</label>
+                                        <select name="gender_type" class="select_wait" id="gender_type">
+                                            <option value="female">زن</option>
+                                            <option value="male">مرد</option>
+                                            <option selected value="both">هردو</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="row">
+                            {% if top_level == 'country' %}
+                                <div class="col-sm-3 col-xs-12">
+                                    <label for="county">استان ها :</label>
+                                    <div class="form-group">
+                                        <select name="province" id="province_select" class="select_wait">
+                                            <option value="all">همه استان ها</option>
+
+                                            {% for province_db in provinces %}
+                                                <option {% if province_db.id == province %} selected {% endif %}
+                                                                                            value="{{ province_db.id }}">{{ province_db.title }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                            {% endif %}
+                            {% if top_level == "province"  or top_level == "country" %}
+                                <div class="col-sm-3 col-xs-12">
+                                    <label for="county">شهرها :</label>
+                                    <div class="form-group">
+                                        <select name="county" id="county_select" class="select_wait">
+                                            <option value="all">همه شهرها</option>
+
+                                            {% for county_db in counties %}
+                                                <option {% if county_db.id == county %} selected {% endif %}
+                                                                                        value="{{ county_db.id }}">{{ county_db.title }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                            {% endif %}
+                            <div class="col-sm-3 col-xs-12">
+                                <div class="form-group">
+                                    <label for="camp">قرارگاه ها :</label>
+                                    <select name="camp" id="camp_select" class="select_wait">
+                                        <option value="all">همه قرارگاه ها</option>
+                                        {% for camp_db in camps %}
+                                            <option {% if camp_db.id == camp %} selected {% endif %}
+                                                                                value="{{ camp_db.id }}">{{ camp_db.title }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="row m-t-15 m-b-15 text-center">
+                            <p>
+                                <button onclick="add_announcement_receiver('{{ top_level }}', '{{ request|has_perm_both_gender }}')"
+                                        type="button" class="btn btn-primary">
+                                    افزودن دریافت کننده
+                                </button>
+                            </p>
+                        </div>
+                        <!--select option field-->
+
+                        <!--list announcement receiver-->
+                        <div class="row m-b-15">
+                            <table class="table table-striped">
+                                <thead class="thead-dark ea-display-none" id="header_table">
+                                <tr>
+                                    <th scope="col">گیرنده</th>
+                                    {% if top_level == 'country' %}
+                                        <th scope="col">استان</th>
+                                    {% endif %}
+                                    {% if top_level == "province"  or top_level == "country" %}
+                                        <th scope="col">شهرستان</th>
+                                    {% endif %}
+                                    {% if request|has_perm_both_gender %}
+                                        <th scope="col">جنسیت</th>
+                                    {% endif %}
+                                    <th scope="col">قرارگاهها</th>
+                                    <th scope="col">مدیریت</th>
+                                </tr>
+                                </thead>
+                                <tbody id="announcement_receiver_list">
+
+                                </tbody>
+                            </table>
+                            <!--list announcement receiver-->
+
+                            <!--image-->
+                            <div class="section-title style-1">
+                                <h3 class="title">
+                                    <span>عکس فعالیت (اختیاری):</span>
+                                </h3>
+                            </div>
+                            <div class="multi-file-content" data-name="image" data-type="single-image">
+                                <div class="activity-image-list">
+                                    <div class="row">
+                                    </div>
+                                </div>
+                                <p class="text-center m-b-40">
+                                    <button type="button" class="btn btn-primary multi-file-choose">
+                                        افزودن تصویر
+                                    </button>
+                                </p>
+                            </div>
+                            <!--end image-->
+
+                            <!--file-->
+                            <div class="section-title style-1">
+                                <h3 class="title">
+                                    <span>فایل های اطلاعیه (اختیاری):</span>
+                                </h3>
+                            </div>
+                            <div class="activity-file-list m-b-30">
+                                {% for file in announcement.files %}
+                                    <div id="file-{{ file.id }}" class="activity-file">
+                                        <span class="name">{{ file.title }}</span>
+                                        <span class="size persian_number">{{ file.size|filesizeformat }}</span>
+                                        <button onclick="delete_file('{{ file.id }}')" class="btn btn-warning">حذف
+                                        </button>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                            <div class="multi-file-content" data-name="files" data-type="activity-file">
+                                <div class="activity-file-list m-b-30"></div>
+                                <p class="text-center m-b-40">
+                                    <button type="button" class="btn btn-primary multi-file-choose">
+                                        افزودن فایل
+                                    </button>
+                                </p>
+                                <script type="text/template" id="">
+                                    <div class="activity-file" data-number="">
+                                        <input type="file" name="files[]">
+                                        <span class="name">عنوان فایل در اینجا</span>
+                                        <span class="size persian_number">260 kb</span>
+                                        <button type="button" class="btn btn-warning">
+                                            حذف
+                                        </button>
+                                    </div>
+                                </script>
+                            </div>
+                            <!--end file-->
+                            <div class="col-sm-12 col-xs-12 m-t-5">
+                                <button class="btn btn-lg btn-success" type="submit">ذخیره</button>
+                                <a href="{% url 'posted_announcement' %}" class="btn btn-lg btn-warning" type="submit">بستن</a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </div>
+    <!--end content-->
+{% endblock %}
+
+{% block js_plugins %}
+    <!--for this page only-->
+    <script type="text/javascript" src="{% static "asset/script/plugin/bootstrap-select.js" %}"></script>
+    <script type="text/javascript" src="{% static "asset/script/plugin/picker.js" %}"></script>
+    {#    <script type="text/javascript" src="{% url 'javascript-catalog' %}"></script>#}
+    <script type="text/javascript" src="{% static "js/announcement.js" %}"></script>
+{% endblock %}
+
+{% block js_code %}
+    <script>
+        $("#province_select").on('change', function () {
+            $.ajax({
+                url: '{% url "main_cities" "123456789" %}'.replace("123456789", $(this).val()),
+                type: "GET"
+            }).done(function (data) {
+                var camps = data["cities"];
+                var i;
+                var camp_item = {};
+                var data_len = camps.length;
+                var county_select = document.getElementById("county_select");
+
+                $("#county_select").find('option').remove();
+
+                var option = document.createElement("option");
+                option.text = "همه شهرها";
+                option.value = "all";
+                county_select.add(option);
+
+                for (i = 0; i < data_len; i++) {
+                    camp_item = camps[i];
+                    option = document.createElement("option");
+                    option.text = camp_item["title"];
+                    option.value = camp_item["id"];
+                    county_select.add(option);
+                }
+                $("#county_select").selectpicker("refresh");
+            });
+        });
+        $("#county_select").on('change', function () {
+            $.ajax({
+                url: '{% url "main_camps" "123456789" %}'.replace("123456789", $(this).val()),
+                type: "GET"
+            }).done(function (data) {
+                var camps = data["camps"];
+                var i;
+                var camp_item = {};
+                var data_len = camps.length;
+                $("#camp_select").find('option').remove();
+
+                var camp_select = document.getElementById("camp_select");
+                var option = document.createElement("option");
+                option.text = "همه قرارگاه ها";
+                option.value = "all";
+                camp_select.add(option);
+
+                for (i = 0; i < data_len; i++) {
+                    camp_item = camps[i];
+                    option = document.createElement("option");
+                    option.text = camp_item["title"];
+                    option.value = camp_item["id"];
+                    camp_select.add(option);
+                }
+                $("#camp_select").selectpicker("refresh");
+            });
+        });
+    </script>
+{% endblock %}

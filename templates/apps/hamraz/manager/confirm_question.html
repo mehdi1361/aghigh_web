@@ -1,0 +1,170 @@
+{% extends "apps/base.html" %}
+{% load static %}
+{% load main_extra %}
+{% block logo %}
+    {% if request.user.userbox.gender == 'male' %}
+        <img src="{% static "/asset/image/b1.png" %}" id="banner-image" alt="">
+    {% else %}
+        <img src="{% static "/asset/image_gr/b1.png" %}" id="banner-image" alt="">
+    {% endif %}
+{% endblock logo %}
+{% block page_content %}
+    <!--content-->
+    <div id="content" class="body_min_height">
+        <section>
+            {% if questions.results %}
+                <div class="container">
+                    <table class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th scope="col">ردیف</th>
+                            <th scope="col">عنوان سوال</th>
+                            <th scope="col">حوزه اصلی</th>
+                            <th scope="col">حوزه فرعی</th>
+                            <th scope="col">عملیات</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for question in questions.results %}
+                            <tr id="q_{{ question.id|to_hash_id }}">
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ question.subject|slice:"20"  }}...</td>
+                                <td>{{ question.main_category.title }}</td>
+                                <td>{{ question.category.title }}</td>
+                                <td>
+                                    <a class="btn btn-small btn-success" onclick="getQuestion('{{ question.id|to_hash_id }}')">
+                                        نمایش جزییات
+                                    </a>
+                                </td>
+                            </tr>
+
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                    {% include "blocks/pagination.html" with pagination_data=pagination_data %}
+
+                </div>
+            {% else %}
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-3 text-center col-md-offset-5" style="border: silver 1px solid; padding: 50px;">
+                            <span>هیچ سوالی برای تایید موجود نمی باشد.</span>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </section>
+    </div>
+
+    <div class="modal fade" id="confirmQuestion" tabindex="-1" role="dialog" aria-labelledby="confirmQuestionModalLabel">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                    <h4 class="modal-title" id="confirmQuestionModalLabel">تایید سوأل</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="section-title style-1 m-b-10">
+                        <h3 class="title">
+                            <span> عنوان: </span>
+                        </h3>
+                        <div class="product-text">
+                            <p id="subject">عنوان سوال اینجا می باشد. </p>
+                        </div>
+                        <div class="form-group">
+                            <select name="category" id="category" class="select_wait" title="حوزه">
+                                {% for category_item in categories.results %}
+                                    <option {% if query_params.category == category_item.id|stringformat:"i" %}selected{% endif %} value="{{ category_item.id }}">{{ category_item.title }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <select name="sub_category" id="sub_category" class="select_wait" title="زیر حوزه"></select>
+                        </div>
+
+                    </div>
+                    <div class="section-title style-1 m-b-10">
+                        <h3 class="title">
+                            <span> توضیحات: </span>
+                        </h3>
+                    </div>
+                    <p id="body"></p>
+
+                </div>
+                <div class="modal-footer no-border">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">انصراف</button>
+                    <button type="button" class="btn btn-warning" onclick="confirmQuestion()">تایید حوزه و زیر حوزه</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--end content-->
+{% endblock %}
+
+{% block js_code %}
+    <script type="text/javascript" src="{% static "asset/script/plugin/bootstrap-select.js" %}"></script>
+    <script type="text/javascript" src="{% static "js/question.js" %}"></script>
+    <script type="text/javascript">
+        var g_question_id;
+
+        function getQuestion(question_id) {
+            $.ajax({
+                url: '{% url 'get_question' %}',
+                type: 'GET',
+                data: {
+                    "question_id": question_id,
+                    "csrfmiddlewaretoken": '{{ csrf_token }}'
+                },
+                success: function (data) {
+
+                    $("#body").html(data["body"]);
+                    $("#subject").html(data["subject"]);
+                    $("#category").val(data["main_category"]["id"]).change();
+                    set_select();
+                    setTimeout(function () {
+                        $("#sub_category").val(data["category"]["id"]);
+                        set_select();
+
+                    }, 100);
+                    $('#confirmQuestion').modal('show');
+                    g_question_id = question_id;
+
+                },
+                error: function (data) {
+                    toastr.error('لطفا بعدا سعی کنید.');
+                }
+            })
+        }
+
+        function confirmQuestion() {
+            $.ajax({
+                url: '{% url 'confirm_question' %}',
+                type: 'POST',
+                data: {
+                    "question_id": g_question_id,
+                    "sub_category": $("#sub_category").val(),
+                    "category": $("#category").val(),
+                    "csrfmiddlewaretoken": '{{ csrf_token }}'
+                },
+                success: function (data) {
+                    if (data["message"] === "success") {
+                        toastr.success('تایید شد.');
+                        $("#q_" + g_question_id).remove();
+                        $('#confirmQuestion').modal('hide');
+
+                    } else {
+                        toastr.error('تایید نشد.');
+                    }
+                },
+                error: function (data) {
+                    toastr.error('لطفا بعدا سعی کنید.');
+                }
+            })
+        }
+
+    </script>
+    <!--for this page only-->
+{% endblock %}

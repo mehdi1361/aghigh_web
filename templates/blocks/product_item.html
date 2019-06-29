@@ -1,0 +1,37 @@
+{% load static %}
+{% load main_extra %}
+
+<div class="item">
+    <div class="activity-item">
+        <a href="{% url "single_product" product_id=product.id|to_hash_id %}" class="image image_loader set_activity">
+            {% if product.has_discount %}
+                <span class="green"> {{ product.discount }}% تخفیف</span>
+            {% endif %}
+            {% if product.is_free %}
+                <span class="red">این محصول رایگان می باشد.</span>
+            {% endif %}
+            <div class="image_set"></div>
+            <img data-src="{{ product.images.0.image|server_public_url:"711x400" }}"
+                 data-target="image_set"
+                 onload="image_load(this,true)"
+                 onerror="image_load(this,false)">
+        </a>
+        <div class="content">
+            <a href="{% url "single_product" product_id=product.id|to_hash_id %}"><h4 class="title">{{ product.title }}</h4></a>
+            <ul>
+                {#                <li><span class="persian_number delete">52000 ت</span><span class="persian_number off">52000 ت</span></li>#}
+                {% if not product.is_free %}
+                    <li class="fit-width">
+                        <a><i class="fa fa-database"></i><span>قیمت: </span></a>
+                        <span class="persian_number">{{ product.price }} ت</span>
+                    </li>
+                {% else %}
+                    <li class="fit-width">
+                        <span>این محصول رایگان می باشد.</span>
+                    </li>
+                {% endif %}
+{#                <li><i class="fa fa-heart"></i><span class="persian_number">4/5</span></li>#}
+            </ul>
+        </div>
+    </div>
+</div>

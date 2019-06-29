@@ -1,0 +1,106 @@
+{% extends "apps/base.html" %}
+{% load static %}
+{% load date_to_persian %}
+{% load main_extra %}
+{% block title %}سامانه عقیق|میانگین زمانی تایید فعالیت ها{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'amcharts/plugins/export/export.css' %}" type="text/css" media="all"/>
+{% endblock %}
+
+{% block page_content %}
+    <!--content-->
+    <div id="content" class="body_min_height">
+        <div class="container">
+            <h3 class="text-center ea-mar-t-0 ea-mar-b-20">میانگین زمانی تایید فعالیت ها</h3>
+            <div class="alert alert-info" role="alert">
+                <div class="row">
+                    <div class="col-sm-11">
+                        <p>میانگین زمانی تایید فعالیت برابر است با حاصل جمع میزان فاصله ثبت هر از فعالیت های دانش آموزان استان تا تایید نهایی آن توسط مربیان تقسیم بر تعداد کل فعالیت های ثبت شده دانش آموزان آن استان(نتایج بر حسب روز) </p>
+                        <p>تعداد فعالیت تایید شده برای هر استان در سمت چپ چارت آورده شده است.</p>
+                    </div>
+                    <div class="col-sm-1 text-center">
+                        <i class="fa fa-info-circle" style="font-size: 30px"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div id="activity_chart" style="height: 1000px; width: 100%; direction: ltr"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--end content-->
+{% endblock %}
+{% block js_plugins %}
+    <!--for this page only-->
+    <script type="text/javascript" src="{% static "asset/script/plugin/owl.carousel.js" %}"></script>
+    <script src="{% static 'amcharts/amcharts.js' %}"></script>
+    <script src="{% static 'amcharts/serial.js' %}"></script>
+    <script src="{% static 'amcharts/plugins/export/export.min.js' %}"></script>
+    <script src="{% static 'amcharts/light.js' %}"></script>
+
+{% endblock %}
+{% block js_code %}
+    <script>
+        var data_report_province = [];
+
+        {% for key, value in  average_accept.items %}
+            data_report_province.push({
+                "province": " {{ value.province_name }} " + " تعداد فعالیت تایید شده" + "-->{{ value.count }}",
+                "average_difference": parseFloat("{{ value.average_difference }}"),
+                "color": "#68B1D5"
+            });
+        {% endfor %}
+
+        AmCharts.addInitHandler(function (chart) {
+            // set base values
+            var categoryWidth = 60;
+
+            // calculate bottom margin based on number of data points
+            var chartHeight = categoryWidth * chart.dataProvider.length;
+
+            // set the value
+            chart.div.style.height = chartHeight + 'px';
+
+        }, ['serial']);
+
+        AmCharts.makeChart("activity_chart", {
+            "type": "serial",
+            "theme": "light",
+            "marginRight": 70,
+            'rotate': true,
+            "dataProvider": data_report_province,
+            "valueAxes": [{
+                "axisAlpha": 0,
+                "position": "left",
+                "title": "متوسط بازه زمانی تایید بر حسب روز"
+            }],
+            "startDuration": 1,
+            "export": {
+                "enabled": true
+            },
+            "trendLines": [],
+            "graphs": [{
+                "balloonText": "<b class='persian_chart_number'>متوسط بازه زمانی(روز): [[value]]</b>",
+                "fillColorsField": "color",
+                "fillAlphas": 0.9,
+                "lineAlpha": 0.2,
+                "type": "column",
+                "valueField": "average_difference"
+            }],
+            "chartCursor": {
+                "categoryBalloonEnabled": false,
+                "cursorAlpha": 0,
+                "zoomable": false
+            },
+            "categoryField": "province",
+            "categoryAxis": {
+                "gridPosition": "start",
+                "labelRotation": 45
+            }
+        });
+    </script>
+{% endblock %}
+

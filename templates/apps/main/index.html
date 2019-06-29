@@ -1,0 +1,280 @@
+{% extends "apps/base.html" %}
+{% load static %}
+{% load main_extra %}
+{% block title %}سامانه عقیق|صفحه اصلی{% endblock %}
+
+{% block logo %}
+    {% if request.user.userbox.gender == 'male' %}
+        <img src="{% static "/asset/image/b1.png" %}" id="banner-image" alt="">
+    {% else %}
+        <img src="{% static "/asset/image_gr/b1.png" %}" id="banner-image" alt="">
+    {% endif %}
+{% endblock logo %}
+{% block page_content %}
+    <!--content-->
+    <div id="content" class="body_min_height">
+        <section>
+            <div class="container">
+                <div class=" row" data-type="home">
+                    <div class="masonry-content" data-set="1200:3|550:2|0:1">
+                                            <div class="home-section">
+                            <div class="home-image-section">
+                                <a class="image" href="{% url 'activity_submit' %}" onclick="setCookie('resanesh_submit','true',1)">
+                                    <img src="{% static "asset/image/resanesh.jpg" %}" alt="">
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="home-section">
+                            <div class="home-image-section">
+                                <a class="image" href="{% url 'activity_submit' %}" onclick="setCookie('revolution_submit','true',1)">
+                                    <img src="{% static "asset/image/revolution.jpg" %}" alt="">
+                                </a>
+                            </div>
+                        </div>
+
+                        {% if request.user.userbox.user_type == "student" %}
+                            <div id="my_school" class="home-section">
+                                <div class="white-content home">
+                                    <a href="{% url "league_single_school" school_id=request.user.userbox.school_id|to_hash_id %}">
+                                        <div class="section-title orange style-1">
+                                            <h3 class="title">
+                                                <i class="fa fa-bank"></i>
+                                                <span>مدرسه من</span>
+                                            </h3>
+                                        </div>
+                                    </a>
+                                    <div class="divider-shadow m-b-20"></div>
+                                    <div class="section-title black style-1 size-2 m-b-0">
+                                        <h4 class="title">
+                                            <i class="fa fa-history"></i>
+                                            <span>آخرین فعالیت های مدرسه من:</span>
+                                        </h4>
+                                    </div>
+                                    {% if not "activity_index" in app_list_disable %}
+                                        <ul class="home-activity-list">
+                                            {% for activity_item in school_activities %}
+                                                <li>
+                                                    {% if activity_item.state == 'ACCEPT' or activity_item.state == 'TIL' %}
+                                                        <a href="{% url "single_activity" activity_id=activity_item.id|to_hash_id %}"
+                                                           class="home-activity-item">
+                                                            <h5 class="title">{{ activity_item.title }}</h5>
+                                                            <span class="point"><span
+                                                                    class="persian_number">{{ activity_item.point }}</span> <i
+                                                                    class="fa fa-star"></i></span>
+                                                        </a>
+                                                    {% endif %}
+                                                </li>
+                                            {% endfor %}
+                                        </ul>
+                                    {% endif %}
+                                    <a class="btn btn-warning fit-width m-t-10" href="{% url "my_school_index" %}">
+                                        صفحه مدرسه من
+                                    </a>
+                                </div>
+                            </div>
+                            {% if not "hamraz_faq_index" in app_list_disable %}
+                                <div id="hamraz" class="home-section ea-pos-rel">
+                                    <div class="home-image-section">
+                                        <a class="image">
+                                            {% if request.user.userbox.gender == 'male' %}
+                                                <img src="{% static "asset/image/home_chat.png" %}" alt="">
+                                            {% else %}
+                                                <img src="{% static "asset/image_gr/home_chat.png" %}" alt="">
+                                            {% endif %}
+                                        </a>
+                                        <div class="content">
+                                            <div class="section-title green style-1">
+                                                <h3 class="title">
+                                                    <i class="fa fa-comments"></i>
+                                                    <span>سامانه همراز</span>
+                                                </h3>
+                                            </div>
+                                            <div class="row row-ps">
+                                                <div class="col-xs-6">
+                                                    <a href="{% url "hamraz_qa_index" %}" class="btn btn-green fit-width">
+                                                        مشاهده سامانه
+                                                    </a>
+                                                </div>
+                                                <div class="col-xs-6">
+                                                    <a href="{% url "hamraz_submit" %}" class="btn btn-green fit-width">
+                                                        پرسش جدید
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endif %}
+
+                        {% if request|has_perm:"calendar_index" %}
+                            {% if not "calendar_index" in app_list_disable %}
+                                <div id="calendar" class="home-section ea-pos-rel">
+                                    <div class="white-content home">
+                                        <div class="section-title blue style-1">
+                                            <h3 class="title">
+                                                <i class="fa fa-calendar"></i>
+                                                <span>تقویم</span>
+                                            </h3>
+                                        </div>
+                                        <div class="set-picker-show cube_size"></div>
+
+                                        <a href="{% url 'calendar_index' %}" class="btn btn-blue-light fit-width">
+                                            مشاهده سامانه تقویم
+                                        </a>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endif %}
+
+                        {% if not "activity_index" in app_list_disable %}
+                            <div class="home-section" id="activity_index_all">
+                                <div class="white-content home">
+                                    <div class="section-title red style-1">
+                                        <h3 class="title">
+                                            <i class="fa fa-gg"></i>
+                                            <span>آخرین های امتیاز بده، بگیر</span>
+                                        </h3>
+                                    </div>
+                                    <div class="option-list">
+
+                                        {% for new_activity_item in new_activities %}
+                                            <a href="{% url "single_activity" activity_id=new_activity_item.id|to_hash_id %}"
+                                               class="option-item" style="margin-bottom: 30px">
+                                                <div class="image">
+                                                    <div><img
+                                                            src="{{ new_activity_item.image | server_public_url:"145x145" }}"
+                                                            height="58" width="58" alt=""></div>
+                                                </div>
+                                                <div class="content">
+                                                    <h4 class="title">{{ new_activity_item.title }}</h4>
+                                                    <p>{{ new_activity_item.description }}</p>
+                                                </div>
+                                            </a>
+                                        {% endfor %}
+                                    </div>
+                                    <a class="btn btn-danger fit-width m-t-10" href="{% url "activity_index" %}">
+                                        مشاهده دیگر موارد
+                                    </a>
+                                </div>
+                            </div>
+                        {% endif %}
+
+                        {% if not "league_index" in app_list_disable %}
+                            <div id="top_schools" class="home-section">
+                                <div class="home-image-section">
+                                    <a class="image">
+                                        <img src="{% static "asset/image/home_best.png" %}" alt="">
+                                    </a>
+                                    <div class="content">
+                                        <div class="section-title purple style-1">
+                                            <h3 class="title">
+                                                <i class="fa fa-trophy"></i>
+                                                <span>ده مدرسه برتر</span>
+                                            </h3>
+                                        </div>
+                                        <div class="home-best-list">
+                                            {% for school_item in league_results %}
+                                                <a href="{% url "league_single_school" school_id=school_item.id|to_hash_id %}"
+                                                   class="home-best-item">
+                                                    <h4 class="title">{{ school_item.name }}</h4>
+                                                    <span class="point"><i class="fa fa-star"></i><span
+                                                            class="persian_number">{{ school_item.point }}</span></span>
+                                                </a>
+                                            {% endfor %}
+                                        </div>
+                                        <a class="btn btn-blue-light fit-width m-t-10" href="{% url "league_index" %}">رفتن
+                                            به سامانه لیگ</a>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+
+                        {% if not "activity_index" in app_list_disable %}
+                            <div class="home-section">
+                                <!--slide-->
+                                <div class="slide-min style-1">
+                                    <div class="owl-carousel owl-carousel-slide">
+                                        {% for vip_item in vip_activities %}
+                                            <div class="item">
+                                                <a href="{% url "single_activity" activity_id=vip_item.id|to_hash_id %}"
+                                                   class="slide-item style-3">
+                                                    <!-- <img src="{{ vip_item.image |server_public_url:"711x400" }}" alt=""> -->
+                                                    <div class="image"
+                                                         style="background-image: url('{{ vip_item.image |server_public_url:"711x400" }}')"></div>
+                                                    <h4 class="title">{{ vip_item.title }}</h4>
+                                                </a>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                <!--end slide-->
+                            </div>
+                        {% endif %}
+
+                        {% if not "announcements_index" in app_list_disable %}
+                            <div class="home-section">
+                                <div class="white-content home">
+                                    <div class="section-title orange style-1">
+                                        <h3 class="title">
+                                            <i class="fa fa-file-text-o"></i>
+                                            <span>اخبار و اطلاعیه ها</span>
+                                        </h3>
+                                    </div>
+                                    <div class="home-new-list">
+                                        {% for announcement_item in announcements %}
+                                            <a href="{% url "single_announcement" announcement_id=announcement_item.id|to_hash_id %}"
+                                               class="home-new-item">
+                                                <div class="content">
+                                                    <h4 class="title">{{ announcement_item.title }}</h4>
+                                                    <p>{{ announcement_item.description }}</p>
+                                                </div>
+                                            </a>
+                                        {% endfor %}
+                                    </div>
+                                    <a href="{% url "announcements_index" %}" class="btn btn-warning fit-width">
+                                        مشاهده دیگر اخبار
+                                    </a>
+                                </div>
+                            </div>
+                        {% endif %}
+
+                        {% if not "shop" in app_list_disable %}
+                            {% if request|has_perm:"products" %}
+                                <div id="shop" class="home-section ea-pos-rel" onclick="window.location.href='{% url "products" %}'">
+                                    <a class="home-banner">
+                                        <img src="{% static "asset/image/banner.jpg" %}" alt="">
+                                    </a>
+                                    <div class="ea-pos-cover"></div>
+                                </div>
+                            {% endif %}
+                        {% endif %}
+
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    <!--end content-->
+{% endblock %}
+
+{% block js_code %}
+    <!--for this page only-->
+    <script type="text/javascript" src="{% static "asset/script/plugin/owl.carousel.js" %}"></script>
+    <script type="text/javascript" src="{% static "asset/script/plugin/masonry.js" %}"></script>
+    <script type="text/javascript" src="{% static "asset/script/plugin/picker.js" %}"></script>
+
+    <script>
+        {% url 'confirm_code' as confirm_code_url %}
+        {% if confirm_code_url in request.META.HTTP_REFERER %}
+            toastr.info('{{ request.user.userbox.full_name }} خوش آمدید');
+        {% endif %}
+
+        // Initialize the tour
+        tour.init();
+
+        // Start the tour
+        tour.start();
+    </script>
+{% endblock %}

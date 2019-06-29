@@ -1,0 +1,62 @@
+{% extends "apps/base.html" %}
+{% load static %}
+{% load main_extra %}
+{% block logo %}
+    {% if request.user.userbox.gender == 'male' %}
+        <img src="{% static "/asset/image/b2.png" %}" id="banner-image" alt="">
+    {% else %}
+        <img src="{% static "/asset/image_gr/b2.png" %}" id="banner-image" alt="">
+    {% endif %}
+{% endblock logo %}
+{% block page_content %}
+    <!--content-->
+    <div id="content" class="body_min_height">
+        <div class="container">
+            <div class="section-title style-1">
+                <h3 class="title">
+                    <span>کد فاکتور: {{ invoice.code }}</span>
+                </h3>
+            </div>
+            <div class="section-title style-1">
+                <h3 class="title">
+                    <span>فایل های خریداری شده:</span>
+                </h3>
+            </div>
+            <div class="activity-file-list m-b-50">
+                {% for file in invoice.files %}
+                    <div class="activity-file">
+                        <span class="name">{{ file.title }}</span>
+                        <span class="size persian_number">{{ file.size|filesizeformat }}</span>
+                        <a class="btn btn-warning" href="{{ file.file|server_public_url }}" download>
+                            دانلود
+                        </a>
+                    </div>
+                {% endfor %}
+            </div>
+            <div class="col-md-6 pull-left" style="padding-left: 0">
+                <!--price show-->
+                <div class="shopping-price">
+                    <div>
+                        <span>جمع کل</span>:
+                        <span class="persian_number price pull-left">{{ invoice.total_price }} ت </span>
+                    </div>
+                    <div style="color: #d60035">
+                        <span>تخفیف ها</span>:
+                        <span class="persian_number price pull-left">{{ invoice.total_discount }} ت </span>
+                    </div>
+                    <div>
+                        <span>مبلغ قابل پرداخت</span>:
+                        <span class="persian_number price pull-left">{{ invoice.payable }} ت </span>
+                    </div>
+                </div>
+                <!--end price show-->
+            </div>
+        </div>
+    </div>
+    <!--end content-->
+{% endblock %}
+
+{% block js_code %}
+
+    <!--for this page only-->
+{% endblock %}

@@ -1,0 +1,112 @@
+{% extends "apps/base.html" %}
+{% load static %}
+{% load main_extra %}
+{% block logo %}
+    {% if request.user.userbox.gender == 'male' %}
+        <img src="{% static "/asset/image/b2.png" %}" id="banner-image" alt="">
+    {% else %}
+        <img src="{% static "/asset/image_gr/b2.png" %}" id="banner-image" alt="">
+    {% endif %}
+{% endblock logo %}
+{% block page_content %}
+    <!--content-->
+    <div id="content" class="body_min_height">
+
+        <div class="container">
+            {% if error %}
+                <div class="alert alert-danger m-b-20">
+                    اطلاعات ارسالی درست نمی باشد.
+                </div>
+            {% endif %}
+            <div class="section-title style-1">
+                <h3 class="title">
+                    <span>شیوه خرید:</span>
+                </h3>
+            </div>
+            {% for method in payment_methods %}
+                <div class="form-group m-b-20">
+                    <label class="check-ps style-pay fit-width m-b-10">
+                        <input type="radio" name="payment_method" checked value="{{ method.key }}">
+                        <span></span>
+                        <img src="{{ method.icon | server_public_url }}" alt="">
+                        <span>{{ method.title }}</span>
+                    </label>
+                </div>
+            {% endfor %}
+            <div class="form-group m-b-45">
+                <label class="check-ps style-pay fit-width">
+                    <input type="checkbox" name="role_accepted">
+                    <span></span>
+                    <span>با کلیه شرایط و <a href="#" data-target="#helpModal" data-toggle="modal">قوانین</a> موافقم</span>
+                </label>
+            </div>
+            <div class="row">
+                <div class="col-md-3 col-sm-4 col-xs-6 pull-left">
+                    <a class="btn btn-warning fit-width" onclick="completePayment()">
+                        تکمیل فرایند پرداخت(در انتظار وصل شدن به درگاه)
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--end content-->
+    <div class="modal fade" id="helpModal" tabindex="-1" role="dialog" aria-labelledby="helpModal">
+        <div class="modal-dialog modal-lg " role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                    <h4 class="modal-title">قوانین فروشگاه</h4>
+                </div>
+                <div class="modal-body text-center" style="max-height: 350px; overflow-y: scroll">
+                    لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ و با استفاده از طراحان گرافیک است. چاپگرها و متون بلکه روزنامه و مجله در ستون و سطرآنچنان که لازم است و برای شرایط فعلی تکنولوژی مورد نیاز و کاربردهای متنوع با هدف بهبود ابزارهای کاربردی می باشد. کتابهای زیادی در شصت و سه درصد گذشته، حال و آینده شناخت فراوان جامعه و متخصصان را می طلبد تا با نرم افزارها شناخت بیشتری را برای طراحان رایانه ای علی الخصوص طراحان خلاقی و فرهنگ پیشرو در زبان فارسی ایجاد کرد. در این صورت می توان امید داشت که تمام و دشواری موجود در ارائه راهکارها و شرایط سخت تایپ به پایان رسد وزمان مورد نیاز شامل حروفچینی دستاوردهای اصلی و جوابگوی سوالات پیوسته اهل دنیای موجود طراحی اساسا مورد استفاده قرار گیرد.
+
+                    لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ و با استفاده از طراحان گرافیک است. چاپگرها و متون بلکه روزنامه و مجله در ستون و سطرآنچنان که لازم است و برای شرایط فعلی تکنولوژی مورد نیاز و کاربردهای متنوع با هدف بهبود ابزارهای کاربردی می باشد. کتابهای زیادی در شصت و سه درصد گذشته، حال و آینده شناخت فراوان جامعه و متخصصان را می طلبد تا با نرم افزارها شناخت بیشتری را برای طراحان رایانه ای علی الخصوص طراحان خلاقی و فرهنگ پیشرو در زبان فارسی ایجاد کرد. در این صورت می توان امید داشت که تمام و دشواری موجود در ارائه راهکارها و شرایط سخت تایپ به پایان رسد وزمان مورد نیاز شامل حروفچینی دستاوردهای اصلی و جوابگوی سوالات پیوسته اهل دنیای موجود طراحی اساسا مورد استفاده قرار گیرد.
+
+                    لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ و با استفاده از طراحان گرافیک است. چاپگرها و متون بلکه روزنامه و مجله در ستون و سطرآنچنان که لازم است و برای شرایط فعلی تکنولوژی مورد نیاز و کاربردهای متنوع با هدف بهبود ابزارهای کاربردی می باشد. کتابهای زیادی در شصت و سه درصد گذشته، حال و آینده شناخت فراوان جامعه و متخصصان را می طلبد تا با نرم افزارها شناخت بیشتری را برای طراحان رایانه ای علی الخصوص طراحان خلاقی و فرهنگ پیشرو در زبان فارسی ایجاد کرد. در این صورت می توان امید داشت که تمام و دشواری موجود در ارائه راهکارها و شرایط سخت تایپ به پایان رسد وزمان مورد نیاز شامل حروفچینی دستاوردهای اصلی و جوابگوی سوالات پیوسته اهل دنیای موجود طراحی اساسا مورد استفاده قرار گیرد.
+
+                    لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ و با استفاده از طراحان گرافیک است. چاپگرها و متون بلکه روزنامه و مجله در ستون و سطرآنچنان که لازم است و برای شرایط فعلی تکنولوژی مورد نیاز و کاربردهای متنوع با هدف بهبود ابزارهای کاربردی می باشد. کتابهای زیادی در شصت و سه درصد گذشته، حال و آینده شناخت فراوان جامعه و متخصصان را می طلبد تا با نرم افزارها شناخت بیشتری را برای طراحان رایانه ای علی الخصوص طراحان خلاقی و فرهنگ پیشرو در زبان فارسی ایجاد کرد. در این صورت می توان امید داشت که تمام و دشواری موجود در ارائه راهکارها و شرایط سخت تایپ به پایان رسد وزمان مورد نیاز شامل حروفچینی دستاوردهای اصلی و جوابگوی سوالات پیوسته اهل دنیای موجود طراحی اساسا مورد استفاده قرار گیرد.
+
+                    لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ و با استفاده از طراحان گرافیک است. چاپگرها و متون بلکه روزنامه و مجله در ستون و سطرآنچنان که لازم است و برای شرایط فعلی تکنولوژی مورد نیاز و کاربردهای متنوع با هدف بهبود ابزارهای کاربردی می باشد. کتابهای زیادی در شصت و سه درصد گذشته، حال و آینده شناخت فراوان جامعه و متخصصان را می طلبد تا با نرم افزارها شناخت بیشتری را برای طراحان رایانه ای علی الخصوص طراحان خلاقی و فرهنگ پیشرو در زبان فارسی ایجاد کرد. در این صورت می توان امید داشت که تمام و دشواری موجود در ارائه راهکارها و شرایط سخت تایپ به پایان رسد وزمان مورد نیاز شامل حروفچینی دستاوردهای اصلی و جوابگوی سوالات پیوسته اهل دنیای موجود طراحی اساسا مورد استفاده قرار گیرد.
+                </div>
+                <div class="modal-footer no-border">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">بستن</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block js_code %}
+
+    <!--for this page only-->
+    <script type="text/javascript" src="{% static 'asset/script/plugin/bootstrap-select.js' %}"></script>
+    <script type="text/javascript" src="{% static 'asset/script/plugin/range.js' %}"></script>
+    <script type="text/javascript">
+        function completePayment() {
+            $.ajax({
+                url: '{% url 'shopping_payment' %}',
+                type: 'POST',
+                data: {
+                    'payment_method': $("input[name=payment_method]:checked").val(),
+                    'role_accepted': $("[name=role_accepted]:checked").val() !== undefined,
+                    "csrfmiddlewaretoken": '{{ csrf_token }}'
+                },
+                success: function (data) {
+                    if (!data["error"]) {
+                        {#window.open(data['url'], '_self');#}
+                        window.location.href = '{% url 'single_invoice' %}?code=' + data['order_code']
+                    } else {
+                       toastr.error('اطلاعات ارسالی نامعتبر می باشد.');
+                    }
+                },
+                error: function (data) {
+                    toastr.error('لطفا بعدا سعی کنید.');
+                }
+            })
+        }
+    </script>
+
+{% endblock %}

@@ -1,0 +1,104 @@
+{% extends "apps/base.html" %}
+{% load static %}
+{% load main_extra %}
+
+{% block logo %}
+    {% if request.user.userbox.gender == 'male' %}
+        <img src="{% static "/asset/image/b1.png" %}" id="banner-image" alt="">
+    {% else %}
+        <img src="{% static "/asset/image_gr/b1.png" %}" id="banner-image" alt="">
+    {% endif %}
+{% endblock logo %}
+{% block page_content %}
+    <!--content-->
+    <div id="content" class="body_min_height">
+        <section>
+            <div class="container">
+                <ul class="nav nav-tabs m-b-25" role="tablist">
+                    <li role="presentation">
+                        <a href="{% url 'workspace_question' %}">
+                            سوالات تایید نشده
+                        </a>
+                    </li>
+                    <li role="presentation">
+                        <a href="{% url 'workspace_faq' %}">
+                            تایید سوالات متداول
+                        </a>
+                    </li>
+                    <li role="presentation" class="active">
+                        <a href="{% url 'workspace_statistics' %}">
+                            آمار سوالات
+                        </a>
+                    </li>
+                </ul>
+                <div class="tab-content">
+                    <div class="col-md-6 col-md-offset-3">
+                        <ul class="list-group">
+                            <li class="list-group-item">
+                                تعداد کل سوالات
+                                <span class="badge">{{ statistics.all }}</span>
+                            </li>
+                            <li class="list-group-item">
+                                تعداد سوالات پرسیده شده توسط پسران
+                                <span class="badge">{{ statistics.male }}</span>
+                            </li>
+                            <li class="list-group-item">
+                                تعداد سوالات پرسیده شده توسط دختران
+                                <span class="badge">{{ statistics.female }}</span>
+                            </li>
+                        </ul>
+
+                        <ul class="list-group">
+                            <li class="list-group-item">
+                                تعداد سوالات در دست کارشناسان جهت بررسی
+                                <span class="badge">{{ statistics.advisor_pending }}</span>
+                            </li>
+                        </ul>
+
+                        <ul class="list-group">
+                            <li class="list-group-item">
+                                تعداد سوالات منتظر پاسخ دانش آموزان
+                                <span class="badge">{{ statistics.student_pending }}</span>
+                            </li>
+                        </ul>
+
+                        <ul class="list-group">
+                            <li class="list-group-item">
+                                تعداد سوالات کارتابل مشاوران
+                                <span class="badge">{{ statistics.expert_cartable }}</span>
+                            </li>
+                            <li class="list-group-item">
+                                تعداد سوالات در دست مشاوران جهت پاسخگویی
+                                <span class="badge">{{ statistics.expert_pending }}</span>
+                            </li>
+                            <li class="list-group-item">
+                                تعداد سوالات حل شده توسط مشاوران
+                                <span class="badge">{{ statistics.expert_solved }}</span>
+                            </li>
+                        </ul>
+
+                        <ul class="list-group">
+                            <li class="list-group-item">
+                                تعداد سوالات کارتابل مشاوران ارشد
+                                <span class="badge">{{ statistics.top_expert_cartable }}</span>
+                            </li>
+                            <li class="list-group-item">
+                                تعداد سوالات در دست مشاوران ارشد جهت پاسخگویی
+                                <span class="badge">{{ statistics.top_expert_pending }}</span>
+                            </li>
+                            <li class="list-group-item">
+                                تعداد سوالات حل شده توسط مشاوران ارشد
+                                <span class="badge">{{ statistics.top_expert_solved }}</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!--end content-->
+{% endblock %}
+{% block js_code %}
+
+{% endblock %}

@@ -1,0 +1,61 @@
+{% extends "apps/base.html" %}
+{% load static %}
+{% block title %}سامانه عقیق|سوالات{% endblock %}
+{% load date_to_persian %}
+{% load main_extra %}
+{% block logo %}
+    {% if request.user.userbox.gender == 'male' %}
+        <img src="{% static "/asset/image/b5.png" %}" id="banner-image" alt="">
+    {% else %}
+        <img src="{% static "/asset/image_gr/b5.png" %}" id="banner-image" alt="">
+    {% endif %}
+{% endblock logo %}
+
+{% block page_content %}
+    <!--content-->
+    <div id="content" class="body_min_height">
+        {% if comments.results %}
+            <div class="container">
+                <div class="tab-content">
+                    <div role="tabpanel" class="tab-pane"></div>
+                </div>
+                <div class="row search-list-row">
+                    <div class="col-md-12 col-xs-12">
+                        {% for comment in comments.results %}
+                            <a class="notification-item direct_link">
+                                <div>
+                                    <div class="top">
+                                        <h4 class="title">{{ comment.creator.first_name }} {{ comment.creator.last_name }}</h4>
+                                        <time class="persian_number">{{ comment.create_datetime | date_to_persian }}</time>
+                                    </div>
+                                    <p class="text">
+                                        {{ comment.body | linebreaksbr }}
+                                    </p>
+                                </div>
+                            </a>
+                        {% endfor %}
+
+                        {% include "blocks/pagination.html" with pagination_data=pagination_data %}
+
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-3 text-center col-md-offset-5" style="border: silver 1px solid; padding: 50px;">
+                        <span>هیچ یاداشتی وجود ندارد.</span>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+    <!--end content-->
+{% endblock %}
+
+{% block js_code %}
+    <!--for this page only-->
+    <script type="text/javascript" src="{% static "asset/script/plugin/bootstrap-select.js" %}"></script>
+    <script type="text/javascript" src="{% static "asset/script/plugin/range.js" %}"></script>
+    <script type="text/javascript" src="{% static "js/question.js" %}"></script>
+{% endblock %}

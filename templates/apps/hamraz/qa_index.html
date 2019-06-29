@@ -1,0 +1,83 @@
+{% extends "apps/base.html" %}
+{% load static %}
+{% block title %}سامانه عقیق|سوالات{% endblock %}
+{% block logo %}
+    {% if request.user.userbox.gender == 'male' %}
+        <img src="{% static "/asset/image/b5.png" %}" id="banner-image" alt="">
+    {% else %}
+        <img src="{% static "/asset/image_gr/b5.png" %}" id="banner-image" alt="">
+    {% endif %}
+{% endblock logo %}
+
+{% block page_content %}
+    <!--content-->
+    <div id="content" class="body_min_height">
+        <a href="{% url "hamraz_submit" %}" type="button" id="new_question_btn"
+           class="btn btn-blue btn-circle btn-fix">
+            <i class="fa fa-pencil"></i>
+        </a>
+        <div class="container">
+            <ul class="nav nav-tabs m-b-25" role="tablist">
+                <li role="presentation"><a href="{% url "hamraz_faq_index" %}">مشاوره های متداول</a></li>
+                <li role="presentation" class="active"><a href="{% url "hamraz_qa_index" %}">مشاوره های من</a></li>
+            </ul>
+
+            <div class="tab-content">
+                <div role="tabpanel" class="tab-pane"></div>
+            </div>
+            <div class="row search-list-row">
+                <div class="col-md-3 col-xs-12 pull-left m-b-40">
+                    <h4 class="aside-title style-1">فیلتر</h4>
+                    <form action="{% url "hamraz_qa_index" %}" method="get" class="search-form">
+                        <input type="hidden" name="tab" value="qa">
+                        <div class="form-group">
+                            <label for="category">بر اساس حوزه</label>
+                            <select name="category" id="category" class="select_wait">
+                                <option value="">همه حوزه ها</option>
+                                {% for category_item in categories.results %}
+                                    <option {% if query_params.category == category_item.id|stringformat:"i" %}selected{% endif %} value="{{ category_item.id }}">{{ category_item.title }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="sub_category">بر اساس زیر حوزه</label>
+                            <select name="sub_category" id="sub_category" class="select_wait"></select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="check-ps fit-width big m-b-10">
+                                <input type="radio" name="order" value="1" {% if query_params.order == "1" %}checked{% endif %}>
+                                <span></span>
+                                <span>چینش صعودی</span>
+                            </label>
+                            <label class="check-ps fit-width big">
+                                <input type="radio" name="order" value="-1" {% if query_params.order == "-1" %}checked{% endif %}>
+                                <span></span>
+                                <span>چینش نزولی</span>
+                            </label>
+                        </div>
+                        <div class="form-button">
+                            <button type="submit" class="btn btn-warning">اعمال</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="col-md-9 col-xs-12">
+                    {% for question in my_questions.results %}
+                        {% include "blocks/my_question_item.html" with item=question %}
+                    {% endfor %}
+
+                    {% include "blocks/pagination.html" with pagination_data=pagination_data %}
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--end content-->
+{% endblock %}
+
+{% block js_code %}
+    <!--for this page only-->
+    <script type="text/javascript" src="{% static "asset/script/plugin/bootstrap-select.js" %}"></script>
+    <script type="text/javascript" src="{% static "asset/script/plugin/range.js" %}"></script>
+    <script type="text/javascript" src="{% static "js/question.js" %}"></script>
+{% endblock %}

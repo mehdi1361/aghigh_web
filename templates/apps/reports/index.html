@@ -1,0 +1,210 @@
+{% extends "apps/base.html" %}
+{% load static %}
+{% load date_to_persian %}
+{% load main_extra %}
+{% block title %}سامانه عقیق|گزارش ها{% endblock %}
+{% block page_content %}
+    <!--content-->
+    <div id="content" class="body_min_height">
+        <div class="container">
+            {% if cache_date %}
+                <div class="alert alert-info" role="alert">
+                    <div class="row">
+                        <div class="col-sm-11">
+                            <span>
+
+                                <p>گزارش در {{ cache_date }} ساخته شده است. </p>
+                                <p>این گزارش آنلاین نیست و ساعتی یک بار تولید می‌شود</p>
+
+                            </span>
+                        </div>
+                        <div class="col-sm-1 text-center">
+                            <i class="fa fa-info-circle" style="font-size: 30px"></i>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-4 col-xs-12">
+                        <div class=" report-widget bg-color-2">
+                            <span>
+                                گزارش بازدید
+                            </span>
+                            <div class="count_data">
+                                <span>تعداد کل بازدید های امروز :</span>
+                                <span class="persian_number count_number">{{ visit_count }}</span>
+                            </div>
+                            <a href="{% url 'user_reports' %}">مشاهده</a>
+                        </div>
+                    </div>
+                    <div class="col-md-4 col-xs-12">
+                        <div class=" report-widget bg-color-4">
+                            <span>
+                                میانگین زمانی تایید فعالیت ها
+                            </span>
+                            <div class="count_data">
+                                <span>میانگین کل به روز: </span>
+                                <span class="persian_number count_number">{{ average_difference }}</span>
+                            </div>
+                            <a href="{% url 'average_date_activity_reports' %}">مشاهده</a>
+                        </div>
+                    </div>
+                    <div class="col-md-4 col-xs-12">
+                        <div class=" report-widget bg-color-4">
+                            <span>
+                                رتبه بندی استان ها
+                            </span>
+                            <div class="count_data">
+                                <span>تعداد کل مدارس فعال: </span>
+                                <span class="persian_number count_number">{{ active_school_count }}</span>
+                            </div>
+                            <a href="{% url 'school_reports' %}">مشاهده</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-4 col-xs-12">
+                        <div class=" report-widget bg-color-1">
+                            <span>
+                                گزارش فعالیت ها
+                            </span>
+                            <div class="count_data">
+                                <span>تعداد کل فعالیت های تایید شده :</span>
+                                <span class="persian_number count_number">{{ activity_count }}</span>
+                            </div>
+                            <a href="{% url 'activity_reports' %}">مشاهده</a>
+                        </div>
+                    </div>
+                    <div class="col-md-4 col-xs-12">
+                        <div class=" report-widget bg-color-1">
+                            <span>
+                                فعالیت،محور و شاخه
+                            </span>
+                            <div class="count_data">
+                                <span>نمایش فعالیت ها به تفکیک محور و شاخه</span>
+                                <span class="persian_number count_number"></span>
+                            </div>
+                            <a href="{% url 'activity_cat_dep' %}">مشاهده</a>
+                        </div>
+                    </div>
+                    <div class="col-md-4 col-xs-12">
+                        <div class=" report-widget bg-color-2">
+                            <span>
+                                انجام فعالیت
+                            </span>
+                            <div class="count_data">
+                                <span>پراکندگی انجام فعالیت ها در «24 ساعت شبانه روز»</span>
+                                <span class="persian_number count_number"></span>
+                            </div>
+                            <a href="{% url 'date_done_activity_reports' %}?report_type=hour">مشاهده</a>
+                        </div>
+                    </div>
+                    <div class="col-md-4 col-xs-12">
+                        <div class=" report-widget bg-color-2">
+                            <span>
+                               انجام فعالیت
+                            </span>
+                            <div class="count_data">
+                                <span>پراکندگی انجام فعالیت ها در «روزهای هفته»</span>
+                                <span class="persian_number count_number"></span>
+                            </div>
+                            <a href="{% url 'date_done_activity_reports' %}?report_type=week">مشاهده</a>
+                        </div>
+                    </div>
+                    <div class="col-md-4 col-xs-12">
+                        <div class=" report-widget bg-color-4">
+                            <span>
+                               انجام فعالیت
+                            </span>
+                            <div class="count_data">
+                                <span>پراکندگی انجام فعالیت ها در «روزهای سال»</span>
+                                <span class="persian_number count_number"></span>
+                            </div>
+                            <a href="{% url 'date_done_activity_reports' %}?report_type=day">مشاهده</a>
+                        </div>
+                    </div>
+                    <div class="col-md-4 col-xs-12">
+                        <div class=" report-widget bg-color-1">
+                            <span>
+                                ثبت فعالیت
+                            </span>
+                            <div class="count_data">
+                                <span>پراکندگی ثبت فعالیت ها در «24 ساعت شبانه روز»</span>
+                                <span class="persian_number count_number"></span>
+                            </div>
+                            <a href="{% url 'date_register_activity_reports' %}?report_type=hour">مشاهده</a>
+                        </div>
+                    </div>
+                    <div class="col-md-4 col-xs-12">
+                        <div class=" report-widget bg-color-1">
+                            <span>
+                               ثبت فعالیت
+                            </span>
+                            <div class="count_data">
+                                <span>پراکندگی ثبت فعالیت ها در «روزهای هفته»</span>
+                                <span class="persian_number count_number"></span>
+                            </div>
+                            <a href="{% url 'date_register_activity_reports' %}?report_type=week">مشاهده</a>
+                        </div>
+                    </div>
+                    <div class="col-md-4 col-xs-12">
+                        <div class=" report-widget bg-color-2">
+                            <span>
+                              ثبت فعالیت
+                            </span>
+                            <div class="count_data">
+                                <span>پراکندگی ثبت فعالیت ها در «روزهای سال»</span>
+                                <span class="persian_number count_number"></span>
+                            </div>
+                            <a href="{% url 'date_register_activity_reports' %}?report_type=day">مشاهده</a>
+                        </div>
+                    </div>
+                    <div class="col-md-4 col-xs-12">
+                        <div class=" report-widget bg-color-4">
+                            <span>
+                              فعالیت تایید شده
+                            </span>
+                            <div class="count_data">
+                                <span>پراکندگی تایید فعالیت ها در «24 ساعت شبانه روز»</span>
+                                <span class="persian_number count_number"></span>
+                            </div>
+                            <a href="{% url 'date_accept_activity_reports' %}?report_type=hour">مشاهده</a>
+                        </div>
+                    </div>
+                    <div class="col-md-4 col-xs-12">
+                        <div class=" report-widget bg-color-4">
+                            <span>
+                               فعالیت تایید شده
+                            </span>
+                            <div class="count_data">
+                                <span>پراکندگی تایید فعالیت ها در «روزهای هفته»</span>
+                                <span class="persian_number count_number"></span>
+                            </div>
+                            <a href="{% url 'date_accept_activity_reports' %}?report_type=week">مشاهده</a>
+                        </div>
+                    </div>
+                    <div class="col-md-4 col-xs-12">
+                        <div class=" report-widget bg-color-1">
+                            <span>
+                               فعالیت تایید شده
+                            </span>
+                            <div class="count_data">
+                                <span>پراکندگی تایید فعالیت ها در «روزهای سال»</span>
+                                <span class="persian_number count_number"></span>
+                            </div>
+                            <a href="{% url 'date_accept_activity_reports' %}?report_type=day">مشاهده</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <!--end content-->
+{% endblock %}
+{% block js_plugins %}
+
+{% endblock %}

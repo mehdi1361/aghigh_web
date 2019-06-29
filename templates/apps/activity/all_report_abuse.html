@@ -1,0 +1,114 @@
+{% extends "apps/base.html" %}
+{% load static %}
+{% load main_extra %}
+{% load date_to_persian %}
+{% block title %}سامانه عقیق| گزارشات ارسالی{% endblock %}
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static "asset/style/star-rating.min.css" %}">
+    <link rel="stylesheet" href="{% static "asset/style/theme.min.css" %}">
+
+{% endblock %}
+
+{% block page_content %}
+    <!--content-->
+
+    <div id="content" class="body_min_height">
+        <div class="container">
+            <table class="table table-striped">
+                <thead class="thead-dark">
+                <tr>
+                    <th scope="col">ردیف</th>
+                    <th scope="col">نام فعالیت</th>
+                    <th scope="col">نام مدرسه</th>
+                    <th scope="col">تعداد گزارش</th>
+                    <th scope="col">عملیات</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for report in report_abuses %}
+                    <tr id="report_{{ report.activity_id|to_hash_id }}">
+                        <td class="persian_number">{{ forloop.counter }}</td>
+                        <td>
+                            {{ report.activity_title }}
+                        </td>
+                        <td>
+                            {{ report.school_name }}
+                        </td>
+                        <td class="persian_number">
+                            {{ report.count }}
+                        </td>
+                        <td>
+                            <a class="btn btn-small btn-success" href="{% url 'get_report_abuses'  activity_id=report.activity_id|to_hash_id %}">
+                                نمایش جزییات
+                            </a>
+                            <a class="btn btn-small btn-warning" href="{% url "single_activity" activity_id=report.activity_id|to_hash_id %}">
+                                نمایش فعالیت
+                            </a>
+                            <button class="btn btn-small btn-danger" data-activity_id="{{ report.activity_id|to_hash_id }}" onclick="change_state_modal(this)">
+                                عدم رعایت ضوابط
+                            </button>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            {% include "blocks/pagination.html" with pagination_data=pagination_data %}
+        </div>
+    </div>
+    <!--end content-->
+
+    <!--start modals-->
+    <div class="modal fade" id="ChangeStateModal" tabindex="-1" role="dialog" aria-labelledby="ChangeStateModal"
+         style="display: none;">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                    <h4 class="modal-title" id="noteModalLabel">برای تغییر وضعیت فعالیت به عدم رعایت ضوابط مطمئن هستید؟</h4>
+                </div>
+                <div class="modal-footer no-border">
+                    <input type="hidden" name="activity_id">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">
+                        انصراف
+                    </button>
+                    <button type="button" class="btn btn-warning" data-dismiss="modal" onclick="change_state_activity()">تایید
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--end modals-->
+
+{% endblock %}
+
+{% block js_code %}
+    <!--for this page only-->
+    <script type="text/javascript" src="{% static "asset/script/plugin/star-rating.min.js" %}"></script>
+    <script type="text/javascript" src="{% static "asset/script/plugin/theme.min.js" %}"></script>
+    <script type="text/javascript">
+        function change_state_modal(element) {
+            $("input[name=activity_id]").val($(element).attr("data-activity_id"));
+            $("#ChangeStateModal").modal('show')
+        }
+        function change_state_activity() {
+            var activity_id = $("input[name=activity_id]").val();
+            $.ajax({
+                url: '{% url 'change_state_activity' '123456' %}'.replace('123456', activity_id),
+                type: 'post',
+                data: {
+                    "state": 'BAN',
+                    "csrfmiddlewaretoken": '{{ csrf_token }}'
+                },
+                success: function (data) {
+                    if (data['success']) {
+                        $("#report_" + activity_id).remove()
+                    } else {
+                        toastr.error('درخواست نامعتبر می باشد.');
+                    }
+                }
+            });
+        }
+    </script>
+{% endblock %}

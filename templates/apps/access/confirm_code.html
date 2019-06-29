@@ -1,0 +1,125 @@
+{% extends "apps/base.html" %}
+{% load static %}
+{% block page_header %}{% endblock %}
+{% block title %}سامانه عقیق | تایید کد{% endblock %}
+
+{% block page_content %}
+    <div class="wrapper">
+        <div class="login-content body_min_height" style="display: flex;">
+            <div>
+                <div class="content">
+                    {% if error %}
+                        <div class="alert alert-danger">کد وارد شده نامعتبر می باشد.</div>
+                    {% endif %}
+                    <div class="login-title m-b-45">
+                        <div class="image">
+                            {#                            {% if request.user.userbox.gender == 'male' %}#}
+                            {#                            <img src="{% static "asset/image/b4.png" %}" alt="">#}
+                            {#                            {% else %}#}
+                            {#                            <img src="{% static "asset/image_gr/b4.png" %}" alt="">#}
+                            {#                            {% endif %}#}
+                            <img src="{% static "asset/image/b4.png" %}" alt="">
+
+                        </div>
+                        <h3 class="text-center title">
+                            احراز هویت
+                        </h3>
+                    </div>
+
+                    <form action="" method="post" class="white-content">
+                        {% csrf_token %}
+                        <p class="text-p style-1">
+                            کد پیامک شده را وارد کنید
+                        </p>
+                        <div class="form-group style-1 gray m-b-20">
+                            <label for="">کد تایید *</label>
+                            <div class="input">
+                                <input type="text" autofocus class="form-control" maxlength="5" name="code"
+                                       autocomplete="off">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-6 m-b-15">
+                                <button type="submit" class="btn btn-warning fit-width">
+                                    ثبت کد
+                                </button>
+                            </div>
+                            <div class="col-sm-6">
+                                <button type="button" class="btn btn-info fit-width resend-code" disabled>
+                                    ارسال مجدد کد
+                                    <span class="countdown"></span>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block page_footer %}{% endblock %}
+{% block base_js_codes %}
+    <script type="text/javascript" src="{% static "asset/script/script.js" %}"></script>
+    <script type="text/javascript" src="{% static "asset/script/plugin/bootstrap.js" %}"></script>
+{% endblock %}
+
+{% block js_code %}
+    <!--for this page only-->
+    <script type="text/javascript" src="{% static "asset/script/plugin/owl.carousel.js" %}"></script>
+
+    <script>
+        function countdown() {
+            var timer2 = "3:01";
+            var interval = setInterval(function () {
+                var timer = timer2.split(':');
+                //by parsing integer, I avoid all extra string processing
+                var minutes = parseInt(timer[0], 10);
+                var seconds = parseInt(timer[1], 10);
+                --seconds;
+                minutes = (seconds < 0) ? --minutes : minutes;
+                if (minutes < 0) clearInterval(interval);
+                seconds = (seconds < 0) ? 59 : seconds;
+                seconds = (seconds < 10) ? '0' + seconds : seconds;
+                //minutes = (minutes < 10) ?  minutes : minutes;
+                $('.countdown').html('(' + minutes + ':' + seconds + ')');
+                timer2 = minutes + ':' + seconds;
+
+                if (timer2 === "0:00") {
+                    $('.countdown').hide();
+                    $('.resend-code').prop("disabled", false);
+                }
+            }, 1000);
+        }
+
+        countdown();
+
+        $(".resend-code").click(function () {
+            countdown();
+            $('.resend-code').prop("disabled", true);
+            setTimeout(function () {
+                $('.countdown').show()
+            }, 1000);
+
+            $.ajax({
+                url: '{% url 'resend_confirm_code' %}',
+                type: 'post',
+                data: {
+                    "csrfmiddlewaretoken": '{{ csrf_token }}'
+                },
+                success: function (data) {
+                    if (data["success"]) {
+                        toastr.success('پیام با موفقیت ارسال شد');
+                    } else if (data["success"] === false && data["redirect"] === true) {
+                        window.location.href = '{% url 'access_login' %}'
+                    } else {
+                        console.log(data);
+                        toastr.error('خطایی رخ داده است');
+                    }
+                }
+            });
+        });
+
+    </script>
+{% endblock %}

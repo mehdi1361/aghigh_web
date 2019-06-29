@@ -1,0 +1,452 @@
+{% extends "apps/base.html" %}
+{% load static %}
+{% load main_extra %}
+{% block title %}سامانه عقیق|ویرایش فعالیت{% endblock %}
+{% block logo %}
+    {% if request.user.userbox.gender == 'male' %}
+        <img src="{% static "/asset/image/b1.png" %}" id="banner-image" alt="">
+    {% else %}
+        <img src="{% static "/asset/image_gr/b1.png" %}" id="banner-image" alt="">
+    {% endif %}
+{% endblock logo %}
+{% block page_content %}
+
+    <!--content-->
+    <div id="content" class="body_min_height">
+        {% if not perm %}
+            <div class="container" style="text-align: center">شما نمی توانید فعالیت را ویرایش کنید.</div>
+        {% else %}
+            <div class="container">
+                {% if response == 200 %}
+                    <div class="alert alert-success">فعالیت با موفقیت ویرایش شد.</div>
+                {% elif errors %}
+                    {% for error in errors %}
+                        <div class="alert alert-danger">
+                            {% if error == "start_date" %}تاریخ شروع را وارد کنید.
+                            {% elif error == "end_date" %}تاریخ پایان را وارد کنید.
+                            {% elif error == "start_date_lower" %}تاریخ شروع و پایان ناهماهنگ می باشد.
+                            {% elif error == "date_future" %}شما نمی توانید که فعالیت برای اینده ثبت کنید.
+                            {% elif error == "location" %}نام مکان را وارد کنید
+                            {% elif error == "title" %}عنوان فعالیت را وارد کنید.
+                            {% elif error == "category" %}دسته فعالیت را وارد نمایید.
+                            {% elif error == "description" %}توضیحات مربوط به فعالیت را وارد کنید.
+                            {% elif error == "additional_fields" %}فیلد های اضافه درست وارد نشده است.
+                            {% elif error == "images" %}عکس ها درست وارد نشده اند. حداقل سه عکس الزامیست.
+                            {% elif error == "additional_files_count" %}تعداد فایل های انتخاب شده برای ادیشنال فیلدها
+                                صحیح نیست.
+                            {% elif error == "additional_files_type" %}فرمت فایل های انتخاب شده برای ادیشنال فیلدها صحیح
+                                نیست.
+                            {% elif error == "additional_files_size" %}حجم فایل های انتخاب شده برای ادیشنال فیلدها صحیح
+                                نیست.
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+                {% if activity.general_comment %}
+                    <div class="alert alert-danger">
+                        علت رد کلی فعالیت: {{ activity.general_comment }}
+                    </div>
+                {% endif %}
+                <form action="{% url 'activity_submit' %}" method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <input type="hidden" name="deleted_images" id="deleted_images">
+                    <input type="hidden" name="deleted_files" id="deleted_files">
+                    <input type="hidden" name="deleted_additional_files" id="deleted_additional_files">
+                    <input type="hidden" name="update_id" value="{{ activity.id|to_hash_id }}">
+                    <!--top field-->
+                    <div class="row m-b-15">
+                        <div class="col-sm-3 col-xs-12">
+                            <div class="form-group style-1">
+                                {% if activity.title_status %}
+                                    <div class="input-success">
+                                        <label for="">عنوان *</label>
+                                        <div class="input">
+                                            <input name="title" type="text" id="title" value="{{ activity.title }}"
+                                                   disabled
+                                                   class="form-control">
+                                        </div>
+                                    </div>
+                                {% else %}
+                                    <div class="input-danger">
+                                        <label for="">عنوان *</label>
+                                        <div class="input">
+                                            <input type="text" value="{{ activity.title }}" name="title"
+                                                   class="form-control">
+                                            <div class="input-button">
+                                                <button type="button" class="red"
+                                                        onclick="showMessage('{{ activity.title_comment }}')">
+                                                    <i class="fa fa-file-text"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="col-sm-3 col-xs-12">
+                            <div class="form-group style-1">
+                                {% if activity.location_status %}
+                                    <div class="input-success">
+                                        <label for="">مکان *</label>
+                                        <div class="input">
+                                            <input type="text" value="{{ activity.location }}" disabled
+                                                   class="form-control" name="location">
+                                        </div>
+                                    </div>
+                                {% else %}
+                                    <div class="input-danger">
+                                        <label for="">مکان *</label>
+                                        <div class="input">
+                                            <input type="text" value="{{ activity.location }}" name="location"
+                                                   class="form-control">
+                                            <div class="input-button">
+                                                <button type="button" class="red"
+                                                        onclick="showMessage('{{ activity.location_comment }}')">
+                                                    <i class="fa fa-file-text"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-sm-3 col-xs-12">
+                            <div class="form-group style-1 form-picker">
+                                {% if activity.start_date_status %}
+                                    <div class="input-success">
+                                        <label for="">تاریخ شروع</label>
+                                        <div class="input">
+                                            <input type="text" data-time="true"
+                                                   value="{{ activity.start_date }}" disabled
+                                                   class="datepicker_ps form-control" name="start_date">
+                                        </div>
+                                    </div>
+                                {% else %}
+                                    <div class="input-danger">
+                                        <label for="">تاریخ شروع</label>
+                                        <div class="input">
+                                            <input type="text" data-time="true"
+                                                   class="form-control input-picker datepicker_ps" name="start_date"
+                                                   value="{{ activity.start_date }}">
+                                            <div class="input-button">
+                                                <button type="button" class="red"
+                                                        onclick="showMessage('{{ activity.start_date_comment }}')">
+                                                    <i class="fa fa-file-text"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <button type="button" class="btn-picker">
+                                            <i class="fa fa-calendar"></i>
+                                        </button>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-sm-3 col-xs-12">
+                            <div class="form-group style-1 form-picker">
+                                {% if activity.end_date_status %}
+                                    <div class="input-success">
+                                        <label for="">تاریخ پایان</label>
+                                        <div class="input">
+                                            <input type="text" data-time="true"
+                                                   value="{{ activity.end_date }}" disabled
+                                                   class="datepicker_ps form-control" name="end_date">
+                                        </div>
+                                    </div>
+                                {% else %}
+                                    <div class="input-danger">
+                                        <label for="">تاریخ پایان</label>
+                                        <div class="input">
+                                            <input type="text" data-time="true"
+                                                   class="form-control input-picker datepicker_ps" name="end_date"
+                                                   value="{{ activity.end_date }}">
+                                            <div class="input-button">
+                                                <button type="button" class="red"
+                                                        onclick="showMessage('{{ activity.end_date_comment }}')">
+                                                    <i class="fa fa-file-text"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <button type="button" class="btn-picker">
+                                            <i class="fa fa-calendar"></i>
+                                        </button>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    <!--end top field-->
+
+                    <!--text field-->
+                    <div class="form-group style-1 fix-label m-b-40">
+                        <label for="">
+                            خلاصه شرح فعالیت/شرح مختصر جلسه و مصوبات *
+                        </label>
+                        {% if activity.description_status %}
+                            <div class="input-success">
+                                <textarea rows="4" disabled class="form-control"
+                                          name="description">{{ activity.description }}</textarea>
+                            </div>
+                        {% else %}
+                            <div class="input-danger">
+                                <textarea rows="4" class="form-control"
+                                          name="description">{{ activity.description }}</textarea>
+                            </div>
+                            <div class="input">
+                                <div class="input-button">
+                                    <button type="button" class="red"
+                                            onclick="showMessage('{{ activity.description_comment }}')">
+                                        <i class="fa fa-file-text"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <!--end text field-->
+
+                    <!--image-->
+                    <div class="section-title style-1">
+                        <h3 class="title">
+                            <span>عکس های فعالیت (حداقل سه عکس):</span>
+                        </h3>
+                    </div>
+                    <div class="activity-image-list">
+                        <div class="row">
+                            {% for image in activity.images %}
+                                <div class="col-md-4 col-ps-6 col-xs-12" id="image-{{ image.id }}">
+                                    <div class="activity-image"
+                                         style="{% if not image.status %}background: #ffbcbc;{% else %}background: #e5fff0;{% endif %}">
+                                        <a href="{{ image.image|server_public_url }}" target="_blank" class="image"
+                                           style="background-image: url({{ image.image|server_public_url:"711x400" }})"
+                                           download></a>
+                                        <div class="content">
+                                            <h4 class="title">{{ image.title }}</h4>
+                                            <span class="size persian_number">{{ image.size|filesizeformat }}</span>
+                                            {% if not image.status %}
+                                                <button onclick="delete_image('{{ image.id }}'); multi_file_choose();"
+                                                        type="button"
+                                                        class="btn btn-warning btn-sm multi-file-remove">حذف
+                                                </button>
+                                                <div class="form-group style-1 fix-label ea-pos-abs-t-l">
+                                                    <div class="input" style="border-bottom: inherit !important;">
+                                                        <div class="input-button">
+                                                            <button type="button" class="red"
+                                                                    onclick="showMessage('{{ image.comment }}')">
+                                                                <i class="fa fa-file-text"></i>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="multi-file-content" data-name="images" data-type="activity-image">
+                        <div class="activity-image-list">
+                            <div class="row">
+                            </div>
+                        </div>
+                        <p class="text-center m-b-40">
+                            <button type="button" onclick="multi_file_choose()"
+                                    class="btn btn-primary multi-file-choose">
+                                افزودن تصویر
+                            </button>
+                        </p>
+                    </div>
+                    <!--end image-->
+
+                    <!--file-->
+                    <div class="section-title style-1">
+                        <h3 class="title">
+                            <span>فایل های صوتی و ویدیویی فعالیت (اختیاری):</span>
+                        </h3>
+                    </div>
+                    <div class="activity-file-list m-b-30">
+                        {% for file in activity.files %}
+                            <div id="file-{{ file.id }}" class="activity-file"
+                                 style="{% if not file.status %}background: #ffe5e5;{% endif %}">
+                                <span class="name">{{ file.title }}</span>
+                                <span class="size persian_number">{{ file.size|filesizeformat }}</span>
+                                <a class="btn btn-primary" href="{{ file.file|server_public_url }}" download>
+                                    دانلود
+                                </a>
+                                {% if not file.status %}
+                                    <button onclick="delete_file('{{ file.id }}'); multi_file_choose()"
+                                            class="btn btn-warning">حذف
+                                    </button>
+                                    <div class="form-group style-1" style="padding-top: 0 !important;">
+                                        <div class="input" style="border-bottom: inherit !important;">
+                                            <div class="input-button">
+                                                <button type="button" class="red"
+                                                        onclick="showMessage('{{ file.comment }}')">
+                                                    <i class="fa fa-file-text"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <div class="multi-file-content" data-name="files" data-type="activity-file">
+                        <div class="activity-file-list m-b-30"></div>
+                        <p class="text-center m-b-40">
+                            <button type="button" onclick="multi_file_choose()"
+                                    class="btn btn-primary multi-file-choose">
+                                افزودن فایل
+                            </button>
+                        </p>
+                        <script type="text/template" id="">
+                            <div class="activity-file" data-number="">
+                                <input type="file" name="files[]">
+                                <span class="name">عنوان فایل در اینجا</span>
+                                <span class="size persian_number">260 kb</span>
+                                <button type="button" class="btn btn-warning" onclick="multi_file_choose()">
+                                    حذف
+                                </button>
+                            </div>
+                        </script>
+                    </div>
+                    <!--end file-->
+
+                    <div class="row">
+                        <div class="col-sm-4 col-xs-12">
+                            <div class="form-group">
+                                <select {% if activity.category_status %}disabled{% endif %} id="category"
+                                        name="category"
+                                        title="دسته بندی فعالیت *" class="select_wait">
+                                    {% for category in categories %}
+                                        <option {% if category.id == activity.category.id %}selected{% endif %}
+                                                value="{{ category.id }}">{{ category.title }}</option>
+                                    {% endfor %}
+                                </select>
+                                {% if not activity.category_status %}
+                                    <div class="input-button pull-left" style="position: inherit !important;">
+                                        <button type="button" class="red"
+                                                onclick="showMessage('{{ activity.category_comment }}')">
+                                            <i class="fa fa-file-text"></i>
+                                        </button>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row m-b-20" id="additional_fields_container">
+
+                    </div>
+
+                    <div>
+                        {% if not activity.general_comment %}
+                            <button class="btn btn-lg btn-warning" id="btn_submit" type="submit" disabled>اعمال تغییرات
+                            </button>
+                        {% endif %}
+                        <a href="{% url 'my_school_index' %}" class="btn btn-lg btn-primary">بازگشت</a>
+                    </div>
+                </form>
+            </div>
+        {% endif %}
+    </div>
+    <div class="modal fade" id="noteModal" tabindex="-1" role="dialog" aria-labelledby="noteModalLabel"
+         style="display: none;">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                    <h4 class="modal-title" id="noteModalLabel">توضیح اشتباه موجود در فیلد</h4>
+                </div>
+                <div class="modal-body">
+                    <span id="comment_note">
+
+                    </span>
+                </div>
+                <div class="modal-footer no-border">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">
+                        بستن
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--end content-->
+{% endblock %}
+
+{% block js_code %}
+    <!--for this page only-->
+    <script type="text/javascript" src="{% static "asset/script/plugin/bootstrap-select.js" %}"></script>
+    <script type="text/javascript" src="{% static "asset/script/plugin/picker.js" %}"></script>
+    <script type="text/javascript" src="{% static "js/activity.js" %}"></script>
+
+    <script>
+        additional_fields = '{{ activity.additional_field }}';
+
+        additional_fields = JSON.parse(additional_fields.replace(/&quot;/g, '"')
+            .replace(/\\n/g, "\\n")
+            .replace(/\\'/g, "\\'")
+            .replace(/\\"/g, '\\"')
+            .replace(/\\&/g, "\\&")
+            .replace(/\\r/g, "\\r")
+            .replace(/\\t/g, "\\t")
+            .replace(/\\b/g, "\\b")
+            .replace(/\\f/g, "\\f")
+            .replace(/[\u0000-\u0019]+/g, "")
+        );
+
+        page_name = "update";
+        $("#category").change();
+
+        // prevent form submit without change
+        {% comment %}window.onload = function () {
+            setTimeout(function () {
+                $("input").on("input", function () {
+                    $("button#btn_submit").prop("disabled", false);
+                });
+
+                $("input").change(function () {
+                    $("button#btn_submit").prop("disabled", false);
+                });
+
+                $("textarea").on("input", function () {
+                    $("button#btn_submit").prop("disabled", false);
+                });
+
+                $("select").change(function () {
+                    $("button#btn_submit").prop("disabled", false);
+                });
+
+            }, 1000);
+        };
+{% endcomment %}
+        function enable_btn_submit() {
+            $("input").on("input", function () {
+                $("button#btn_submit").prop("disabled", false);
+            });
+
+            $("input").change(function () {
+                $("button#btn_submit").prop("disabled", false);
+            });
+
+            $("textarea").on("input", function () {
+                $("button#btn_submit").prop("disabled", false);
+            });
+
+            $("select").change(function () {
+                $("button#btn_submit").prop("disabled", false);
+            });
+        }
+
+        function multi_file_choose() {
+            $("button#btn_submit").prop("disabled", false);
+        }
+
+        $(document).on('click', '.multi-file-choose', function (e) {
+            $("button#btn_submit").prop("disabled", false);
+        });
+    </script>
+{% endblock %}

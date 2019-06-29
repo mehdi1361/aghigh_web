@@ -1,0 +1,201 @@
+{% extends "apps/base.html" %}
+{% load static %}
+{% load main_extra %}
+
+{% block title %}سامانه عقیق|جستجوی فعالیت{% endblock %}
+
+{% block logo %}
+    {% if request.user.userbox.gender == 'male' %}
+        <img src="{% static "/asset/image/b1.png" %}" id="banner-image" alt="">
+    {% else %}
+        <img src="{% static "/asset/image_gr/b1.png" %}" id="banner-image" alt="">
+    {% endif %}
+{% endblock logo %}
+{% block page_content %}
+
+    <!--content-->
+    <div id="content" class="body_min_height">
+        <section>
+            <div class="container">
+                <form action="{% url "search_activity" %}" method="get" class="search-form">
+                    <div class="search-detail">
+                        <div class="detail">
+
+                            <p class="result-text">
+                                {% if query_params %}
+                                    <span class="persian_number">{{ activities.count }}</span>
+                                    <span>نتیجه یافت شده برای جستجو</span>
+                                    {% if query_params.text %}
+                                        "<span>{{ query_params.text }}</span>"
+                                    {% endif %}
+                                {% endif %}
+                            </p>
+                        </div>
+                        <div class="search">
+                            <input type="text" name="text" value="{{ query_params.text|default_if_none:"" }}"
+                                   placeholder="جستجو ..." class="form-control style-1">
+                        </div>
+                    </div>
+                    <div class="row search-list-row">
+                        <div class="col-md-3 col-xs-12 pull-left m-b-40">
+                            <h4 class="aside-title style-1">فیلتر</h4>
+                            <div class="form-group">
+                                <label for="point">بر اساس امتیاز فعالیت</label>
+                                <div>
+                                    <div id="slider-point"></div>
+                                    <input type="hidden" name="point" id="slider-point-val">
+                                    <div class="range-detail">
+                                        <span class="range-detail-start" id="start_point"></span>
+                                        <span class="range-detail-end" id="end_point"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="state">بر اساس استان</label>
+                                <select name="province" id="province" class="select_wait">
+                                    <option value="">همه استان ها</option>
+                                    {% for province_item in provinces %}
+                                        <option {% if query_params.province == province_item.id|stringformat:"i" %}selected{% endif %}
+                                                value="{{ province_item.id }}">{{ province_item.title }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="county">بر اساس شهرستان</label>
+                                <select name="county" id="county" class="select_wait">
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="state">بر اساس شاخه</label>
+                                <select name="category" id="category" class="select_wait">
+                                    <option value="">همه شاخه ها</option>
+                                    {% for category in categories %}
+                                        <option {% if query_params.category == category.id|stringformat:"i" %}selected{% endif %}
+                                                value="{{ category.id }}">{{ category.title }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            {% if request.user.userbox.user_type == "student" %}
+                                <div class="form-group">
+                                    <label class="check-ps big fit-width">
+                                        <input type="checkbox"
+                                               {% if query_params.my_school == 1 %}checked{% endif %}
+                                               name="my_school" value="1">
+                                        <span></span>
+                                        <span>فعالیت های مدرسه من</span>
+                                    </label>
+                                </div>
+                            {% endif %}
+                            <div class="form-group">
+                                <h4 class="aside-title style-1">مرتب سازی</h4>
+                                <label class="check-ps fit-width big m-b-10">
+                                    <input type="radio" name="order"
+                                           {% if query_params.order == "newest" %}checked{% endif %}
+                                           value="newest">
+                                    <span></span>
+                                    <span>جدیدترین ها</span>
+                                </label>
+                                <label class="check-ps fit-width big">
+                                    <input type="radio" name="order"
+                                           {% if query_params.order == "most_view" %}checked{% endif %}
+                                           value="most_view">
+                                    <span></span>
+                                    <span>تعداد بینندگان</span>
+                                </label>
+                                <label class="check-ps fit-width big m-b-10">
+                                    <input type="radio" name="order"
+                                           {% if query_params.order == "point_high" %}checked{% endif %}
+                                           value="point_high">
+                                    <span></span>
+                                    <span>بیشترین امتیاز</span>
+                                </label>
+                                <label class="check-ps fit-width big">
+                                    <input type="radio" name="order"
+                                           {% if query_params.order == "point_low" %}checked{% endif %}
+                                           value="point_low">
+                                    <span></span>
+                                    <span>کمترین امتیاز</span>
+                                </label>
+                                <label class="check-ps fit-width big">
+                                    <input type="radio" name="order"
+                                           {% if query_params.order == "trend" %}checked{% endif %}
+                                           value="trend">
+                                    <span></span>
+                                    <span>داغ ترین</span>
+                                </label>
+
+                            </div>
+                            <div class="form-button">
+                                <button id="search_btn" type="submit" class="btn btn-warning">اعمال</button>
+                                <a href="{% url "search_activity" %}" class="btn btn-primary">حذف</a>
+                            </div>
+                        </div>
+                </form>
+                <div class="col-md-9 col-xs-12">
+                    <div class="row">
+                        {% for activity_item in activities.results %}
+                            <div class="col-lg-4 col-ps-6 col-xs-12">
+                                {% include "blocks/activity_item.html" with activity=activity_item %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                    {% include "blocks/pagination.html" with pagination_data=pagination_data %}
+
+                </div>
+            </div>
+        </section>
+    </div>
+    <!--end content-->
+{% endblock %}
+
+{% block js_plugins %}
+    <!--for this page only-->
+    <script type="text/javascript" src='{% static "asset/script/plugin/bootstrap-select.js" %}'></script>
+    <script type="text/javascript" src='{% static "asset/script/plugin/range.js" %}'></script>
+{% endblock %}
+{% block js_code %}
+    <script>
+        county = '{{ query_params.county }}';
+        $('#province').change();
+    </script>
+    <script type="text/javascript">
+        var slider = document.getElementById('slider-point');
+        var point_start = 0;
+        var point_end = 10000;
+        if (!isNaN(parseInt('{{ query_params.point_start }}', 10))) {
+            point_start = parseInt('{{ query_params.point_start }}')
+        }
+
+        if (!isNaN(parseInt('{{ query_params.point_end }}', 10))) {
+            point_end = parseInt('{{ query_params.point_end }}')
+        }
+
+        noUiSlider.create(slider, {
+            start: [point_start, point_end],
+            connect: true,
+            range: {
+                'min': 0,
+                'max': 10000
+            }
+        });
+        var nodes = [
+            document.getElementById('start_point'), // 0
+            document.getElementById('end_point')  // 1
+        ];
+
+        // Display the slider value and how far the handle moved
+        // from the left edge of the slider.
+        slider.noUiSlider.on('update', function (values, handle, unencoded, isTap, positions) {
+            nodes[handle].innerHTML = getArabicNumbers(parseInt(values[handle]));
+            $("#slider-point-val").val(parseInt(values[0]).toString() + ',' + parseInt(values[1]).toString());
+        });
+
+        $('#search_term').on('keypress', function () {
+
+            var search_term = $(this).val();
+            $('#search_text').val(search_term);
+        });
+
+    </script>
+{% endblock %}

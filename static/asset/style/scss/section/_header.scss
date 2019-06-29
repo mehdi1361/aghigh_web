@@ -1,0 +1,260 @@
+//////////////////////////////////////////////////////////////////////// header
+header{
+  background-color: $header_blue;
+  background-image: url(../image/star.png);
+  background-repeat: repeat;
+  background-position: left bottom;
+  position: relative;
+  overflow: hidden;
+
+  &:after{
+    position: absolute;
+    bottom: 0;
+    height: $wave_height;
+    left: 0;
+    width: 100%;
+    background-image: url(../image/header.png);
+    background-position: center center;
+    background-repeat: repeat-x;
+    background-size: auto 100%;
+    content: '';
+    display: block;
+    z-index: 2;
+  }
+
+  >div{
+    display: table;
+    width: 100%;
+
+    .container{
+      background: -moz-linear-gradient(left, rgba(108,76,203,0) 0%, rgba(108,76,203,0.9) 100%);
+      background: -webkit-linear-gradient(left, rgba(108,76,203,0) 0%,rgba(108,76,203,0.9) 100%);
+      background: linear-gradient(to right, rgba(108,76,203,0) 0%,rgba(108,76,203,0.9) 100%);
+      filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#006c4ccb', endColorstr='#6c4ccb',GradientType=1 );
+    }
+
+    >div{
+      display: table-cell;
+
+      &.aside{
+        &:first-child{
+          background: $header_blue;
+        }
+      }
+    }
+  }
+
+  .content{
+    position: relative;
+    .top{
+      margin-bottom: 35px;
+    }
+  }
+
+
+
+  .container{
+    padding-top: 20px;
+    position: relative;
+    padding-bottom: $wave_height + 10px;
+  }
+
+  .navigation{
+    display: table;
+    width: 100%;
+    >*{
+      float: right;
+    }
+  }
+}
+body.gray header:after{
+  background-image: url(../image/header_gray.png);
+}
+
+//////////////////////////////////////////////////////////////////////// banner
+.header-banner{
+  display: block;
+  width: 190px;
+  height: 95px;
+  position: relative;
+
+  button.btn{
+    position: absolute;
+    z-index: 8;
+    bottom: 0;
+    right: 0;
+    padding: 0;
+    height: 65px;
+    width: 65px;
+    font-size: 25px;
+    line-height: 71px;
+    @include set_radius(50%);
+  }
+
+  >div{
+    position: absolute;
+    top:20px;
+    right: 0;
+    width: 190px;
+    height: 190px;
+    @include set_radius(50%);
+    text-align: center;
+    img{
+      margin: 0 auto;
+      position: absolute;
+      bottom: 0;
+      z-index: 2;
+    }
+
+
+    &.hamraz{
+      img{
+        bottom: 11px;
+      }
+    }
+
+    &.calendar{
+      &:after{
+        bottom: 170px;
+        right: 57px;
+        width: 211px;
+      }
+    }
+
+    &.home{
+      img{
+        bottom: 37px;
+      }
+      &:after{
+        bottom: 154px;
+        right: 77px;
+        width: 156px;
+      }
+      button.btn{
+        bottom: 37px;
+      }
+    }
+
+    &:after{
+      position: absolute;
+      bottom: 154px;
+      right: 58px;
+      width: 190px;
+      content: '';
+      height: 250px;
+      @include set_radius(0 0 190px 190px);
+      @include set_webkit(transform-origin, bottom);
+      @include set_transform(rotateZ(135deg));
+      background: -moz-linear-gradient(bottom, rgba(0,0,0,0.25) 0%, rgba(0,0,0,0) 100%);
+      background: -webkit-linear-gradient(bottom, rgba(0,0,0,0.25) 0%,rgba(0,0,0,0) 100%);
+      background: linear-gradient(to top, rgba(0,0,0,0.25) 0%,rgba(0,0,0,0) 100%);
+      filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#000', endColorstr='#000',GradientType=1 );
+    }
+    &.style-league:after{
+      bottom: 99px;
+      right: 18px;
+      width: 199px;
+      content: '';
+      height: 250px;
+      @include set_radius(0);
+      @include set_transform(rotateZ(134deg));
+    }
+  }
+}
+
+
+//////////////////////////////////////////////////////////////////////// responsive
+@media (max-width: 992px) {
+  .header-banner{
+    position: fixed;
+    top:-10000px;
+  }
+}
+
+@media (max-width: 850px) {
+  header{
+
+    .container{
+      padding-bottom: $wave_height - 20;
+    }
+
+
+
+    .content{
+      width: 100%;
+      display: table;
+      padding: 0 15px;
+
+
+      .top{
+        float: right;
+        margin-bottom: 0;
+      }
+      .navigation{
+        float: left;
+        width: auto;
+      }
+    }
+  }
+}
+
+@media (max-width: 370px) {
+  header .content .top{
+    width: 80%;
+    padding-top: 12px;
+
+    a{
+      display: block;
+      img{
+        display: block;
+        max-width: 100%;
+      }
+    }
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,93 @@
+{% extends "apps/base.html" %}
+{% load static %}
+{% block title %}سامانه عقیق|سوالات{% endblock %}
+{% block logo %}
+    {% if request.user.userbox.gender == 'male' %}
+        <img src="{% static "/asset/image/b5.png" %}" id="banner-image" alt="">
+    {% else %}
+        <img src="{% static "/asset/image_gr/b5.png" %}" id="banner-image" alt="">
+    {% endif %}
+{% endblock logo %}
+
+{% block page_content %}
+    <!--content-->
+    <div id="content" class="body_min_height">
+        <a href="{% url "hamraz_submit" %}" type="button" id="new_question_btn"
+           class="btn btn-blue btn-circle btn-fix hidden">
+            <i class="fa fa-pencil"></i>
+        </a>
+        <div class="container">
+            {% if request.user.userbox.role_select == "country" %}
+
+            {% else %}
+                <ul class="nav nav-tabs m-b-25" role="tablist">
+                    <li role="presentation" class="active"><a href="{% url "hamraz_faq_index" %}">مشاوره های متداول</a></li>
+                    <li role="presentation"><a href="{% url "hamraz_qa_index" %}">مشاوره های من</a></li>
+                </ul>
+            {% endif %}
+            <div class="tab-content">
+                <div role="tabpanel"
+                     class="tab-pane" id="all_q">
+                </div>
+                <div role="tabpanel" class="tab-pane" id="own_q">
+                </div>
+                <div class="row search-list-row">
+                    <div class="col-md-3 col-xs-12 pull-left m-b-40">
+                        <h4 class="aside-title style-1 m-b-30">فیلتر</h4>
+                        <form action="{% url "hamraz_faq_index" %}" method="get" class="search-form">
+                            <input type="hidden" name="tab" value="faq">
+                            <div class="form-group">
+                                <label for="state">بر اساس حوزه</label>
+                                <select name="faq_category" id="faq_category" class="select_wait">
+                                    <option value="">همه حوزه ها</option>
+                                    {% for category_item in categories.results %}
+                                        <option {% if query_params.faq_category == category_item.id|stringformat:"i" %}selected{% endif %} value="{{ category_item.id }}">{{ category_item.title }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="faq_sub_category">بر اساس زیر حوزه</label>
+                                <select name="faq_sub_category" id="faq_sub_category" class="select_wait">
+
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="check-ps fit-width big m-b-10">
+                                    <input type="radio" name="faq_sort" value="time"
+                                           {% if query_params.faq_sort == "time" %}checked{% endif %}>
+                                    <span></span>
+                                    <span>چینش بر اساس زمان</span>
+                                </label>
+                                <label class="check-ps fit-width big">
+                                    <input type="radio" name="faq_sort" value="view"
+                                           {% if query_params.faq_sort == "view" %}checked{% endif %}>
+                                    <span></span>
+                                    <span>چینش بر اساس بازدید</span>
+                                </label>
+                            </div>
+                            <div class="form-button">
+                                <button type="submit" class="btn btn-warning">اعمال</button>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="col-md-9 col-xs-12">
+                        {% for question in faq_questions.results %}
+                            {% include "blocks/question_item.html" with item=question %}
+                        {% endfor %}
+
+                        {% include "blocks/pagination.html" with pagination_data=pagination_data %}
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--end content-->
+{% endblock %}
+
+{% block js_code %}
+    <!--for this page only-->
+    <script type="text/javascript" src="{% static "asset/script/plugin/bootstrap-select.js" %}"></script>
+    <script type="text/javascript" src="{% static "asset/script/plugin/range.js" %}"></script>
+    <script type="text/javascript" src="{% static "js/question.js" %}"></script>
+{% endblock %}

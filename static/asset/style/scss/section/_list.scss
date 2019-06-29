@@ -1,0 +1,1629 @@
+//////////////////////////////////////////////////////////////////////// public
+.row-min{
+  margin: 0 -13px;
+  >div{
+    padding: 0 13px;
+  }
+}
+
+//////////////////////////////////////////////////////////////////////// activity widget
+.activity-widget-row{
+  margin: 0 -10px;
+  >div{
+    padding: 0 10px;
+  }
+}
+.activity-widget{
+  margin-bottom: 20px;
+  @include set_radius(3px);
+  @include set_webkit(box-shadow,0px 1px 3px rgba(0, 0, 0, 0.2));
+  background: $activity_gray_light;
+  height: 155px;
+  display: block;
+  padding: 20px;
+  padding-top: 0;
+
+  @include set_transition();
+  &:hover{
+    @include set_webkit(box-shadow,0px 6px 8px -3px rgba(0, 0, 0, 0.3));
+    .img{
+      @include set_transform(scale(1.1) rotate(360deg));
+    }
+  }
+
+  >div{
+    display: table;
+    width: 100%;
+    height: 128px;
+
+
+    >div{
+      display: table-cell;
+      @include set_vertical(middle);
+      &:first-child{
+        width: 118px;
+        .img{
+          float: right;
+          @include set_transition(all 0.5s);
+        }
+      }
+    }
+  }
+
+
+  .border{
+    height: 7px;
+    display: block;
+    background: red;
+    @include set_radius(7px);
+    &.border-1{ background: $activity_orange}
+    &.border-2{ background: $activity_red_dark}
+    &.border-3{ background: $activity_blue_light}
+    &.border-4{ background: $activity_red}
+  }
+
+
+  .title{
+    color: $activity_gray_dark;
+    font-size: 17px;
+    line-height: 30px;
+  }
+}
+
+//////////////////////////////////////////////////////////////////////// activity list
+.activity-item{
+  background: white;
+  @include set_radius(3px);
+  @include set_webkit(box-shadow,0px 1px 3px rgba(0, 0, 0, 0.2));
+  margin-bottom: 30px;
+  overflow: hidden;
+  @include set_transition();
+  &:hover{
+    @include set_webkit(box-shadow,0px 6px 8px -3px rgba(0, 0, 0, 0.3));
+    .image .image_set,.image img{
+      @include set_transform(scale(1.1) rotate(3deg));
+    }
+  }
+
+
+  .image{
+    display: block;
+    position: relative;
+    overflow: hidden;
+    >span{
+      position: absolute;
+      font-size: 12px;
+      color: white;
+      top:5px;
+      right:0;
+      padding-right: 5px;
+      padding-left: 10px;
+      line-height: 26px;
+      height: 26px;
+      z-index: 10;
+
+
+      &:after{
+        position: absolute;
+        right: 98%;
+        top:0;
+        content: '';
+        width: 0;
+        height: 0;
+        border-style: solid;
+        border-width: 0 13px 13px 0;
+      }
+
+
+      &:before{
+        position: absolute;
+        right: 98%;
+        bottom:0;
+        content: '';
+        width: 0;
+        height: 0;
+        border-style: solid;
+        border-width: 0 0 13px 13px;
+      }
+
+
+      &.green{
+        background: $activity_green;
+        &:after{
+          border-color: transparent $activity_green transparent transparent;
+        }
+        &:before{
+          border-color: transparent transparent $activity_green transparent;
+        }
+      }
+    }
+    .image_set,img{
+      min-height: 1px;
+      width: 100%;
+      position: relative;
+      z-index: 1;
+      @include set_transition();
+    }
+
+
+    &.load{
+      img{
+        height: auto !important;
+        width: 100% !important;
+      }
+    }
+  }
+
+  .content{
+    padding: 10px;
+  }
+
+  .title{
+    color: $activity_gray_darker;
+    font-size: 16px;
+    line-height: 25px;
+    margin-top:0;
+    margin-bottom:10px;
+    min-height: 50px;
+  }
+
+
+  a .title{
+    @include link_hover_color($activity_gray_darker, $header_orange);
+  }
+
+  ul{
+    display: table;
+    width: 100%;
+    margin:0;
+    min-height: 50px;
+
+
+    li{
+      display: table;
+      float: right;
+      line-height: 25px;
+      color: $activity_gray;
+      margin-left:25px;
+      i{
+        margin-left:6px;
+      }
+
+      a{
+        @include link_hover_color($activity_gray, $header_orange);
+      }
+
+      span.delete{
+        text-decoration: line-through;
+      }
+      span.off{
+        color: $text_orange;
+        margin-right:10px;
+      }
+    }
+  }
+}
+
+.activity-list-slide{
+  .owl-item{
+    padding: 0 2px;
+  }
+  .owl-dots{
+    display: table;
+    margin: 0 auto;
+    .owl-dot{
+      display: block;
+      height: 12px;
+      width: 12px;
+      @include set_radius(50%);
+      margin: 0 4px;
+      background: $activity_gray_dot;
+      float: left;
+      @include set_transition();
+
+      &.active{
+        background: $header_blue;
+      }
+    }
+  }
+}
+
+//////////////////////////////////////////////////////////////////////// activity image
+.activity-image{
+  margin-bottom: 30px;
+  @include set_radius(3px);
+  @include set_webkit(box-shadow,0px 1px 3px rgba(0, 0, 0, 0.2));
+  background: $activity_gray_light;
+  display: table;
+  min-height: 120px;
+  width: 100%;
+
+  >*{
+    display: table-cell;
+    @include set_vertical(top);
+  }
+
+  .image{
+    width: 40%;
+    @include set_image_cover();
+  }
+
+  .content{
+    padding: {
+      top:10px;
+      right: 20px;
+      left:10px;
+      bottom: 10px;
+    };
+
+    .title{
+      font-size: 15px;
+      font-weight: normal;
+      margin: 0;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      color: $activity_gray_darker;
+      line-height: 30px;
+    }
+
+    .size{
+      font-size: 15px;
+      line-height: 30px;
+      display: block;
+      margin-bottom:10px;
+      direction: ltr;
+      text-align: right;
+    }
+
+    button{
+      float: left;
+    }
+  }
+}
+
+//////////////////////////////////////////////////////////////////////// activity file
+.activity-file{
+  background: $activity_gray_light;
+  @include set_radius(3px);
+  @include set_webkit(box-shadow,0px 1px 3px rgba(0, 0, 0, 0.2));
+  margin-bottom:10px;
+  display: table;
+  width:100%;
+  overflow: hidden;
+  font-size: 15px;
+  padding-right: 20px;
+
+  .btn{
+    float: left;
+  }
+
+
+  .name{
+    min-width: 256px;
+    display: block;
+    float: right;
+    padding: 9px 0px;
+    padding-left: 20px;
+  }
+
+  .size{
+    display: block;
+    float: right;
+    padding: 9px 0px;
+    direction: ltr;
+    text-align: right;
+    padding-left: 20px;
+  }
+}
+
+//////////////////////////////////////////////////////////////////////// btn list
+.button-group-gray{
+  background: $btn_green_light;
+  padding-top: 10px;
+  padding-bottom: 1px;
+  border-top:solid thin $activity_gray_dot;
+  border-bottom:solid thin $btn_green;
+  .row{
+    margin: 0;
+    >div{
+      padding: 0 10px;
+    }
+  }
+  .btn.btn-sm{
+    padding: 9px 20px;
+  }
+}
+
+
+//////////////////////////////////////////////////////////////////////// label list
+.label-list{
+  display: table;
+  width: 100%;
+  .label{
+    float: right;
+    margin-left:5px;
+    margin-bottom:5px;
+  }
+  a.label{
+    @include set_transition();
+  }
+}
+
+
+//////////////////////////////////////////////////////////////////////// shop banner
+.shop-banner{
+  margin: 0 -8px;
+
+  >div{
+    display: block;
+    float: right;
+    padding: 0 8px;
+    img{
+      width: 100%;
+    }
+
+    &.small{
+      width: 50%;
+    }
+    &.big{
+      width: 100%;
+    }
+  }
+}
+
+//////////////////////////////////////////////////////////////////////// shop item
+.shopping-item{
+  margin-bottom: 30px;
+  @include set_radius(3px);
+  @include set_webkit(box-shadow,0px 1px 3px rgba(0, 0, 0, 0.2));
+  background: $activity_gray_light;
+  display: table;
+  min-height: 120px;
+  width: 100%;
+
+  >*{
+    display: table-cell;
+    @include set_vertical(top);
+  }
+
+  .image{
+    width: 40%;
+    @include set_image_cover();
+  }
+
+  .content{
+    padding: {
+      top:10px;
+      right: 20px;
+      left:10px;
+      bottom: 10px;
+    };
+
+
+    .title{
+      font-size: 16px;
+      font-weight: normal;
+      line-height: 25px;
+      margin-top:0;
+      min-height: 65px;
+      color: $activity_gray_darker;
+    }
+
+    a .title{
+      @include link_hover_color($activity_gray_darker, $activity_gray);
+    }
+
+    .size{
+      font-size: 14px;
+      line-height: 30px;
+      display: block;
+      direction: ltr;
+      text-align: right;
+      float: right;
+      color: $activity_gray;
+    }
+
+    button{
+      float: left;
+    }
+  }
+}
+
+//////////////////////////////////////////////////////////////////////// product
+.product-info-1{
+  display: table;
+  width: 100%;
+
+
+  li{
+    float: left;
+    display: table;
+    margin-right:20px;
+    margin-bottom:20px;
+    color: $footer_gray;
+    font-size: 17px;
+    line-height: 30px;
+    i{
+      font-size: 20px;
+      display: block;
+      line-height: 30px;
+      float: left;
+      margin-right:5px;
+    }
+  }
+}
+
+.product-info-2{
+  display: table;
+  width: 100%;
+  li{
+    float: right;
+    display: table;
+    margin-bottom:10px;
+    margin-left:25px;
+    color: $search_gray_dark;
+    font-size: 16px;
+    line-height: 30px;
+    i{
+      font-size: 20px;
+      display: block;
+      line-height: 30px;
+      float: right;
+      margin-left:5px;
+    }
+    span{
+      float: right;
+      margin-left:5px;
+      &.off{
+        color: $text_orange;
+      }
+      &.delete{
+        text-decoration: line-through;
+      }
+    }
+    a{
+      @include link_hover_color($search_gray_dark,$header_orange);
+    }
+  }
+
+
+  i.fa,.subject{
+    color: $header_orange;
+  }
+}
+
+.product-info-3{
+  display: table;
+  width: 100%;
+  .row{
+    display: table-row;
+    margin: 0;
+    padding-bottom: 10px;
+
+
+    >div{
+      display: table-cell;
+      position: relative;
+      &:after{
+        content: '';
+        position: absolute;
+        height: 100%;
+        width: 100%;
+        display: block;
+        border:solid thin $activity_gray_light;
+        top:0;
+        right:0;
+      }
+
+
+
+      &.subject{
+        padding: 15px;
+        font-size: 14px;
+        line-height: 30px;
+        color: $activity_gray_dark;
+        background: $activity_gray_light;
+        @include set_radius(0 3px 3px 0);
+        border-bottom: solid white 10px;
+        &:after{
+          @include set_radius(0 3px 3px 0);
+        }
+      }
+
+
+
+      &.text{
+        color: $activity_gray;
+        padding: 15px;
+        font-size: 14px;
+        line-height: 30px;
+        @include set_radius(3px 0 0 3px);
+        border-bottom: solid white 10px;
+        &:after{
+          @include set_radius(3px 0 0 3px);
+        }
+      }
+    }
+  }
+}
+
+
+
+//////////////////////////////////////////////////////////////////////// comment
+.comment-list{
+
+}
+.comment-item{
+  border:solid thin $search_gray_light;
+  display: table;
+  width: 100%;
+  margin-bottom:20px;
+
+  >div{
+    display: table-cell;
+    @include set_vertical(top);
+  }
+
+  .number{
+    width: 330px;
+    background: $activity_gray_light;
+    padding: 15px;
+    padding-top: 10px;
+
+    .title{
+      color: $activity_gray_darker;
+      font-size: 13px;
+      line-height: 30px;
+      margin-top:0;
+      margin-bottom:15px;
+    }
+  }
+
+
+  .send{
+    padding: 15px;
+    padding-top:30px;
+    color: $activity_gray_darker;
+    p{
+      margin-bottom:30px;
+      font-size: 14px;
+      line-height: 30px;
+    }
+
+    .btn{
+      float: left;
+    }
+  }
+
+  .text{
+    padding: 15px;
+    padding-top:10px;
+    padding-left:25px;
+
+    .top{
+      display: table;
+      width: 100%;
+      margin-bottom:15px;
+      .image{
+        float: right;
+        width: 45px;
+        height: 45px;
+        @include set_image_cover();
+        margin-left:15px;
+      }
+      .name{
+        line-height: 45px;
+        color: $header_blue;
+        font-size: 16px;
+        margin-left:15px;
+        float: right;
+      }
+
+      .fa{
+        float: left;
+        color: $header_orange;
+        font-size: 16px;
+        line-height: 45px;
+        display: block;
+      }
+      a .fa{
+        @include link_hover_color($header_orange);
+      }
+    }
+
+    .content p{
+      margin: 0;
+      color: $search_gray_dark;
+      font-size: 14px;
+      line-height: 30px;
+    }
+  }
+
+  .top{
+    .name{
+      color: $header_blue;
+      font-size: 16px;
+      display: block;
+    }
+  }
+
+
+  .text{
+    p{
+      color: $search_gray_dark;
+      font-size: 14px;
+      line-height: 30px;
+    }
+  }
+}
+
+.comment-point-list{
+  >div{
+    display: table;
+    width: 100%;
+    margin-bottom:10px;
+
+    &:last-child{
+      margin-bottom:0;
+    }
+
+
+    >*{
+      display: table-cell;
+      @include set_vertical(middle);
+    }
+
+
+    >span{
+      width: 57px;
+      color: $activity_gray;
+      font-size: 13px;
+      line-height: 25px;
+    }
+    >div{
+      >div{
+        height: 11px;
+        background: $input_orange_light;
+        @include set_radius(11px);
+        overflow: hidden;
+        position: relative;
+        >div{
+          float: left;
+          height: 11px;
+          background: $header_orange;
+        }
+      }
+    }
+  }
+}
+.blue .comment-point-list{
+  >div{
+    >div{
+      >div{
+        background: $header_blue_light;
+        >div{
+          background: $header_blue;
+        }
+      }
+    }
+  }
+}
+
+
+//////////////////////////////////////////////////////////////////////// notification list
+.notification-list{
+
+}
+.notification-item{
+  cursor: pointer;
+  display: block;
+  padding-bottom: 25px;
+  margin-bottom:20px;
+  border-bottom: solid thin $activity_gray_dot;
+
+
+  &:last-child{
+    margin-bottom: 0;
+    border-bottom: none;
+  }
+
+
+
+  .top{
+    display: table;
+    width: 100%;
+    .title{
+      float: right;
+      margin-bottom:13px;
+    }
+    time{
+      float: left;
+      margin-bottom:13px;
+    }
+  }
+
+  .detail{
+    display: table;
+    width:100%;
+    >span{
+      float: right;
+      display: block;
+      margin-left:25px;
+      font-size: 14px;
+      color: $search_gray_dark;
+      margin-bottom:15px;
+    }
+  }
+
+  time{
+    color: $header_orange;
+    font-size: 17px;
+  }
+
+  .title{
+    font-size: 16px;
+    font-weight: normal;
+    margin-top:0;
+    color: $activity_gray_darker;
+    @include set_transition();
+    line-height: 30px;
+  }
+
+
+  .text{
+    display: block;
+    margin: 0;
+    text-align: justify;
+    font-size: 14px;
+    color: $search_gray_dark;
+  }
+
+  .author{
+    margin-top:20px;
+    display: table;
+    font-size: 15px;
+    line-height: 30px;
+    color: $header_orange;
+
+
+    i{
+      font-size: 20px;
+      line-height: 30px;
+      float: right;
+      margin-left:10px;
+    }
+  }
+
+  &.new{
+    .title{
+      font-weight: bold;
+      color: $header_blue;
+    }
+  }
+
+  &.open{
+    .text{
+
+    }
+  }
+  &:not(.open)
+  {
+    &:hover{
+      .title{
+        color: $header_orange !important;
+      }
+    }
+
+    .text{
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .author{
+      display: none;
+    }
+  }
+}
+
+
+
+//////////////////////////////////////////////////////////////////////// tabs
+.nav-tabs{
+  display: table;
+  width: 100%;
+  border:none;
+  margin-bottom:20px;
+
+
+  li{
+    display: table;
+    float: right;
+    margin: 0;
+    padding: 0;
+    a{
+      display: block;
+      text-align: center;
+      margin: 0;
+      @include set_radius(0);
+      font-size: 17px;
+      line-height: 30px;
+      padding: 10px;
+      font-weight:bold;
+      cursor: pointer;
+    }
+  }
+
+
+
+  &:not(.set_style)
+  {
+    li{
+      a{
+        border:none !important;
+        color: $header_blue;
+        @include link_hover_bg($activity_gray_light, $header_orange);
+        &:hover{
+          color: white;
+        }
+      }
+
+      &.active{
+        a{
+          background: white !important;
+          color: $header_blue !important;
+          @include set_webkit(box-shadow,0px -5px 0px $header_orange);
+        }
+      }
+    }
+  }
+}
+
+//////////////////////////////////////////////////////////////////////// home modal list
+.home-modal-list-item{
+  display: table;
+  width: 100%;
+  >div{
+    display: table-cell;
+    @include set_vertical(top);
+  }
+  .image{
+    width: 90px;
+    padding: 13px;
+
+
+    >div{
+      width: 64px;
+      height: 64px;
+      @include set_image_cover();
+      @include set_radius(50%);
+    }
+  }
+
+  .text{
+    padding-top: 20px;
+    padding-left:10px;
+    padding-bottom: 20px;
+    border-bottom: solid thin $activity_gray_dot;
+
+    .title{
+      float: right;
+      color: $activity_gray_dark;
+      font-size: 20px;
+      line-height: 49px;
+      margin: 0;
+      margin-left:15px;
+      @include set_transition();
+      width: 60%;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+
+    .point{
+      font-size: 23px;
+      color: $header_orange;
+      float: left;
+      line-height: 49px;
+      i{
+        font-size: 25px;
+        line-height: 49px;
+        float: left;
+        margin-right:10px;
+      }
+    }
+  }
+
+  &:hover .text .title{
+    color: $header_orange;
+  }
+
+  &:last-child{
+    .text{
+      border-bottom:none;
+    }
+  }
+}
+
+//////////////////////////////////////////////////////////////////////// paginate
+.pagination-content{
+  display: block;
+  .pagination{
+    display: table;
+    margin: 0 auto;
+    >li{
+      float: right;
+      margin-left:10px;
+      border:none !important;
+      background: transparent;
+
+      a{
+        display: block;
+        @include set_radius(3px);
+        border:none !important;
+        color: white;
+        @include link_hover_bg($header_orange);
+
+
+        &.dot{
+          background: white !important;
+          @include link_hover_color($header_blue, $header_orange);
+        }
+      }
+
+
+
+      &.active{
+        a{
+          background: $header_blue!important;
+        }
+      }
+    }
+  }
+}
+
+
+//////////////////////////////////////////////////////////////////////// news
+.news-item{
+  display: table;
+  width: 100%;
+  padding: 15px 0;
+  border-bottom: solid thin $activity_gray_dot;
+
+
+  &:first-child{
+    padding-top: 0;
+  }
+  
+  &:last-child{
+    padding-bottom: 0;
+    border-bottom: none;
+  }
+
+  >div{
+    display: table-cell;
+    @include set_vertical(top);
+  }
+  .image{
+    width: 144px;
+    img{
+      width: 123px;
+    }
+  }
+
+  .top{
+    display: table;
+    width: 100%;
+    .title{
+      float: right;
+      margin-left:15px;
+      margin-bottom:15px;
+      margin-top:0;
+      font-size: 16px;
+      line-height: 30px;
+      color: $activity_gray_darker;
+    }
+    a .title{
+      @include link_hover_color($activity_gray_darker, $header_orange);
+    }
+
+    time{
+      float: left;
+      margin-bottom:15px;
+      font-size: 17px;
+      line-height: 30px;
+      color: $header_orange;
+    }
+  }
+  .bottom{
+    p{
+      color: $search_gray_dark;
+      font-size: 14px;
+      line-height: 30px;
+    }
+  }
+}
+
+
+
+//////////////////////////////////////////////////////////////////////// league
+.league-item{
+  display: block;
+  a{
+    display: table;
+    width: 100%;
+    padding: 25px 0;
+    border-bottom:solid thin $activity_gray_dot;
+    >div{
+      display: table-cell;
+
+    }
+    .image{
+      width: 85px;
+      @include set_vertical(top);
+      >div{
+        display: block;
+        height: 65px;
+        width: 65px;
+        @include set_image_cover();
+      }
+    }
+
+
+    .content{
+      @include set_vertical(top);
+
+      .top{
+        display: table;
+        width: 100%;
+
+        .title{
+          float: right;
+          margin-top:0;
+          margin-bottom:10px;
+          color: $activity_gray_darker;
+          font-size: 16px;
+          line-height: 30px;
+          display: table;
+
+          i{
+            float: left;
+            margin-right:10px;
+            font-size: 20px;
+            line-height: 28px;
+          }
+        }
+
+
+        .point{
+          float: left;
+          margin-bottom:10px;
+          display: table;
+          color: $header_orange;
+          font-size: 20px;
+          line-height: 30px;
+          i{
+            float: left;
+            margin-right:5px;
+            line-height: 30px;
+          }
+        }
+      }
+
+
+      .info{
+        display: table;
+        width: 100%;
+        margin: 0;
+        li{
+          float: right;
+          display: table;
+          margin-left:20px;
+          color: $search_gray_dark;
+          font-size: 14px;
+          line-height: 30px;
+          i{
+            font-size: 18px;
+            line-height: 30px;
+            float: right;
+            margin-left:10px;
+          }
+        }
+      }
+    }
+  }
+
+
+
+  &:first-child a{
+    padding-top:0;
+  }
+}
+
+//////////////////////////////////////////////////////////////////////// school chart
+.school-chart-list{
+  >div{
+    .school-chart{
+      margin: 0 auto;
+      margin-bottom:20px;
+    }
+  }
+}
+
+
+//////////////////////////////////////////////////////////////////////// school info
+.school-info{
+  >div{
+    p{
+      color: $search_gray_dark;
+      font-size: 16px;
+      line-height: 30px;
+      margin-bottom:10px;
+      &:before{
+        content: '- ';
+      }
+    }
+  }
+}
+
+.info-ul{
+  display: block;
+  margin-bottom:10px;
+  li{
+    display: block;
+    margin-bottom:10px;
+    color: $search_gray_dark;
+    font-size: 15px;
+    line-height: 30px;
+    .fa{
+      font-size: 20px;
+      line-height: 30px;
+      float: right;
+      margin-left:10px;
+    }
+  }
+}
+
+//////////////////////////////////////////////////////////////////////// home list
+.home-activity-list{
+  display: block;
+  margin: 0;
+  li{
+    display: block;
+    margin-bottom:5px;
+    &:last-child{
+      margin-bottom:0;
+    }
+  }
+
+
+  .home-activity-item{
+    display: table;
+    width: 100%;
+    @include link_hover_color($search_gray_dark,$header_orange);
+
+    .title{
+      float: right;
+      margin-left:10px;
+      font-size: 15px;
+      line-height: 27px;
+      margin-top:0;
+      margin-bottom:5px;
+      white-space: nowrap;
+      max-width: 70%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .point{
+      float: left;
+      margin-bottom:5px;
+      font-size: 15px;
+      line-height: 30px;
+      display: table;
+      color: $header_orange;
+
+      i{
+        font-size: 16px;
+        line-height: 30px;
+        float: left;
+        margin-right:5px;
+      }
+    }
+  }
+
+}
+.home-best-list{
+  display: block;
+  margin: 0;
+  li{
+    display: block;
+    margin-bottom:5px;
+    &:last-child{
+      margin-bottom:0;
+    }
+  }
+
+  .home-best-item{
+    display: table;
+    width: 100%;
+    @include link_hover_color($search_gray_dark,$header_orange);
+    &:hover .point{
+      color: $header_orange;
+    }
+
+    .title{
+      float: right;
+      margin-left:10px;
+      font-size: 15px;
+      line-height: 27px;
+      margin-top:0;
+      margin-bottom:5px;
+      white-space: nowrap;
+      max-width: 70%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .point{
+      float: left;
+      margin-bottom:5px;
+      font-size: 15px;
+      line-height: 30px;
+      display: table;
+      color: $picker_blue;
+      @include set_transition();
+
+
+      i{
+        font-size: 16px;
+        line-height: 30px;
+        float: left;
+        margin-right:5px;
+      }
+    }
+  }
+}
+
+.option-list{
+  display: block;
+  .option-item{
+    display: block;
+    width: 100%;
+    margin-bottom:15px;
+    position: relative;
+
+    .image{
+      width: 70px;
+      position: absolute;
+      right: 0;
+      top:0;
+
+      >div{
+        width: 58px;
+        height: 58px;
+        @include set_radius(3px);
+        background-color: $input_border_gray;
+        @include set_image_cover();
+      }
+    }
+
+    .content{
+      padding-right: 70px;
+    }
+
+
+    .title{
+      margin-top:0;
+      color: $activity_gray_dark;
+      font-size: 13px;
+      line-height: 30px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      @include set_transition();
+      margin-bottom:0;
+    }
+
+    p{
+      color: $search_gray_dark;
+      font-size: 11px;
+      line-height: 27px;
+      margin: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    &:hover{
+      .title{
+        color: $header_orange;
+      }
+    }
+  }
+}
+.home-new-list{
+  display: block;
+  .home-new-item{
+    display: block;
+    width: 100%;
+    margin-bottom:15px;
+    position: relative;
+
+
+
+    .title{
+      margin-top:0;
+      color: $activity_gray_dark;
+      font-size: 15px;
+      line-height: 30px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      @include set_transition();
+      margin-bottom:0;
+    }
+
+
+    p{
+      color: $search_gray_dark;
+      font-size: 11px;
+      line-height: 27px;
+      margin: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    &:hover{
+      .title{
+        color: $header_orange;
+      }
+    }
+  }
+}
+
+.home-book-item{
+  background: white;
+  @include set_radius(3px);
+  margin-bottom:10px;
+  display: block;
+  overflow: hidden;
+  @include set_webkit(box-shadow,0px 1px 3px rgba(0, 0, 0, 0.2));
+  position: relative;
+  padding: {
+    right: 130px;
+    left: 20px;
+    top:15px;
+    bottom: 15px;
+  };
+
+  .image{
+    width: 110px;
+    height: 100%;
+    background: red;
+    display: block;
+    position: absolute;
+    right: 0;
+    top:0;
+    @include set_image_cover();
+  }
+
+  .title{
+    font-size: 15px;
+    color: $activity_gray_dark;
+    line-height: 30px;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    @include set_transition();
+  }
+
+  p{
+    margin: 0;
+    color: $search_gray_dark;
+    font-size: 13px;
+    line-height: 30px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &:hover .title{
+    color: $header_orange;
+  }
+}
+
+.calendar-list{
+  margin:0;
+  padding-right: 15px;
+
+  li{
+    color: $activity_gray_darker;
+    font-size: 14px;
+    line-height: 40px;
+  }
+}
+
+
+
+//////////////////////////////////////////////////////////////////////// date input
+.date-input{
+  display: block;
+  position: relative;
+  color: $activity_gray_darker;
+  input{
+    position: relative;
+    z-index: 3;
+    width: 100%;
+    height: 23px;
+    background: transparent;
+    border:none;
+    cursor: pointer;
+    padding-right: 13px;
+  }
+
+  span{
+      position: absolute;
+    z-index: 1;
+    right: 0;
+    top:0;
+    line-height: 23px;
+    display: block;
+    color: $activity_gray_darker;
+  }
+
+  i{
+    position: absolute;
+    z-index: 1;
+    left: 0;
+    top:0;
+    line-height: 23px;
+    display: block;
+    color: $header_orange;
+    font-size: 18px;
+  }
+}
+
+
+//////////////////////////////////////////////////////////////////////// responsive
+@media (min-width: 481px) {
+  .activity-file{
+    .btn{
+      @include set_radius(0);
+      @include set_webkit(box-shadow,none !important);
+    }
+  }
+}
+
+@media (max-width: 992px) {
+  .comment-item .number{
+    width: 220px;
+  }
+  .calendar-list{
+    li{
+      font-size: 13px;
+      line-height: 30px;
+    }
+  }
+}
+
+@media (max-width: 700px) {
+  .news-item{
+    .top{
+      .title{
+        width: 100%;
+      }
+      time{
+        float: right;
+        margin-bottom:0;
+      }
+    }
+    .bottom{
+      display: none;
+    }
+  }
+}
+
+@media (max-width: 640px) {
+  .comment-item{
+    >div{
+      display: table;
+      width: 100% !important;
+    }
+  }
+
+  .activity-file{
+    padding-left: 10px;
+    padding-bottom: 10px;
+
+
+    .title{
+      width: 100% !important;
+    }
+    .size{
+      width: 100%;
+      padding: 0;
+    }
+
+    .btn{
+      padding: 5px 20px;
+      margin-right:5px;
+    }
+  }
+}
+
+@media (max-width: 600px) {
+  .home-modal-list-item{
+    .image{
+      width: 77px;
+      >div{
+        width: 50px;
+        height: 50px;
+      }
+    }
+    .text{
+      padding-top: 13px;
+      padding-left: 10px;
+      padding-bottom: 10px;
+
+      .title{
+        font-size: 16px;
+      }
+      .point{
+        font-size: 19px;
+        i{
+          font-size: 18px;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 550px) {
+  .league-item a .content .top .title{
+    width: 100%;
+  }
+  .league-item a .content .top .point{
+    float: right;
+  }
+}
+
+
+@media (max-width: 480px) {
+
+  .nav-tabs li a{
+    font-size: 14px;
+  }
+}
+
+
+
+@media (max-width: 460px) {
+  .shop-banner{
+    >div{
+      width: 100% !important;
+    }
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

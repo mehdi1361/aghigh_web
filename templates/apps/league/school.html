@@ -1,0 +1,75 @@
+{% extends "apps/base.html" %}
+{% load static %}
+{% load rand_bar_color %}
+{% block title %}سامانه عقیق|لیگ{% endblock %}
+{% block logo %}
+    {% if request.user.userbox.gender == 'male' %}
+        <img src="{% static "/asset/image/b7.png" %}" id="banner-image" alt="">
+    {% else %}
+        <img src="{% static "/asset/image_gr/b7.png" %}" id="banner-image" alt="">
+    {% endif %}
+{% endblock logo %}
+{% block page_content %}
+    <!--content-->
+    <div id="content" class="body_min_height">
+        <section>
+            <div class="container">
+                <div class="section-title orange style-1">
+                    <div class="col-sm-6">
+                        <h3 class="title">
+                            <i class="fa fa-bank"></i>
+                            <span>وضعیت کلی مدرسه</span> {{ school.name }}
+                        </h3>
+                    </div>
+                    <div class="col-sm-6">
+                        <h3 class="title">
+                            <i class="fa fa-user"></i>
+                            <span>مسئول انجمن:</span> {{ school.student_name }}
+                        </h3>
+                    </div>
+                </div>
+                <div class="row school-info">
+                    <div class="col-sm-6 col-xs-12">
+                        <div class="col-sm-12 col-xs-12">
+                            <p style="font-weight: bold; color: #18888a;">
+                                <i class="fa fa-map-marker"></i><span> {{ school.province.title }} - {{ school.county.title }}</span>
+                            </p>
+                            <p>رتبه کشوری مدرسه در سامانه :<span> {{ school.rank }}</span> از<span>{{ school.rank_from_nationality }}</span></p>
+                            <p>رتبه استانی مدرسه در سامانه :<span> {{ school.province_rank }}</span> از<span>{{ school.rank_from_province }}</span></p>
+                            <p>رتبه شهرستان مدرسه در سامانه :<span> {{ school.county_rank }}</span> از<span>{{ school.rank_from_county }}</span></p>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                <div class="m-t-25 m-b-45 section-title style-1 m-b-20">
+                    <h3 class="title">
+                        <i class="fa fa-bank"></i>
+                        <span>فعالیت های مدرسه</span>
+                    </h3>
+                </div>
+                <div class="row">
+                    {% if school_activities.results %}
+                        {% for activity_item in school_activities.results %}
+                            <div class="col-lg-3 col-sm-4 col-ps-6 col-xs-12">
+                                {% include "blocks/activity_item.html" with activity=activity_item %}
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <h4 class="text-center col-xs-12">
+                            این مدرسه بدون فعالیت تایید شده می باشد.
+                        </h4>
+                    {% endif %}
+                </div>
+                {% include "blocks/pagination.html" with pagination_data=pagination_data %}
+            </div>
+        </section>
+    </div>
+    <!--end content-->
+
+{% endblock %}
+
+{% block js_plugins %}
+    <!--for this page only-->
+    <script type="text/javascript" src="{% static "asset/script/plugin/bootstrap-select.js" %}"></script>
+    <script type="text/javascript" src="{% static "asset/script/plugin/range.js" %}"></script>
+{% endblock %}v

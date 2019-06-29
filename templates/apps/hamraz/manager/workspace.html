@@ -1,0 +1,114 @@
+{% extends "apps/base.html" %}
+{% load static %}
+{% load main_extra %}
+
+{% block logo %}
+    {% if request.user.userbox.gender == 'male' %}
+        <img src="{% static "/asset/image/b1.png" %}" id="banner-image" alt="">
+    {% else %}
+        <img src="{% static "/asset/image_gr/b1.png" %}" id="banner-image" alt="">
+    {% endif %}
+{% endblock logo %}
+{% block page_content %}
+    <!--content-->
+    <div id="content" class="body_min_height">
+        <section>
+            <div class="container">
+                {% if top_expert == "True" %}
+                    <ul class="nav nav-tabs m-b-25" role="tablist">
+                        <li role="presentation" class="active">
+                            <a href="{% url 'workspace_question' %}">
+                                سوالات تایید نشده
+                            </a>
+                        </li>
+                        <li role="presentation">
+                            <a href="{% url 'workspace_faq' %}">
+                                تایید سوالات متداول
+                            </a>
+                        </li>
+                        <li role="presentation">
+                            <a href="{% url 'workspace_statistics' %}">
+                                آمار سوالات
+                            </a>
+                        </li>
+                    </ul>
+                {% endif %}
+                <div class="tab-content">
+                    {% if questions.results %}
+                        <table class="table table-striped">
+                            <thead>
+                            <tr>
+                                <th scope="col">ردیف</th>
+                                <th scope="col">عنوان سوال</th>
+                                <th scope="col">حوزه اصلی</th>
+                                <th scope="col">حوزه فرعی</th>
+                                <th scope="col">عملیات</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for question in questions.results %}
+                                <tr id="q_{{ question.id|to_hash_id }}">
+                                    <td>{{ forloop.counter }}</td>
+                                    <td>{{ question.subject|slice:"20" }}...</td>
+                                    <td>{{ question.category.title }}</td>
+                                    <td>{{ question.main_category.title }}</td>
+                                    <td class="action">
+                                        {% if question.code_state != "052" and question.code_state != "053" %}
+                                            <a class="btn btn-small btn-success" href="{% url 'answer_question' question_id=question.id|to_hash_id %}">
+                                                پاسخگویی
+                                            </a>
+                                            <a class="btn btn-small btn-danger" onclick="rejectQuestion('{{ question.id|to_hash_id }}')">
+                                                ارجا به مشاور دیگر
+                                            </a>
+                                        {% else %}
+                                            <a style="color: #369c1d">
+                                                دانش آموز به پاسخ رسید
+                                            </a>
+                                            <a class="btn btn-small btn-success" href="{% url 'answer_question' question_id=question.id|to_hash_id %}">
+                                                نمایش
+                                            </a>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                        {% include "blocks/pagination.html" with pagination_data=pagination_data %}
+                    {% else %}
+                        <div class="col-md-4 text-center col-md-offset-4" style="border: silver 1px solid; padding: 50px;">
+                            <span>هیچ سوالی در میز کار شما موجود نمی باشد.</span>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!--end content-->
+{% endblock %}
+{% block js_code %}
+    <script type="text/javascript">
+        function rejectQuestion(question_id) {
+            $.ajax({
+                url: '{% url 'reject_question' %}',
+                type: 'POST',
+                data: {
+                    "question_id": question_id,
+                    "csrfmiddlewaretoken": '{{ csrf_token }}'
+                },
+                success: function (data) {
+                    if (data["statue_code"] === 200) {
+                        toastr.success('رد شد.');
+                        $("#q_" + question_id).remove()
+                    } else {
+                        toastr.error('رد نشد.');
+                    }
+                },
+                error: function (data) {
+                    toastr.error('لطفا بعدا سعی کنید.');
+                }
+            })
+        }
+    </script>
+{% endblock %}

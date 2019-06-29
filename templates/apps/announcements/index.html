@@ -1,0 +1,71 @@
+{% extends "apps/base.html" %}
+{% load static %}
+{% load main_extra %}
+{% load date_to_persian %}
+{% block title %}سامانه عقیق|اطلاعیه ها{% endblock %}
+
+{% block logo %}
+    {% if request.user.userbox.gender == 'male' %}
+        <img src="{% static "/asset/image/b3.png" %}" id="banner-image" alt="">
+    {% else %}
+        <img src="{% static "/asset/image_gr/b3.png" %}" id="banner-image" alt="">
+    {% endif %}
+{% endblock logo %}
+{% block page_content %}
+    <!--content-->
+
+    <div id="content" class="body_min_height">
+        <section>
+            <div class="container">
+                <div class="row search-list-row">
+
+                    <div class="col-md-12 col-xs-12">
+                        <div class="news-item-list">
+                            {% if announcements.results %}
+                                {% for announcement_item in announcements.results %}
+                                    <div class="news-item">
+                                        {% if announcement_item.image %}
+                                            <div class="image">
+                                                <a href="{% url "single_announcement" announcement_id=announcement_item.id|to_hash_id %}">
+                                                    <img src="{{ announcement_item.image |server_public_url }}" alt="">
+                                                </a>
+                                            </div>
+                                        {% endif %}
+                                        <div class="text">
+                                            <div class="top">
+                                                <a href="{% url "single_announcement" announcement_id=announcement_item.id|to_hash_id %}">
+                                                    <h4 class="title" style="{% if announcement_item.seen %}font-weight: 300;{% endif %}">{{ announcement_item.title }}</h4>
+                                                </a>
+                                                <time class="persian_number">{{ announcement_item.created_at |date_to_persian }}</time>
+                                            </div>
+                                            <div class="bottom">
+                                                <p>{{ announcement_item.description | slice:"0:40" }} ...</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            {% else %}
+                                <div class="row text-center">
+                                    <div class="col-xs-12">
+                                        <span>
+                                          شما هیچ اطلاعیه ای ندارید.
+                                        </span>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
+                        {% include "blocks/pagination.html" with pagination_data=pagination_data %}
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    <!--end content-->
+{% endblock %}
+
+{% block js_plugins %}
+    <!--for this page only-->
+    <script type="text/javascript" src="{% static "asset/script/plugin/bootstrap-select.js" %}"></script>
+    <script type="text/javascript" src="{% static "asset/script/plugin/range.js" %}"></script>
+    <script type="text/javascript" src="{% static "asset/script/plugin/picker.js" %}"></script>
+{% endblock %}

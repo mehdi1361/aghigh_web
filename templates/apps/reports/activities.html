@@ -1,0 +1,251 @@
+{% extends "apps/base.html" %}
+{% load static %}
+{% load date_to_persian %}
+{% load main_extra %}
+{% block title %}سامانه عقیق|گزارش فعالیت ها{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'amcharts/plugins/export/export.css' %}" type="text/css" media="all"/>
+    <link rel="stylesheet" href="{% static 'iranmap/map.css' %}" type="text/css" media="all"/>
+{% endblock %}
+
+{% block page_content %}
+    <!--content-->
+    <div id="content" class="body_min_height">
+        <div class="container">
+            <h3 class="text-center ea-mar-t-0 ea-mar-b-20">گزارش فعالیت ها</h3>
+            <div class="alert alert-info" role="alert">
+                <div class="row">
+                    <div class="col-sm-11">
+                        <span>با کلیک کردن بر روی هر یک از استان ها تعداد فعالیت های تایید شده و همچنین تعداد فعالیت های در انتظار تایید(برابر است با مجموع تعداد فعالیت های در انتظار ویرایش توسط دانش آموز و تعداد فعالیت های در انتظار بررسی توسط مربی)نشان داده می شود </span>
+                    </div>
+                    <div class="col-sm-1 text-center">
+                        <i class="fa fa-info-circle" style="font-size: 30px"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    <div id="province_chart" style="width: 100%;height: 550px; direction: ltr"></div>
+                </div>
+                <div class="col-md-8">
+                    <div class="svg-wrapper">
+                        {% include "blocks/iran_svg.html" %}
+                    </div>
+                </div>
+            </div>
+            <div class="alert alert-info" role="alert">
+                <div class="row">
+                    <div class="col-sm-11">
+                        <span>نشان دادن تعداد کل فعالیت های هر یک از استان ها(مجموع تایید شده و در انتظار تایید) به تفکیک جنسیت(دخترانه،پسرانه)</span>
+                    </div>
+                    <div class="col-sm-1 text-center">
+                        <i class="fa fa-info-circle" style="font-size: 30px"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div id="country_chart" style="height: auto; width: 100%; direction: ltr"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--end content-->
+{% endblock %}
+{% block js_plugins %}
+    <!--for this page only-->
+    <script type="text/javascript" src="{% static "asset/script/plugin/owl.carousel.js" %}"></script>
+    <script src="{% static 'amcharts/amcharts.js' %}"></script>
+    <script src="{% static 'amcharts/serial.js' %}"></script>
+    <script src="{% static 'amcharts/plugins/export/export.min.js' %}"></script>
+    <script src="{% static 'amcharts/light.js' %}"></script>
+
+{% endblock %}
+{% block js_code %}
+    <script>
+        $('.map-link').click(function () {
+            var name = $(this).attr('data-name');
+            var code = $(this).attr('data-code');
+            var title = "فعالیت های استان " + name;
+
+            $.ajax({
+                url: '{% url 'get_activity_from_province' %}',
+                type: 'post',
+                data: {
+                    "code": code,
+                    "csrfmiddlewaretoken": '{{ csrf_token }}'
+                },
+                success: function (data) {
+                    var message = data["message"];
+                    if (message === "error") {
+                        toastr.error('لطفا بعدا تلاش کنید.');
+                    } else {
+                        data = data["data"];
+                        AmCharts.makeChart("province_chart", {
+                            "theme": "light",
+                            "type": "serial",
+                            "startDuration": 1,
+                            "dataProvider": [
+                                {
+                                    "activity_state": "تایید شده",
+                                    "male": data["accept"]["male"],
+                                    "female": data["accept"]["female"]
+                                },
+                                {
+                                    "activity_state": "درانتظار تایید",
+                                    "male": data["not_accept"]["male"],
+                                    "female": data["not_accept"]["female"]
+                                },
+                                {
+                                    "activity_state": "در انتظار ویرایش توسط دانش آموز",
+                                    "male": data["she_not_accept"]["male"],
+                                    "female": data["she_not_accept"]["female"]
+                                },
+                                {
+                                    "activity_state": "در انتظار بررسی توسط مربی",
+                                    "male": data["shr_not_accept"]["male"],
+                                    "female": data["shr_not_accept"]["female"]
+                                }
+                            ],
+                            "valueAxes": [{
+                                "position": "left",
+                                "title": title,
+                                "integersOnly": true
+
+                            }],
+                            "chartCursor": {
+                                "categoryBalloonEnabled": false,
+                                "cursorAlpha": 0,
+                                "zoomable": false
+                            },
+                            "categoryField": "activity_state",
+                            "categoryAxis": {
+                                "gridPosition": "start",
+                                "labelRotation": 90
+                            },
+                            "export": {
+                                "enabled": true
+                            },
+                            "rotate": false,
+                            "trendLines": [],
+                            "graphs": [
+                                {
+                                    "balloonText": "<b class='persian_chart_number'>دخترانه:[[value]]</b>",
+                                    "fillAlphas": 0.8,
+                                    "id": "AmGraph-1",
+                                    "lineAlpha": 0.2,
+                                    "title": "female",
+                                    "type": "column",
+                                    "valueField": "female"
+                                },
+                                {
+                                    "balloonText": "<b class='persian_chart_number'>پسرانه:[[value]]</b>",
+                                    "fillAlphas": 0.8,
+                                    "id": "AmGraph-2",
+                                    "lineAlpha": 0.2,
+                                    "title": "male",
+                                    "type": "column",
+                                    "valueField": "male"
+                                }
+                            ]
+                        });
+                        $('tspan').each(function () {
+                            $(this).html(getArabicNumbers($(this).html()));
+                        });
+                    }
+                },
+                error: function (e) {
+                    toastr.error('شما دسترسی ندارید.');
+                }
+            });
+
+
+        });
+        $('.map-link[data-code*="41"]').click()
+    </script>
+    <script>
+        var data_report_province = [];
+
+        {% for key, value in  data_report_province.items %}
+            data_report_province.push({
+                "province": "{{ value.province_name }}",
+                "male": parseInt("{{ value.male }}"),
+                "female": parseInt("{{ value.female }}")
+            });
+        {% endfor %}
+        setTimeout(function () {
+            $('tspan').each(function () {
+                $(this).html(getArabicNumbers($(this).html()));
+            });
+
+            $('path').mouseout(function () {
+                $('.persian_chart_number').each(function () {
+                    $(this).html(getArabicNumbers($(this).html()));
+                });
+            });
+
+        }, 100);
+        AmCharts.addInitHandler(function (chart) {
+            // set base values
+            if (chart.div.getAttribute('id') === "country_chart") {
+                var categoryWidth = 100;
+
+                // calculate bottom margin based on number of data points
+                var chartHeight = categoryWidth * chart.dataProvider.length;
+
+                // set the value
+                chart.div.style.height = chartHeight + 'px';
+            }
+
+        }, ['serial']);
+
+        AmCharts.makeChart("country_chart", {
+            "type": "serial",
+            "startDuration": 1,
+            "rotate": true,
+            "dataProvider": data_report_province,
+            "valueAxes": [{
+                "position": "left",
+                "integersOnly": true,
+                "title": "فعالیت ها"
+            }],
+            "chartCursor": {
+                "categoryBalloonEnabled": false,
+                "cursorAlpha": 0,
+                "zoomable": false
+            },
+            "categoryField": "province",
+            "categoryAxis": {
+                "gridPosition": "start",
+                "labelRotation": 90
+            },
+            "export": {
+                "enabled": true
+            },
+            "trendLines": [],
+            "graphs": [
+                {
+                    "balloonText": "<b class='persian_chart_number'>پسرانه:[[value]]</b>",
+                    "fillAlphas": 0.8,
+                    "id": "AmGraph-1",
+                    "lineAlpha": 0.2,
+                    "title": "پسرانه",
+                    "type": "column",
+                    "valueField": "male"
+                },
+                {
+                    "balloonText": "<b class='persian_chart_number'>دخترانه:[[value]]</b>",
+                    "fillAlphas": 0.8,
+                    "id": "AmGraph-2",
+                    "lineAlpha": 0.2,
+                    "title": "دخترانه",
+                    "type": "column",
+                    "valueField": "female"
+                }
+            ]
+        });
+
+    </script>
+{% endblock %}
+

@@ -1,0 +1,144 @@
+{% extends "apps/base.html" %}
+{% load static %}
+{% load main_extra %}
+{% load rand_bar_color %}
+{% block title %}سامانه عقیق|مدرسه من{% endblock %}
+{% block logo %}
+    <img src="{% static "/asset/image/b7.png" %}" id="banner-image" alt="">
+{% endblock logo %}
+
+{% block page_content %}
+    <!--content-->
+    <div id="content" class="body_min_height">
+        {% if request|has_perm:"activity_submit" %}
+            {% if not "activity_submit" in app_list_disable %}
+                <a id="school_activity" href="{% url "activity_submit" %}" type="button" class="btn btn-blue btn-circle btn-fix">
+                    <i class="fa fa-plus"></i>
+                </a>
+            {% endif %}
+        {% endif %}
+        <section>
+            <div class="container">
+                <ul class="nav nav-tabs m-b-25" role="tablist">
+                    <li role="presentation"><a data-target="#school_info" aria-controls="school_info"
+                                               role="tab" data-toggle="tab">اطلاعات مدرسه من</a></li>
+                    <li role="presentation" class="active"><a data-target="#school_act" aria-controls="school_act"
+                                                              role="tab"
+                                                              data-toggle="tab">فعالیت های مدرسه من</a></li>
+                </ul>
+                <div class="tab-content">
+                    <div role="tabpanel" class="tab-pane" id="school_info">
+                        <div class="section-title orange style-1">
+                            <h3 class="title">
+                                <i class="fa fa-bank"></i>
+                                <span>وضعیت کلی مدرسه</span>
+                            </h3>
+                        </div>
+                        <div class="row school-info">
+                            <div class="col-sm-6 col-xs-12">
+                                <p>رتبه کشوری مدرسه در سامانه لیگ:<span>{{ school.rank }}</span> از
+                                    <span>{{ school.rank_from_nationality }}</span></p>
+                                <p>رتبه استانی مدرسه در سامانه لیگ:<span>{{ school.province_rank }}</span> از
+                                    <span>{{ school.rank_from_province }}</span></p>
+                                <p>رتبه شهرستان مدرسه در سامانه لیگ: <span>{{ school.rank_from_county }}</span> از
+                                    <span>{{ school.county_rank }}</span></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div role="tabpanel" class="tab-pane active" id="school_act">
+                        <div class="form-group">
+                            <label class="label ea-text-000" for="activity_year" style="font-size: 14px">
+                                <i class="fa fa-graduation-cap m-l-5" style="font-size: 21px;vertical-align: middle"></i>
+                                انتخاب سال تحصیلی :
+                                <div class="m-r-10" style="display: inline">
+                                    <select name="activity_year" id="activity_year" class="select_wait" onchange="loadArchive(this)">
+                                        <option {% if activity_year == '97_98' %}selected{% endif %} value="97_98">فعالیت های امسال</option>
+                                        <option {% if activity_year == '96_97' %}selected{% endif %} value="96_97">فعالیت های سال گذشته</option>
+                                    </select>
+                                </div>
+                            </label>
+                        </div>
+                        <div class="row">
+                            {% if activities.results %}
+                                {% for activity_item in activities.results %}
+                                    <div class="col-lg-3 col-sm-4 col-ps-6 col-xs-12">
+                                        {% include "blocks/activity_item.html" with activity=activity_item %}
+                                    </div>
+                                {% endfor %}
+                            {% else %}
+                                <h4 class="text-center col-xs-12">
+                                    مدرسه بدون فعالیت می باشد.
+                                </h4>
+                            {% endif %}
+                        </div>
+                        {% include "blocks/pagination.html" with pagination_data=pagination_data %}
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    <!--end content-->
+{% endblock %}
+
+<!--modal menu for responsive-->
+<div class="modal fade" id="menuModal" tabindex="-1" role="dialog" aria-labelledby="menuModalLabel">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+                <h4 class="modal-title" id="menuModalLabel">منو سایت</h4>
+            </div>
+            <div class="modal-body">
+                <ul class="modal-menu" id="menu_modal_content"></ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">بستن پنجره</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--end modal menu for responsive-->
+
+<div class="modal fade" id="errorModal" tabindex="-1" role="dialog" aria-labelledby="errorModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+                <h4 class="modal-title" id="errorModalLabel">خطا</h4>
+            </div>
+            <div class="modal-body">
+                <p class="m-b-20 text-p">
+                    لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ و با استفاده از طراحان گرافیک است. چاپگرها
+                    و متون بلکه روزنامه و مجله در ستون و سطرآنچنان که لازم است و برای شرایط فعلی تکنولوژی مورد نیاز و
+                    کاربردهای متنوع با هدف بهبود ابزارهای کاربردی می باشد. کتابهای زیادی در شصت و سه درصد گذشته .
+                </p>
+            </div>
+            <div class="modal-footer no-border">
+                <button type="button" class="btn btn-warning" data-dismiss="modal">بستن</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block js_plugins %}
+    <!--for this page only-->
+    <script type="text/javascript" src="{% static "asset/script/plugin/bootstrap-select.js" %}"></script>
+    <script type="text/javascript" src="{% static "asset/script/plugin/range.js" %}"></script>
+    <script>
+        function loadArchive(e) {
+            window.history.replaceState('', '', updateURLParameter(window.location.href, 'activity_year', $(e).val()));
+            location.reload()
+        }
+    </script>
+    <script>
+        // Initialize the tour
+        tour.init();
+
+        // Start the tour
+        tour.start();
+    </script>
+{% endblock %}

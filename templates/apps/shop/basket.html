@@ -1,0 +1,144 @@
+{% extends "apps/base.html" %}
+{% load static %}
+{% load main_extra %}
+{% block logo %}
+    {% if request.user.userbox.gender == 'male' %}
+        <img src="{% static "/asset/image/b2.png" %}" id="banner-image" alt="">
+    {% else %}
+        <img src="{% static "/asset/image_gr/b2.png" %}" id="banner-image" alt="">
+    {% endif %}
+{% endblock logo %}
+{% block page_content %}
+    <!--content-->
+    <div id="content" class="body_min_height">
+        {% if results.products %}
+            <div class="container">
+                <div class="section-title style-1">
+                    <h3 class="title">
+                        <span>سبد خرید:</span>
+                    </h3>
+                </div>
+                <!--items list-->
+                <div class="shopping-items-list m-b-30">
+                    <div class="row">
+                        {% for product in results.products %}
+                            <div class="col-md-4 col-sm-6 col-xs-12" id="id_{{ product.id }}">
+                                <div class="shopping-item">
+                                    <a href="{{ product.images.0.image|server_public_url:"711x400" }}" target="_blank" class="image" style="background-image: url({% static 'asset/image/image/aci.jpg' %}">
+                                        {% if product.has_discount %}
+                                            <span class="basket-green"> {{ product.discount }}% تخفیف</span>
+                                        {% endif %}
+                                    </a>
+
+                                    <div class="content">
+                                        <a href="{% url "single_product" product_id=product.id|to_hash_id %}">
+                                            <h4 class="title">{{ product.title }}</h4>
+                                        </a>
+                                        {% if not product.is_free %}
+                                            <span class="price persian_number">{{ product.price }} ت</span>
+                                        {% else %}
+                                            <span>این محصول رایگان می باشد.</span>
+                                        {% endif %}
+                                        <a class="remove pull-left" onclick="deleteBasket('{{ product.id }}')">
+                                            <i class="fa fa-trash"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <!--end items list-->
+                <div class="row">
+                    <div class="col-md-6 m-b-30">
+                        <!--price show-->
+                        <div class="shopping-price">
+                            <div>
+                                <span>جمع کل</span>:
+                                <span class="persian_number price pull-left">{{ results.total_price }} ت </span>
+                            </div>
+                            <div style="color: #d60035">
+                                <span>تخفیف ها</span>:
+                                <span class="persian_number price pull-left">{{ results.total_discount }} ت </span>
+                            </div>
+                            <div>
+                                <span>مبلغ قابل پرداخت</span>:
+                                <span class="persian_number price pull-left">{{ results.payable }} ت </span>
+                            </div>
+                        </div>
+                        <!--end price show-->
+                    </div>
+                    <div class="col-md-6 m-b-30 hidden">
+                        <!--off form-->
+                        <div class="row">
+                            <div class="col-sm-9 col-ps-8">
+                                <div class="form-group style-1">
+                                    <label for="">کد تخفیف</label>
+                                    <div class="input">
+                                        <input type="text" class="form-control">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-3 col-ps-4 p-t-20">
+                                <button class="btn btn-success fit-width">
+                                    اعمال
+                                </button>
+                            </div>
+                        </div>
+                        <!--end off form-->
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-3 col-sm-4 col-xs-12 pull-left">
+                        <a class="btn btn-warning fit-width" href="{% url 'shopping_payment' %}">
+                            مرحله بعد
+                        </a>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-3 text-center col-md-offset-5" style="border: silver 1px solid; padding: 50px;">
+                        <span>سبد خرید شما خالی می باشد.</span>
+                    </div>
+                </div>
+
+            </div>
+        {% endif %}
+    </div>
+    <!--end content-->
+{% endblock %}
+
+{% block js_code %}
+
+    <!--for this page only-->
+    <script type="text/javascript" src="{% static 'asset/script/plugin/bootstrap-select.js' %}"></script>
+    <script type="text/javascript" src="{% static 'asset/script/plugin/range.js' %}"></script>
+
+    <script type="text/javascript">
+
+        function deleteBasket(product_id) {
+            $.ajax({
+                url: '{% url 'delete_basket' %}',
+                type: 'POST',
+                data: {
+                    "product_id": product_id,
+                    "csrfmiddlewaretoken": '{{ csrf_token }}'
+                },
+                success: function (data) {
+                    if (data["message"] === "success") {
+                        toastr.success('محصول حذف شد.');
+                        window.location.reload()
+                    } else {
+                        toastr.error('محصول حذف نشد.');
+                    }
+                },
+                error: function (data) {
+                    toastr.error('لطفا بعدا سعی کنید.');
+                }
+            })
+        }
+
+    </script>
+{% endblock %}

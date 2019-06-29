@@ -1,0 +1,346 @@
+.modal{
+  .modal-content{
+    @include set_radius(3px);
+    @include set_webkit(box-shadow, 0 2px 5px rgba(0, 0, 0, 0.2));
+  }
+
+  .modal-header{
+    padding: 25px 30px;
+    border-bottom: none;
+    .modal-title{
+      font-size: 22px;
+      font-weight: normal;
+      line-height: 1;
+    }
+  }
+  .modal-footer{
+    padding: 25px 0;
+    margin: 0 30px;
+    border-top:solid 2px $header_orange;
+    &.no-border{
+      border-top:none;
+    }
+  }
+
+
+  .modal-body{
+    padding: 0 30px;
+  }
+}
+
+.home-modal{
+  position: fixed;
+  top:0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  z-index: 10000;
+  padding: 50px 15px;
+  display: block;
+  overflow-x: hidden;
+  overflow-y: auto;
+
+  >.content-center{
+    display: block;
+    @include set_vertical(middle);
+    width: 100%;
+  }
+
+
+  >.home-modal-close{
+    position: absolute;
+    top:0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+    z-index: 100;
+  }
+
+
+  .content{
+    margin: 0 auto;
+    width: 100%;
+    max-width: 470px;
+    display: block;
+
+    >div{
+      position: relative;
+      z-index: 102;
+      margin: 0 auto;
+    }
+  }
+
+  .medal{
+    display: table;
+    text-align: center;
+
+    .img{
+      height: 260px;
+      width: 260px;
+      background-color: $btn_primary;
+      background-image: url(../image/medal-shadow.png);
+      background-repeat: no-repeat;
+      background-position: top center;
+      margin-bottom:15px;
+      @include set_radius(50%);
+      overflow: hidden;
+
+      img{
+        display: table;
+        margin: 0 auto;
+      }
+    }
+
+    .title{
+      font-size: 26px;
+      color: white;
+      line-height: 30px;
+      margin: 0;
+      text-align: center;
+      @include set_radius(3px);
+      background: $btn_primary;
+      min-width: 230px;
+      max-width: 100%;
+      padding: 10px 15px;
+    }
+  }
+
+
+  .vitrin{
+    background-image: url(../image/medal-bg.jpg);
+    background-repeat: repeat;
+
+    @include set_radius(3px);
+    @include set_webkit(box-shadow,0px 1px 3px rgba(0, 0, 0, 0.2));
+    overflow: hidden;
+    .top{
+      padding-top: 70px;
+      height: 215px;
+      @include set_image_cover();
+      background-image: url(../image/banner_2.jpg);
+
+      .info{
+        display: table;
+        width: 100%;
+        padding: 0 25px;
+        >div{
+          width: 110px;
+          height: 110px;
+          @include set_radius(50%);
+          background: rgba(0,0,0,0.2);
+          color:white;
+          text-align: center;
+          padding: 22px 0;
+
+          span{
+            display: block;
+            line-height: 30px;
+            &:first-child{
+              font-size: 25px;
+            }
+            &:last-child{
+              font-size: 20px;
+            }
+          }
+        }
+      }
+    }
+  }
+
+
+  .best-list{
+    @include set_radius(3px);
+    @include set_webkit(box-shadow,0px 1px 3px rgba(0, 0, 0, 0.2));
+    background: white;
+    overflow: hidden;
+    >div.nav-scroll{
+      padding-top: 95px;
+      width: 100%;
+      overflow: auto;
+      background-color: $btn_primary;
+      background-image: url(../image/pattern.png);
+      background-repeat: repeat;
+    }
+
+    .nav-tabs{
+      display: table;
+      min-width: 100%;
+
+      li{
+        display: table-cell;
+        a{
+          white-space: nowrap;
+          background: transparent !important;
+          color: white !important;
+          font-weight: normal;
+          border-top:none;
+          border-left:none;
+          border-right:none;
+          border-bottom: solid 4px transparent;
+          @include set_transition();
+        }
+
+        &.active{
+          a{
+            border-bottom-color: white;
+          }
+        }
+      }
+    }
+  }
+}
+
+
+.medal-row{
+  display: table;
+  width: 100%;
+  height: 120px;
+  background-image: url(../image/medal-row.png);
+  background-repeat: repeat-x;
+  background-position: bottom center;
+  position: relative;
+  padding-bottom: 15px;
+
+  >div{
+    display: table-cell;
+    width: 25%;
+    @include set_vertical(bottom);
+    img{
+      display: block;
+      margin: 0 auto;
+    }
+  }
+
+  &.special{
+
+    >div{
+      width: 33.3%;
+    }
+
+    &:after{
+      content: '';
+      height: 35px;
+      width: 100%;
+      position: absolute;
+      bottom: -35px;
+      left: 0;
+      display: block;
+      background-image: url(../image/medal-row-special.png);
+      background-position: center center;
+      background-repeat: no-repeat;
+    }
+  }
+
+
+  &:not(.special)
+  {
+    padding-right: 35px;
+    padding-left: 35px;
+    @include set_webkit(box-shadow,0 2px 2px rgba(0, 0, 0, 0.2));
+  }
+}
+
+
+.player-modal{
+  position: fixed;
+  top:0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background: rgba(0,0,0,0.5);
+  @include parent_child_center();
+  opacity: 0;
+  @include set_transition();
+  z-index: 100000;
+
+  &.active{
+    opacity: 1;
+  }
+
+  button{
+    position: absolute;
+    z-index: 1;
+    top:0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    display: block;
+    cursor: pointer;
+    background: transparent;
+    border:none;
+  }
+
+  #player_content_parent{
+    position: relative;
+    z-index: 2;
+    width: 80%;
+    max-width: 800px;
+    margin: 0 auto;
+    >div{
+      display: block;
+      width: 100%;
+    }
+  }
+}
+
+@media (max-width: 450px) {
+  .home-modal .vitrin .top{
+    height: 165px;
+    padding-top: 46px;
+    .info > div{
+      width: 80px;
+      height: 80px;
+      padding: 22px 0;
+
+      span{
+        line-height: 18px;
+      }
+
+
+      span:first-child {
+        font-size: 18px;
+      }
+
+      span:last-child {
+        font-size: 13px;
+      }
+    }
+
+  }
+
+  .medal-row{
+    height: 80px;
+  }
+  .medal-row:not(.special){
+    padding-right: 0;
+    padding-left: 0;
+  }
+
+  .home-modal .vitrin{
+    padding-bottom: 15px !important;
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

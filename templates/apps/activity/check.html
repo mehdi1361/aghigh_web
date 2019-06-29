@@ -1,0 +1,448 @@
+{% extends "apps/base.html" %}
+{% load static %}
+{% load main_extra %}
+{% block title %}سامانه عقیق|ویرایش فعالیت{% endblock %}
+{% block logo %}
+    {% if request.user.userbox.gender == 'male' %}
+        <img src="{% static "/asset/image/b1.png" %}" id="banner-image" alt="">
+    {% else %}
+        <img src="{% static "/asset/image_gr/b1.png" %}" id="banner-image" alt="">
+    {% endif %}
+{% endblock logo %}
+{% block page_content %}
+    {% if not perm %}
+        <div class="container body_min_height" style="text-align: center">
+            شما نمی توانید فعالیت را بررسی کنید.
+        </div>
+    {% else %}
+        <!--content-->
+        <div id="content" class="body_min_height">
+            <div class="container">
+                {% if response == 200 %}
+                    <div class="alert alert-success">فعالیت با موفقیت ویرایش شد.</div>
+                {% endif %}
+                <form id="data-activity">
+                    <input type="hidden" id="activity_id" value="{{ activity.id|to_hash_id }}">
+                    <!--top field-->
+                    <div class="row m-b-15">
+                        <div class="col-sm-3 col-xs-12">
+                            <div class="form-group style-1">
+                                <div id="general_title_1"
+                                     class="{% if activity.title_status %}input-success{% else %}input-danger{% endif %}">
+                                    <label for="">عنوان *</label>
+                                    <div class="input">
+                                        <input name="title" type="text" id="title" value="{{ activity.title }}"
+                                               class="form-control">
+                                        {% if not activity.title_status %}
+                                            <div class="input-button" id="general_title">
+                                                <button type="button" class="green"
+                                                        onclick="acceptField('general', 'title')">
+                                                    <i class="fa fa-check-circle"></i>
+                                                </button>
+                                                <button type="button" class="red"
+                                                        onclick="openModal('general', 'title')">
+                                                    <i class="fa fa-times-circle"></i>
+                                                </button>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-3 col-xs-12">
+                            <div class="form-group style-1">
+                                <div id="general_location_1"
+                                     class="{% if activity.location_status %}input-success{% else %}input-danger{% endif %}">
+                                    <label for="">مکان *</label>
+                                    <div class="input">
+                                        <input type="text" value="{{ activity.location }}"
+                                               class="form-control" name="location">
+                                    </div>
+                                    {% if not activity.location_status %}
+                                        <div class="input-button" id="general_location">
+                                            <button type="button" class="green"
+                                                    onclick="acceptField('general', 'location')">
+                                                <i class="fa fa-check-circle"></i>
+                                            </button>
+                                            <button type="button" class="red"
+                                                    onclick="openModal('general', 'location')">
+                                                <i class="fa fa-times-circle"></i>
+                                            </button>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-3 col-xs-12">
+                            <div class="form-group style-1 form-picker">
+                                <div id="general_start_date_1"
+                                     class="{% if activity.start_date_status %}input-success{% else %}input-danger{% endif %}">
+                                    <label for="">تاریخ شروع</label>
+                                    <div class="input">
+                                        <input type="text" data-time="true"
+                                               value="{{ activity.start_date }}"
+                                               class="datepicker_ps form-control" name="start_date">
+                                        {% if not activity.start_date_status %}
+                                            <div class="input-button" id="general_start_date">
+                                                <button type="button" class="green"
+                                                        onclick="acceptField('general', 'start_date')">
+                                                    <i class="fa fa-check-circle"></i>
+                                                </button>
+                                                <button type="button" class="red"
+                                                        onclick="openModal('general', 'start_date')">
+                                                    <i class="fa fa-times-circle"></i>
+                                                </button>
+                                            </div>
+                                        {% endif %}
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-3 col-xs-12">
+                            <div class="form-group style-1 form-picker">
+                                <div id="general_end_date_1"
+                                     class="{% if activity.end_date_status %}input-success{% else %}input-danger{% endif %}">
+                                    <label for="">تاریخ پایان</label>
+                                    <div class="input">
+                                        <input type="text" data-time="true"
+                                               value="{{ activity.end_date }}"
+                                               class="datepicker_ps form-control" name="end_date">
+                                        {% if not activity.end_date_status %}
+                                            <div class="input-button" id="general_end_date">
+                                                <button type="button" class="green"
+                                                        onclick="acceptField('general', 'end_date')">
+                                                    <i class="fa fa-check-circle"></i>
+                                                </button>
+                                                <button type="button" class="red"
+                                                        onclick="openModal('general', 'end_date')">
+                                                    <i class="fa fa-times-circle"></i>
+                                                </button>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--end top field-->
+
+                    <!--text field-->
+                    <div class="form-group style-1 fix-label m-b-40">
+                        <label for="">
+                            خلاصه شرح فعالیت/شرح مختصر جلسه و مصوبات *
+                        </label>
+                        <div id="general_description_1"
+                             class="{% if activity.description_status %}input-success{% else %}input-danger{% endif %}">
+                            <textarea rows="4" class="form-control"
+                                      name="description">{{ activity.description }}</textarea>
+
+                            {% if not activity.description_status %}
+                                <div class="input-button" id="general_description">
+                                    <button type="button" class="green" onclick="acceptField('general', 'description')">
+                                        <i class="fa fa-check-circle"></i>
+                                    </button>
+                                    <button type="button" class="red" onclick="openModal('general', 'description')">
+                                        <i class="fa fa-times-circle"></i>
+                                    </button>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <!--end text field-->
+
+                    <!--image-->
+                    <div class="section-title style-1">
+                        <h3 class="title">
+                            <span>عکس های فعالیت * (حداقل سه عکس):</span>
+                        </h3>
+                    </div>
+                    <div class="activity-image-list">
+                        <div class="row">
+                            {% for image in activity.images %}
+                                <div class="col-md-4 col-ps-6 col-xs-12" id="image-{{ image.id }}">
+                                    <div class="activity-image"
+                                         style="{% if not image.status %}background: #ffbcbc;{% else %}background: #e5fff0;{% endif %}">
+                                        <a href="{{ image.image|server_public_url }}" target="_blank" class="image"
+                                           style="background-image: url({{ image.image|server_public_url:"711x400" }})"
+                                           download></a>
+                                        <div class="content">
+                                            <h4 class="title">{{ image.title }}</h4>
+                                            <span class="size persian_number">{{ image.size|filesizeformat }}</span>
+                                        </div>
+                                    </div>
+                                    {% if not image.status %}
+                                        <div class="form-group" style="margin-top: -29px" id="image_{{ image.id }}">
+                                            <div class="input-button pull-left" style="position: inherit !important;">
+                                                <button type="button" class="green"
+                                                        onclick="acceptField('image', '{{ image.id }}')">
+                                                    <i class="fa fa-check-circle"></i>
+                                                </button>
+                                                <button type="button" class="red"
+                                                        onclick="openModal('image', '{{ image.id }}')">
+                                                    <i class="fa fa-times-circle"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                </div>
+
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% if activity.files %}
+                        <!--file-->
+                        <div class="section-title style-1">
+                            <h3 class="title">
+                                <span>فایل های صوتی و ویدیویی فعالیت :</span>
+                            </h3>
+                        </div>
+                        <div class="activity-file-list m-b-30">
+                            {% for file in activity.files %}
+                                <div id="file-{{ file.id }}" class="activity-file"
+                                     style="{% if not file.status %}background: #ffe5e5;{% else %}background: #e5fff0;{% endif %}">
+                                    <span class="name">{{ file.title }}</span>
+                                    <span class="size persian_number">{{ file.size|filesizeformat }}</span>
+                                    <a class="btn btn-primary" href="{{ file.file|server_public_url }}" download>
+                                        دانلود
+                                    </a>
+                                </div>
+                                {% if not file.status %}
+                                    <div class="form-group" style="margin-top: -10px">
+                                        <div class="input-button pull-left" style="position: inherit !important;">
+                                            <button type="button" class="green"
+                                                    onclick="acceptField('file', '{{ file.id }}')"><i
+                                                    class="fa fa-check-circle"></i>
+                                            </button>
+                                            <button type="button" class="red"
+                                                    onclick="openModal('file', '{{ file.id }}')">
+                                                <i class="fa fa-times-circle"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    <div class="section-title style-1">
+                        <h3 class="title">
+                            <span>دسته فعالیت :</span>
+                        </h3>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-4 col-xs-12">
+                            <div class="form-group" id="general_category_1">
+                                <select id="category" name="category"
+                                        title="دسته بندی فعالیت *" class="select_wait">
+                                    {% for category in categories %}
+                                        <option {% if category.id == activity.category.id %}selected{% endif %}
+                                                value="{{ category.id }}">{{ category.title }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                                {% if not activity.category_status %}
+                                    <div class="form-group" id="general_category">
+                                        <div class="input-button pull-left" style="position: inherit !important;">
+                                            <button type="button" class="green"
+                                                    onclick="acceptField('general', 'category')"><i
+                                                    class="fa fa-check-circle"></i>
+                                            </button>
+                                            <button type="button" class="red"
+                                                    onclick="openModal('general', 'category')">
+                                                <i class="fa fa-times-circle"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row m-b-20" id="additional_fields_container">
+
+                    </div>
+
+                    <div>
+                        <a class="btn btn-lg btn-success" id="btn_submit">ذخیره</a>
+                        <button class="btn btn-lg btn-primary m-r-10" onclick="window.location.assign('{% url 'workspace_index' %}')" type="button">انصراف</button>
+                        <button class="btn btn-lg btn-warning m-r-10" type="button" data-toggle="modal" data-target="#ConfirmAllModal">تایید کلی فعالیت</button>
+                        <button class="btn btn-lg btn-warning m-r-10" type="button" data-toggle="modal" data-target="#RejectAllModal">رد کلی فعالیت</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <!--end content-->
+        <div class="modal fade" id="noteModal" tabindex="-1" role="dialog" aria-labelledby="noteModalLabel"
+             style="display: none;">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                        <h4 class="modal-title" id="noteModalLabel">توضیح اشتباه موجود در فیلد</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group style-1 fix-label m-b-0">
+                            <div class="input">
+                                <textarea id="comment_deny" rows="4" class="form-control"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer no-border">
+                        <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="cleanTextArea()">
+                            انصراف
+                        </button>
+                        <button type="button" class="btn btn-warning" data-dismiss="modal" onclick="denyField()">ثبت
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="ConfirmAllModal" tabindex="-1" role="dialog" aria-labelledby="ConfirmAllModalLabel"
+             style="display: none;">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                        <h4 class="modal-title" id="noteModalLabel">برای تایید کلیه فیلدها مطمئن هستید؟</h4>
+                    </div>
+                    <div class="modal-footer no-border">
+                        <button type="button" class="btn btn-primary" data-dismiss="modal">
+                            انصراف
+                        </button>
+                        <button type="button" class="btn btn-warning" data-dismiss="modal" onclick="confirm_all()">تایید
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="RejectAllModal" tabindex="-1" role="dialog" aria-labelledby="RejectAllModalLabel"
+             style="display: none;">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                        <h4 class="modal-title" id="noteModalLabel">علت رد کلی را وارد کنید</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group style-1 fix-label m-b-0">
+                            <div class="input">
+                                <textarea id="general_comment" rows="4" class="form-control" placeholder="*"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer no-border">
+                        <button type="button" class="btn btn-primary" data-dismiss="modal">
+                            انصراف
+                        </button>
+                        <button type="button" class="btn btn-warning" data-dismiss="modal" onclick="reject_all()">ثبت
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}
+
+{% block js_code %}
+    <!--for this page only-->
+    <script type="text/javascript" src="{% static "asset/script/plugin/bootstrap-select.js" %}"></script>
+    <script type="text/javascript" src="{% static "asset/script/plugin/picker.js" %}"></script>
+    <script type="text/javascript" src="{% static "js/activity.js" %}"></script>
+
+    <script>
+        additional_fields = '{{ activity.additional_field }}';
+        additional_fields = JSON.parse(additional_fields.replace(/&quot;/g, '"')
+            .replace(/\\n/g, "\\n")
+            .replace(/\\'/g, "\\'")
+            .replace(/\\"/g, '\\"')
+            .replace(/\\&/g, "\\&")
+            .replace(/\\r/g, "\\r")
+            .replace(/\\t/g, "\\t")
+            .replace(/\\b/g, "\\b")
+            .replace(/\\f/g, "\\f")
+            .replace(/[\u0000-\u0019]+/g, "")
+        );
+
+        page_name = "check";
+
+        $("#category").change();
+
+        $("#btn_submit").on('click', function () {
+            var r = confirm("آیا می خواهید تغییرات ثبت شود؟");
+            if (r === true) {
+                $.ajax({
+                    url: '{% url 'activity_check' '123456' %}'.replace('123456', $("#activity_id").val()),
+                    type: 'post',
+                    data: {
+                        "data_check_activity": JSON.stringify(data_check_activity),
+                        "csrfmiddlewaretoken": '{{ csrf_token }}'
+                    },
+                    success: function (data) {
+                        var message = data["message"];
+                        if (message === "success") {
+                            window.location.href = '{% url 'workspace_index' %}'
+                        } else {
+                            toastr.error('درخواست نامعتبر می باشد.');
+
+                        }
+                    }
+                });
+            }
+        });
+        function reject_all() {
+            var general_comment = $("#general_comment");
+            if (general_comment.val() === "") {
+                toastr.error('علت رد فعالیت اجباری است.');
+                return;
+            }
+            data_check_activity["general"].push({
+                'id': "general_comment",
+                'status': false,
+                'comment': general_comment.val()
+            });
+            $.ajax({
+                url: '{% url 'activity_check' '123456' %}'.replace('123456', $("#activity_id").val()),
+                type: 'post',
+                data: {
+                    "data_check_activity": JSON.stringify(data_check_activity),
+                    "csrfmiddlewaretoken": '{{ csrf_token }}'
+                },
+                success: function (data) {
+                    var message = data["message"];
+                    if (message === "success") {
+                        window.location.href = '{% url 'workspace_index' %}'
+                    } else {
+                        toastr.error('درخواست نامعتبر می باشد.');
+
+                    }
+                }
+            });
+        }
+        function confirm_all() {
+            $.ajax({
+                url: '{% url 'activity_confirm' activity_id=activity.id|to_hash_id %}',
+                type: 'post',
+                data: {
+                    "csrfmiddlewaretoken": '{{ csrf_token }}'
+                },
+                success: function (data) {
+                    var message = data["message"];
+                    if (message === "success") {
+                        toastr.success('درخواست با موفقیت انجام شد.');
+                        window.location.href = '{% url 'workspace_index' %}'
+                    } else {
+                        toastr.error('درخواست نامعتبر می باشد.');
+
+                    }
+                }
+            });
+        }
+    </script>
+{% endblock %}

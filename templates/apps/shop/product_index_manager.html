@@ -1,0 +1,150 @@
+{% extends "apps/base.html" %}
+{% load static %}
+{% block logo %}
+    {% if request.user.userbox.gender == 'male' %}
+        <img src="{% static "/asset/image/b2.png" %}" id="banner-image" alt="">
+    {% else %}
+        <img src="{% static "/asset/image_gr/b2.png" %}" id="banner-image" alt="">
+    {% endif %}
+{% endblock logo %}
+{% block page_content %}
+    <!--content-->
+    <div id="content" class="body_min_height">
+        <section>
+            <div class="container">
+                <div class="row row-min text-center">
+                    <div class="col-lg-6">
+                        <!--widget-->
+                        <div class="row activity-widget-row">
+                            <div class="col-ps-6">
+                                <a href="{% url "product_list_manager" %}" class="activity-widget bg-color-1">
+                                    <div>
+                                        <div>
+                                            <img src="{% static 'asset/image/b1.png' %}" style="height: auto; width: 100%">
+                                        </div>
+                                        <div>
+                                            <h4 class="title" style="color: #fff !important;">
+                                                محصولات
+                                            </h4>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+{#                            <div class="col-ps-6">#}
+{#                                <a href="" class="activity-widget bg-color-2">#}
+{#                                    <div>#}
+{#                                        <div>#}
+{#                                            <img src="{% static 'asset/image/b2.png' %}" style="height: auto; width: 100%">#}
+{#                                        </div>#}
+{#                                        <div>#}
+{#                                            <h4 class="title" style="color: #fff !important;">#}
+{#                                                فاکتور ها#}
+{#                                            </h4>#}
+{#                                        </div>#}
+{#                                    </div>#}
+{#                                </a>#}
+{#                            </div>#}
+{#                            <div class="col-ps-6">#}
+{#                                <a href="" class="activity-widget bg-color-3">#}
+{#                                    <div>#}
+{#                                        <div>#}
+{#                                            <img src="{% static 'asset/image/b3.png' %}" style="height: auto; width: 100%">#}
+{#                                        </div>#}
+{#                                        <div>#}
+{#                                            <h4 class="title" style="color: #fff !important;">#}
+{#                                                کوپن های تخفیف#}
+{#                                            </h4>#}
+{#                                        </div>#}
+{#                                    </div>#}
+{#                                </a>#}
+{#                            </div>#}
+{#                            <div class="col-ps-6">#}
+{#                                <a href="{% url "banner_manager" %}" class="activity-widget bg-color-4">#}
+{#                                    <div>#}
+{#                                        <div>#}
+{#                                            <img src="{% static 'asset/image/b4.png' %}" style="height: auto; width: 100%">#}
+{#                                        </div>#}
+{#                                        <div>#}
+{#                                            <h4 class="title" style="color: #fff !important;">#}
+{#                                                بنر ها#}
+{#                                            </h4>#}
+{#                                        </div>#}
+{#                                    </div>#}
+{#                                </a>#}
+{#                            </div>#}
+                        </div>
+                        <!--end widget-->
+                    </div>
+{#                    <div class="col-lg-6">#}
+{#                        <!--widget-->#}
+{#                        <div class="row activity-widget-row">#}
+{#                            <div class="col-ps-6">#}
+{#                                <a href="" class="activity-widget bg-color-4">#}
+{#                                    <div>#}
+{#                                        <div>#}
+{#                                            <img src="{% static 'asset/image/b5.png' %}" style="height: auto; width: 100%">#}
+{#                                        </div>#}
+{#                                        <div>#}
+{#                                            <h4 class="title" style="color: #fff !important;">#}
+{#                                                دیدگاه محصولات#}
+{#                                            </h4>#}
+{#                                        </div>#}
+{#                                    </div>#}
+{#                                </a>#}
+{#                            </div>#}
+{#                            <div class="col-ps-6">#}
+{#                                <a href="" class="activity-widget bg-color-3">#}
+{#                                    <div>#}
+{#                                        <div>#}
+{#                                            <img src="{% static 'asset/image/b6.png' %}" style="height: auto; width: 100%">#}
+{#                                        </div>#}
+{#                                        <div>#}
+{#                                            <h4 class="title" style="color: #fff !important;">#}
+{#                                                محصولات#}
+{#                                            </h4>#}
+{#                                        </div>#}
+{#                                    </div>#}
+{#                                </a>#}
+{#                            </div>#}
+{#                            <div class="col-ps-6">#}
+{#                                <a href="" class="activity-widget bg-color-2">#}
+{#                                    <div>#}
+{#                                        <div>#}
+{#                                            <img src="{% static 'asset/image/b7.png' %}" style="height: auto; width: 100%">#}
+{#                                        </div>#}
+{#                                        <div>#}
+{#                                            <h4 class="title" style="color: #fff !important;">#}
+{#                                                محصولات#}
+{#                                            </h4>#}
+{#                                        </div>#}
+{#                                    </div>#}
+{#                                </a>#}
+{#                            </div>#}
+{#                            <div class="col-ps-6">#}
+{#                                <a href="" class="activity-widget bg-color-1">#}
+{#                                    <div>#}
+{#                                        <div>#}
+{#                                            <img src="{% static 'asset/image/b8.png' %}" style="height: auto; width: 100%">#}
+{#                                        </div>#}
+{#                                        <div>#}
+{#                                            <h4 class="title" style="color: #fff !important;">#}
+{#                                                محصولات#}
+{#                                            </h4>#}
+{#                                        </div>#}
+{#                                    </div>#}
+{#                                </a>#}
+{#                            </div>#}
+{#                        </div>#}
+{#                        <!--end widget-->#}
+{#                    </div>#}
+                </div>
+            </div>
+        </section>
+    </div>
+    <!--end content-->
+{% endblock %}
+
+{% block js_code %}
+    <!--for this page only-->
+    <script type="text/javascript" src="../asset/script/plugin/owl.carousel.js"></script>
+{% endblock %}

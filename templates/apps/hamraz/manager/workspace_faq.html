@@ -1,0 +1,113 @@
+{% extends "apps/base.html" %}
+{% load static %}
+{% load main_extra %}
+
+{% block logo %}
+    {% if request.user.userbox.gender == 'male' %}
+        <img src="{% static "/asset/image/b1.png" %}" id="banner-image" alt="">
+    {% else %}
+        <img src="{% static "/asset/image_gr/b1.png" %}" id="banner-image" alt="">
+    {% endif %}
+{% endblock logo %}
+{% block page_content %}
+    <!--content-->
+    <div id="content" class="body_min_height">
+        <section>
+            <div class="container">
+                <ul class="nav nav-tabs m-b-25" role="tablist">
+                    <li role="presentation">
+                        <a href="{% url 'workspace_question' %}">
+                            سوالات تایید نشده
+                        </a>
+                    </li>
+                    <li role="presentation" class="active">
+                        <a href="{% url 'workspace_faq' %}">
+                            تایید سوالات متداول
+                        </a>
+                    </li>
+                    <li role="presentation">
+                        <a href="{% url 'workspace_statistics' %}">
+                            آمار سوالات
+                        </a>
+                    </li>
+                </ul>
+                <div class="tab-content">
+                    {% if faq_list.results %}
+                        {% for question in faq_list.results %}
+                            <div class="faq_{{ question.id|to_hash_id }} clearfix m-b-10">
+                                <button class="btn btn-success btn-sm" onclick="accept_faq_question('{{ question.id|to_hash_id }}')">
+                                    <i class="fa fa-check"></i>
+                                    تایید
+                                </button>
+                                <button class="btn btn-danger btn-sm" onclick="remove_faq_question('{{ question.id|to_hash_id }}')">
+                                    <i class="fa fa-close"></i>
+                                    حذف
+                                </button>
+                            </div>
+                            {% include "blocks/question_item.html" with item=question %}
+                        {% endfor %}
+
+                        {% include "blocks/pagination.html" with pagination_data=pagination_data %}
+                    {% else %}
+                        <div class="col-md-4 text-center col-md-offset-4" style="border: silver 1px solid; padding: 50px;">
+                            <span>هیچ سوالی در میز کار شما موجود نمی باشد.</span>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </section>
+    </div>
+    <!--end content-->
+{% endblock %}
+{% block js_code %}
+    <script type="text/javascript">
+        // accept faq question
+        function accept_faq_question(question_id) {
+            $.ajax({
+                url: '{% url 'accept_faq_question' %}',
+                type: 'POST',
+                data: {
+                    "question_id": question_id,
+                    "csrfmiddlewaretoken": '{{ csrf_token }}'
+                },
+                success: function (data) {
+                    if (data["statue_code"] === 200) {
+                        toastr.success('پذیرفته شد.');
+                        $(".faq_" + question_id).remove();
+                    } else {
+                        toastr.error('پذیرفته نشد.');
+                    }
+                },
+                error: function (data) {
+                    toastr.error('لطفا بعدا سعی کنید.');
+                }
+            })
+        }
+
+        // remove faq question
+        function remove_faq_question(question_id) {
+            var remove_confirm = confirm("آیا از حذف سوال اطمینان دارید؟");
+            if (remove_confirm) {
+                $.ajax({
+                    url: '{% url 'remove_faq_question' %}',
+                    type: 'POST',
+                    data: {
+                        "question_id": question_id,
+                        "csrfmiddlewaretoken": '{{ csrf_token }}'
+                    },
+                    success: function (data) {
+                        if (data["statue_code"] === 200) {
+                            toastr.success('حذف شد.');
+                            $(".faq_" + question_id).remove();
+                        } else {
+                            toastr.error('حذف نشد.');
+                        }
+                    },
+                    error: function (data) {
+                        toastr.error('لطفا بعدا سعی کنید.');
+                    }
+                })
+            }
+        }
+    </script>
+{% endblock %}

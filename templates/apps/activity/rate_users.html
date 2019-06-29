@@ -1,0 +1,78 @@
+{% extends "apps/base.html" %}
+{% load static %}
+{% load main_extra %}
+{% load date_to_persian %}
+{% block title %}سامانه عقیق|نمایش امتیاز دهندگان فعالیت{% endblock %}
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static "asset/style/star-rating.min.css" %}">
+    <link rel="stylesheet" href="{% static "asset/style/theme.min.css" %}">
+    <style>
+        .rating-stars {
+            font-size: x-large !important;
+        }
+    </style>
+{% endblock %}
+{% block logo %}
+    {% if request.user.userbox.gender == 'male' %}
+        <img src="{% static "/asset/image/b1.png" %}" id="banner-image" alt="">
+    {% else %}
+        <img src="{% static "/asset/image_gr/b1.png" %}" id="banner-image" alt="">
+    {% endif %}
+{% endblock logo %}
+{% block page_content %}
+    <!--content-->
+
+    <div id="content" class="body_min_height">
+        <div class="container">
+            <table class="table table-striped">
+                <thead class="thead-dark">
+                <tr>
+                    <th scope="col">ردیف</th>
+                    <th scope="col">نام کاربر</th>
+                    <th scope="col">امتیاز</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for rate_info in rate_info_list %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>
+                            <a href="{% url "league_single_school" school_id=rate_info.student.school.id|to_hash_id %}">
+                                <h5>{{ rate_info.student.first_name }} {{ rate_info.student.last_name }}</h5>
+                            </a>
+                        </td>
+                        <td>
+                            <input class="rating" disabled type="text" title="" value="{{ rate_info.rate }}">
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            {% include "blocks/pagination.html" with pagination_data=pagination_data %}
+        </div>
+    </div>
+    <!--end content-->
+
+{% endblock %}
+
+{% block js_code %}
+    <!--for this page only-->
+    <script type="text/javascript" src="{% static "asset/script/plugin/star-rating.min.js" %}"></script>
+    <script type="text/javascript" src="{% static "asset/script/plugin/theme.min.js" %}"></script>
+    <script type="text/javascript">
+        $('.rating').rating({
+            'theme': 'krajee-fa',
+            'showCaption': false,
+            'rtl': true,
+            'animate': false,
+            'showClear': false,
+            'disabled': true,
+            'stars': '5',
+            'min': '0',
+            'max': '5',
+            'step': '1',
+            'size': 'md'
+            // 'starCaptions': {0: 'status:nix', 1: 'status:wackelt', 2: 'status:geht', 3: 'status:laeuft'}
+        });
+    </script>
+{% endblock %}

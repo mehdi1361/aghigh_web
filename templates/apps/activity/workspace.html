@@ -1,0 +1,153 @@
+{% extends "apps/base.html" %}
+{% load static %}
+{% load main_extra %}
+{% block title %}سامانه عقیق|بررسی فعالیت ها{% endblock %}
+
+{% block logo %}
+    {% if request.user.userbox.gender == 'male' %}
+        <img src="{% static "/asset/image/b1.png" %}" id="banner-image" alt="">
+    {% else %}
+        <img src="{% static "/asset/image_gr/b1.png" %}" id="banner-image" alt="">
+    {% endif %}
+{% endblock logo %}
+{% block page_content %}
+    <div id="content" class="body_min_height">
+        <section>
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="col-md-1">
+                            <a class="btn btn-info" data-target="#helpModal" data-toggle="modal">راهنما</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="row search-list-row">
+
+                    <div class="col-md-12 col-xs-12">
+                        <ul class="nav nav-tabs" role="tablist">
+                            <li role="presentation" {% if not page_name or page_name == "workspace" %}
+                                class="active"{% endif %}>
+                                <a data-target="#product_info" aria-controls="workspace" role="tab"
+                                   data-toggle="tab">
+                                    فعالیت های در انتظار بررسی
+                                </a>
+                            </li>
+
+                            <li role="presentation" {% if page_name == "history" %} class="active"{% endif %}>
+                                <a data-target="#product_comment" aria-controls="history"
+                                   role="tab" data-toggle="tab">
+                                    سوابق بررسی
+                                </a>
+                            </li>
+                        </ul>
+
+                        <div class="activity-list">
+                            {% if activities.results %}
+                                <div class="col-md-12 col-xs-12">
+                                    <div class="row">
+                                        {% for activity_item in activities.results %}
+                                            <div class="col-lg-3 col-ps-6 col-xs-12">
+                                                {% include "blocks/workspace_activity_item.html" with activity=activity_item %}
+                                            </div>
+                                        {% endfor %}
+
+                                    </div>
+                                    {% include "blocks/pagination.html" with pagination_data=pagination_data %}
+                                </div>
+                            {% else %}
+                                {% if page_name != "history" %}
+                                    <p class="text-center">
+                                        همکار محترم فعلا هیچ فعالیتی برای بررسی موجود نمی باشد.
+                                    </p>
+                                {% else %}
+                                    <p class="text-center">
+                                        همکار محترم شما هیچ فعالیتی را بررسی نکرده اید.
+                                    </p>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <div class="modal fade" id="helpModal" tabindex="-1" role="dialog" aria-labelledby="helpModal">
+        <div class="modal-dialog modal-lg " role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                    <h5 class="modal-title">تغییر نقش</h5>
+                </div>
+                <div class="modal-body text-center">
+                    {% if query_params.role == "coach" %}
+                        <div class="col-md-12 m-t-50 m-b-50">
+                            <div class="col-md-3">
+                                <span style="display: inherit" class="">فعالیت جدید:</span>
+                                <div style="background: #20B20F;" class="input-color-picker"></div>
+                            </div>
+                            <div class="col-md-3">
+                                <span style="display: inherit" class="">دو روز گذشته:</span>
+                                <div style="background: #FFBE18;" class="input-color-picker"></div>
+
+                            </div>
+                            <div class="col-md-3">
+                                <span style="display: inherit" class="">سه روز گذشته:</span>
+                                <div style="background: #FF1713;" class="input-color-picker"></div>
+                            </div>
+                            <div class="col-md-3">
+                                <span style="display: inherit" class="">چهار روز و بیشتر:</span>
+                                <div style="background: #FFBBBB;" class="input-color-picker"></div>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="col-md-12 m-t-50 m-b-50">
+                            <div class="col-md-3">
+                                <span style="display: inherit" class="">چهار روز گذشته:</span>
+                                <div style="background: #20B20F;" class="input-color-picker"></div>
+                            </div>
+                            <div class="col-md-3">
+                                <span style="display: inherit" class="">پنج روز گذشته:</span>
+                                <div style="background: #FFBE18;" class="input-color-picker"></div>
+
+                            </div>
+                            <div class="col-md-3">
+                                <span style="display: inherit" class="">شش روز گذشته:</span>
+                                <div style="background: #FF1713;" class="input-color-picker"></div>
+                            </div>
+                            <div class="col-md-3">
+                                <span style="display: inherit" class="">هفت روز و بیشتر:</span>
+                                <div style="background: #FFBBBB;" class="input-color-picker"></div>
+                            </div>
+                        </div>
+
+                    {% endif %}
+                </div>
+                <div class="modal-footer no-border">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">بستن</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block js_plugins %}
+    <!--for this page only-->
+    <script type="text/javascript" src='{% static "asset/script/plugin/bootstrap-select.js" %}'></script>
+    <script type="text/javascript" src='{% static "asset/script/plugin/range.js" %}'></script>
+{% endblock %}
+{% block js_code %}
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+                var target = $(e.target).attr("aria-controls");
+                if (target !== undefined) {
+                    location.href = '?page_name=' + target;
+                }
+            });
+        });
+    </script>
+{% endblock %}

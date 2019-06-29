@@ -1,0 +1,605 @@
+//////////////////////////////////////////////////////////////////////// content
+#content{
+  position: relative;
+  z-index: 2;
+}
+
+.white-content{
+  background: white;
+  @include set_radius(3px);
+  @include set_webkit(box-shadow,0px 1px 3px rgba(0, 0, 0, 0.2));
+  padding: 30px;
+  padding-top:20px;
+  &.home{
+    padding: {
+      top:10px;
+      left:15px;
+      right:15px;
+      bottom: 10px;
+    };
+  }
+}
+
+.masonry-content{
+  position: relative;
+  @include set_transition(opacity 0.4s);
+  opacity: 0;
+  &.set{
+    opacity: 1;
+  }
+
+  .home-section{
+    padding: 15px;
+    width: 33.3%;
+    position: absolute;
+  }
+}
+
+
+.home-banner{
+  background: white;
+  @include set_radius(3px);
+  @include set_webkit(box-shadow,0px 1px 3px rgba(0, 0, 0, 0.2));
+  overflow: hidden;
+  img{
+    width: 100%;
+    @include set_radius(3px);
+  }
+}
+
+
+.divider-shadow{
+  height: 2px;
+  &:after{
+    float: left;
+    content: '';
+    height: 2px;
+    width: 50%;
+    display: block;
+    background: rgb(255,255,255);
+    background: -moz-linear-gradient(left, rgba(255,255,255,1) 0%, rgba(77,77,77,1) 100%);
+    background: -webkit-linear-gradient(left, rgba(255,255,255,1) 0%,rgba(77,77,77,1) 100%);
+    background: linear-gradient(to right, rgba(255,255,255,1) 0%,rgba(77,77,77,1) 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#4d4d4d',GradientType=1 );
+  }
+  &:before{
+    float: right;
+    display: block;
+    content: '';
+    height: 2px;
+    width: 50%;
+    background: rgb(77,77,77);
+    background: -moz-linear-gradient(left, rgba(77,77,77,1) 0%, rgba(255,255,255,1) 100%);
+    background: -webkit-linear-gradient(left, rgba(77,77,77,1) 0%,rgba(255,255,255,1) 100%);
+    background: linear-gradient(to right, rgba(77,77,77,1) 0%,rgba(255,255,255,1) 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#4d4d4d', endColorstr='#ffffff',GradientType=1 );
+  }
+}
+
+.home-image-section{
+  background: white;
+  @include set_radius(3px);
+  @include set_webkit(box-shadow,0px 1px 3px rgba(0, 0, 0, 0.2));
+  overflow: hidden;
+
+  .image img{
+    @include set_radius(3px);
+    width: 100%;
+  }
+  .content{
+    padding: {
+      top:10px;
+      left:15px;
+      right:15px;
+      bottom: 10px;
+    };
+  }
+}
+
+
+//////////////////////////////////////////////////////////////////////// picker
+.set-picker-show{
+  .ps_picker{
+    position: relative;
+    background: transparent;
+    @include set_webkit(box-shadow,none);
+    width: 100%;
+    height: auto;
+    .row_control{
+      display: none;
+    }
+
+    .title{
+      padding-bottom: 15px;
+    }
+    .list .days li a{
+      height: auto;
+      padding: 10px 0;
+    }
+  }
+}
+
+
+//////////////////////////////////////////////////////////////////////// title
+@mixin section_title_color($name,$color)
+{
+  &.#{$name}{
+    .title{
+      color: $color !important;
+      @include set_transition();
+    }
+    a .title:hover{
+      color: darken($color, 7%) !important;
+    }
+  }
+}
+
+.section-title{
+  display: table;
+  width: 100%;
+
+  .title{
+    float: right;
+    margin-bottom:20px !important;
+  }
+
+  .btn{
+    float: left;
+    margin-right:5px;
+    margin-bottom:20px !important;
+  }
+
+
+
+  @include section_title_color('orange',$header_orange);
+  @include section_title_color('red',$text_orange);
+  @include section_title_color('green',$activity_green);
+  @include section_title_color('blue',$picker_blue);
+  @include section_title_color('black',$activity_gray_dark);
+  @include section_title_color('purple',$picker_blue);
+
+
+  &.style-1{
+
+    .title{
+      color: $header_blue;
+      font-size: 20px;
+      margin: 0;
+      display: table;
+      line-height: 25px;
+      i{
+        margin-left:12px;
+        font-size: 25px;
+        float: right;
+        line-height: 25px;
+      }
+    }
+    &.size-2{
+      .title{
+        font-size: 15px;
+        i{
+          font-size: 18px;
+        }
+      }
+    }
+  }
+
+
+  &.style-2{
+    .title{
+      color: $header_orange;
+      font-size: 20px;
+      margin-top:0;
+      margin-bottom:15px;
+    }
+  }
+}
+
+.login-title{
+  display: block;
+  .image{
+    display: table;
+    margin: 0 auto;
+    max-width: 100%;
+    margin-bottom:20px;
+    position: relative;
+    img{
+      max-width: 100%;
+      position: relative;
+      z-index: 2;
+    }
+
+    &:after{
+      position: absolute;
+      bottom: 169px;
+      right: 61px;
+      width: 220px;
+      z-index: 1;
+      content: '';
+      height: 250px;
+      @include set_radius(0 0 220px 220px);
+      @include set_webkit(transform-origin, bottom);
+      @include set_transform(rotateZ(135deg));
+      background: -moz-linear-gradient(bottom, rgba(0,0,0,0.25) 0%, rgba(0,0,0,0) 100%);
+      background: -webkit-linear-gradient(bottom, rgba(0,0,0,0.25) 0%,rgba(0,0,0,0) 100%);
+      background: linear-gradient(to top, rgba(0,0,0,0.25) 0%,rgba(0,0,0,0) 100%);
+      filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#000', endColorstr='#000',GradientType=1 );
+    }
+  }
+
+  .title{
+    color: white;
+    margin: 0;
+    font-size: 25px;
+    position: relative;
+    z-index: 3;
+  }
+}
+
+.aside-title{
+  color: $activity_gray_darker;
+  font-size: 17px;
+  margin-top:0;
+  margin-bottom:20px;
+}
+
+
+
+//////////////////////////////////////////////////////////////////////// text
+.text-p{
+  font-size: 16px;
+  line-height: 30px;
+  text-align: justify;
+  &.style-1{
+    font-size: 17px;
+    color: $input_border_gray;
+  }
+}
+
+.text-gray{
+  color: $activity_gray;
+}
+
+
+.text-green{
+  color: $activity_green;
+}
+.product-text{
+  font-size: 14px;
+  text-align: justify;
+  line-height: 30px;
+  color: $activity_gray_darker;
+
+  >*{
+    margin-bottom:30px;
+    &:last-child{
+      margin-bottom:0;
+    }
+  }
+
+  ul{
+    padding-right: 15px;
+  }
+}
+
+.text-danger{
+  color: $red_text !important;
+}
+.text-success{
+  color: $btn_green !important;
+}
+
+
+//////////////////////////////////////////////////////////////////////// image loader
+.image_loader{
+  background: $activity_gray_lighter;
+  .image_set{
+    height: 100%;
+    width: 100%;
+    opacity: 0;
+    @include set_transition();
+    @include set_image_cover();
+    &+img{
+      display: none;
+    }
+  }
+
+
+  img{
+    opacity: 0;
+    @include set_transition();
+  }
+  &.load{
+    img{  opacity:1;}
+    .image_set{  opacity:1;}
+  }
+}
+
+//////////////////////////////////////////////////////////////////////// shopping price
+.shopping-price{
+   @include set_radius(3px);
+   overflow: hidden;
+  border:solid thin $activity_green;
+  >div{
+    line-height: 60px;
+    padding: 0 15px;
+
+    span{
+      &:first-child{ font-size: 17px }
+      &.price{ font-size: 20px }
+    }
+
+    &:nth-child(2n + 1){ color:$activity_green; }
+    &:nth-child(2n){ background: $activity_green; color: white; }
+  }
+}
+
+//////////////////////////////////////////////////////////////////////// product
+.product-detail{
+  padding-top: 15px;
+  padding-right: 30px;
+  .title{
+    margin-top:0;
+    color: $activity_gray_darker;
+    font-size: 20px;
+  }
+}
+
+//////////////////////////////////////////////////////////////////////// school line
+@mixin school_line($name,$bg,$main)
+{
+  &.#{$name}
+  {
+     background: $bg;
+      .on_bg{
+        background: $bg;
+      }
+    .out_line,.on_line{
+      background: $main;
+    }
+  }
+}
+
+
+$school_line: 42px;
+$school_line_min: 24px;
+.school-line{
+  display: table;
+  width: 100%;
+  position: relative;
+  height: $school_line;
+  overflow: hidden;
+
+  .on_line{
+    top:($school_line - $school_line_min) / 2;
+    left: 0;
+    display: block;
+    height: $school_line_min;
+    width: 100%;
+    z-index: 6;
+    position: absolute;
+    @include set_transition(width 1.5s ease-out);
+    &:after{
+      position: absolute;
+      left: 0;
+      top:0;
+      height: 100%;
+      content: '';
+      display: block;
+      width: $school_line_min;
+      @include set_radius(3px 0 0 3px);
+      @include set_webkit(box-shadow, -1px 0 0 1px white);
+    }
+  }
+
+  .out_line{
+    top:0;
+    left: 0;
+    display: block;
+    height: 100%;
+    width: 100%;
+    z-index: 0;
+    position: absolute;
+    @include set_transition(width 1.5s ease-out);
+  }
+
+  .circle{
+    position: absolute;
+    top:-50px;
+    right: -50px;
+    height: $school_line;
+    width: $school_line;
+    @include set_radius(50%);
+    background: transparent;
+    border:solid 50px white;
+    z-index: 3;
+    @include set_webkit(box-sizing,content-box);
+  }
+
+  .top_white,.bottom_white{
+    position: absolute;
+    top:0;
+    left: $school_line * -1;
+    width: 100%;
+    background: white;
+    height:($school_line - $school_line_min) / 2;
+  }
+  .bottom_white{
+    top: auto;
+    bottom: 0;
+  }
+  .on_bg{
+    position: absolute;
+    top:($school_line - $school_line_min) / 2;
+    left: $school_line_min * -1;
+    height: $school_line_min;
+    width: 100%;
+    z-index: 4;
+  }
+
+  @include school_line('orange',$input_orange_light,$header_orange);
+  @include school_line('green',$school_green_light,$school_green);
+  @include school_line('green_light',$school_green_2_light,$school_green_2);
+  @include school_line('green_lighter',$school_green_3_light,$school_green_3);
+  @include school_line('red',$school_red_light,$school_red);
+
+
+  .point{
+    color: white;
+    line-height: 27px;
+    left: 8px;
+    font-size: 15px;
+    position: absolute;
+    top:($school_line - $school_line_min) / 2;
+    z-index: 100;
+    display: block;
+  }
+  .fa{
+    position: absolute;
+    right: 0;
+    width: $school_line;
+    text-align: center;
+    line-height: $school_line;
+    font-size: $school_line_min;
+    z-index: 100;
+    color: white;
+  }
+
+  &.small{
+
+    $school_line_small : 30px;
+    $school_line_min_small : 15px;
+
+    height: $school_line_small;
+
+
+    .on_line{
+      top:($school_line_small - $school_line_min_small) / 2;
+      height: $school_line_min_small;
+    }
+
+
+    .circle{
+      height: $school_line_small;
+      width: $school_line_small;
+    }
+
+    .top_white,.bottom_white{
+      left: $school_line_small * -1;
+      height:($school_line_small - $school_line_min_small) / 2;
+    }
+    .on_bg{
+      top:($school_line_small - $school_line_min_small) / 2;
+      left: $school_line_min_small * -1;
+      height: $school_line_min_small;
+    }
+
+    .point{
+      line-height: 17px;
+      font-size: 12px;
+      top:($school_line_small - $school_line_min_small) / 2;
+    }
+
+
+    .fa{
+      width: $school_line_small;
+      line-height: $school_line_small;
+      font-size: $school_line_min_small;
+    }
+  }
+}
+
+
+//////////////////////////////////////////////////////////////////////// school chart
+.school-chart{
+  display: table;
+  width: 134px;
+  position: relative;
+
+  .point{
+    display: block;
+    height: 134px;
+    text-align: center;
+    line-height: 134px;
+    z-index: 2;
+    position: relative;
+    font-size: 18px;
+    margin-bottom:15px;
+  }
+
+  .text{
+    font-size: 15px;
+    text-align: center;
+    display: block;
+  }
+
+  canvas{
+    position: absolute;
+    top:0;
+    z-index: 1;
+    left: 0;
+    @include set_transform(rotate(-90deg));
+  }
+}
+
+//////////////////////////////////////////////////////////////////////// login
+.login-content{
+  background-color: $header_blue_dark;
+  background-image: url(../image/slide-bg.png);
+  padding: 70px 15px;
+  width: 100%;
+  @include parent_child_center();
+  .content{
+    width: 500px;
+    max-width: 100%;
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 1200px) {
+  .masonry-content{
+    .home-section{
+      width: 50%;
+    }
+  }
+}
+
+@media (max-height: 670px) {
+  .login-content{
+    display: block !important;
+    >*{
+      display: block !important;
+    }
+  }
+}
+
+@media (max-width: 550px) {
+  .masonry-content{
+    .home-section{
+      width: 100%;
+    }
+  }
+}
+
+
+@media (max-width: 540px) {
+  .login-content{
+    display: block !important;
+    >*{
+      display: block !important;
+    }
+    .content{
+      width: 100%;
+    }
+  }
+}
+
+
+
+
+
+
+
+
+
+

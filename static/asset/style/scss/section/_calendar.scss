@@ -1,0 +1,93 @@
+.calendar{
+  .head{
+    display: table;
+    width: 100%;
+    background: $header_orange;
+    color: white;
+    height: 35px;
+    >div{
+      display: table-cell;
+      @include set_vertical(middle);
+      font-size: 14px;
+      text-align: center;
+      line-height: 30px;
+      &.day{
+         width: 12.5%;
+      }
+    }
+
+  }
+  .rows{
+    display: block;
+    position: relative;
+    .calendar-row{
+       height: 29px;
+       display: table;
+       width: 100%;
+       border-bottom: solid 1px $calendar_gray;
+
+      .title{
+        float: right;
+        width: 12.5%;
+        line-height: 29px;
+        height: 29px;
+        background: $activity_gray_light;
+        color: $activity_gray;
+        font-size: 14px;
+        text-align: center;
+      }
+    }
+
+    .items{
+      position: absolute;
+      top:0;
+      left: 0;
+      height: 1px;
+      width: 87.5%;
+      .item{
+        position: absolute;
+        width: 100%;
+        background: $header_blue;
+        cursor: pointer;
+        display: table;
+        >div{
+          display: table-cell;
+          @include set_vertical(middle);
+          text-align: center;
+          color: white;
+
+          i{
+            font-size:18px;
+          }
+
+          >div{
+            overflow: hidden;
+          }
+        }
+
+        .text{
+          padding: 5px 10px;
+          text-align: right;
+          text-align: justify;
+          font-size: 12px;
+          line-height: 30px;
+        }
+      }
+    }
+
+    &.days .items .item{
+       width: 12.5%;
+    }
+  }
+}
+
+
+
+
+
+
+
+
+
+
+

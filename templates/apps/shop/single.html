@@ -1,0 +1,411 @@
+{% extends "apps/base.html" %}
+{% load static %}
+{% load main_extra %}
+{% block title %}{{ product.title }}{% endblock %}
+{% block logo %}
+    {% if request.user.userbox.gender == 'male' %}
+        <img src="{% static "/asset/image/b2.png" %}" id="banner-image" alt="">
+    {% else %}
+        <img src="{% static "/asset/image_gr/b2.png" %}" id="banner-image" alt="">
+    {% endif %}
+{% endblock logo %}
+{% block page_content %}
+    <!--content-->
+    <div id="content" class="body_min_height">
+        <a href="{% url 'shopping_basket' %}" class="btn btn-blue btn-circle btn-fix">
+            {% with request|get_count_product_in_basket as basket_count %}
+                <span id="basket_count" class="number persian_number"
+                      data-val="{{ basket_count }}">{{ basket_count }}</span>
+            {% endwith %}
+            <i class="fa fa-shopping-cart"></i>
+        </a>
+        <section>
+            <div class="container">
+                <div class="row row-min m-b-45">
+                    <div class="col-lg-6 m-b-20">
+                        <!--slide-->
+                        <div class="slide-min slide-2">
+                            <div class="owl-carousel single-activity-slider">
+                                {% for image_item in product.images %}
+                                    <div class="item">
+                                        <img src="{{ image_item.image|server_public_url:"711x400" }}" alt=""
+                                             height="400">
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <!--end slide-->
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="product-detail">
+                            <h3 class="title">
+                                {{ product.title }}
+                            </h3>
+{#                            <ul class="product-info-1">#}
+{#                                <li><i class="fa fa-heart"></i> <span class="persian_number">4000</span></li>#}
+{#                                <li><i class="fa fa-eye"></i> <span class="persian_number">150</span></li>#}
+{#                            </ul>#}
+                            <ul class="product-info-2 m-b-40">
+                                <li class="price fit-width">
+                                    <i class="fa fa-credit-card"></i>
+                                    <span class="subject">قیمت:</span>
+                                    {% if product.is_free %}
+                                        <span>این محصول رایگان می باشد.</span>
+                                    {% else %}
+                                        <span class="persian_number">{{ product.price }} ت</span>
+                                    {% endif %}
+                                </li>
+                                <li class="price fit-width"><i class="fa fa-info-circle"></i> <span class="subject">نوع شاخه:</span>
+                                    <span>{{ product.category.parent.title }}</span>
+                                </li>
+                                <li class="price fit-width"><i class="fa fa-database"></i> <span class="subject">دسته بندی:</span>
+                                    <span>{{ product.category.title }}</span>
+                                </li>
+                                {% if product.seller_name %}
+                                    <li class="price fit-width"><i class="fa fa-truck"></i> <span class="subject">فروشنده:</span>
+                                        <span>{{ product.seller_name }}</span></li>
+                                {% endif %}
+                            </ul>
+                            <div class="row">
+
+                                {% if not product.is_free %}
+                                    {% if product.link_buy_direct %}
+                                        <div class="col-lg-6 col-md-3 col-sm-6 col-xs-12 pull-left">
+                                            <a href='{{ product.link_buy_direct }}' target="_blank">
+                                                <button class="btn btn-info  fit-width">
+                                                    <span>
+
+                                                    <i class="fa fa-external-link"></i>
+                                                    خرید مستقیم
+                                                        </span>
+                                                </button>
+                                            </a>
+                                        </div>
+                                    {% else %}
+                                        <div class="col-lg-6 col-md-3 col-sm-6 col-xs-12 pull-left">
+                                            <button class="btn {% if not product.product_in_basket %}btn-warning{% endif %} fit-width"
+                                                    {% if not product.product_in_basket %}
+                                                    onclick="addToBasket('{{ product.id }}', this)" {% else %}
+                                                    disabled {% endif %}>
+                                            <span>
+                                                <i class="fa fa-shopping-cart"></i>
+                                                افزودن به سبد خرید
+                                            </span>
+                                            </button>
+                                        </div>
+                                    {% endif %}
+                                {% else %}
+                                    <div class="activity-file-list m-b-50">
+                                        {% for file in product.files %}
+                                            <div class="activity-file">
+                                                <span class="name" title="{{ file.title }}">{{ file.title|slice:"0:25" }} {% if file.title|length > 25 %}...{% endif %}</span>
+                                                <span class="size persian_number">{{ file.size|filesizeformat }}</span>
+                                                {% if file.duration %}
+                                                    <span class="size persian_number"> {{ file.duration }} :زمان </span>
+                                                {% endif %}
+                                                <a class="btn btn-warning" href="{{ file.file|server_public_url }}"
+                                                   download>
+                                                    دانلود
+                                                </a>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section>
+            <div class="container">
+                <div class="section-title style-1 m-b-10">
+                    <h3 class="title">
+                        <span>توضیحات محصول:</span>
+                    </h3>
+                </div>
+                <div class="product-text m-b-60">
+                    <p>
+                        {{ product.description }}
+                    </p>
+                </div>
+            </div>
+        </section>
+        <section>
+            <div class="container">
+                <div>
+
+                    <!-- Nav tabs -->
+                    <ul class="nav nav-tabs" role="tablist">
+                        <li role="presentation" class="active"><a data-target="#product_info"
+                                                                  aria-controls="product_info" role="tab"
+                                                                  data-toggle="tab">اطلاعات محصول</a></li>
+                        {#                        <li role="presentation"><a data-target="#product_comment" aria-controls="product_comment" role="tab" data-toggle="tab">نظرات</a></li>#}
+                    </ul>
+                    <!-- Tab panes -->
+                    <div class="tab-content">
+                        <div role="tabpanel" class="tab-pane active" id="product_info">
+                            <div class="product-info-3">
+                                {% if product.groups %}
+                                    {% for group in product.groups %}
+                                        <div class="row additionalfields-title">
+                                            <div>{{ group.title }}</div>
+                                        </div>
+                                        {% for field_item in group.sample_form_fields %}
+                                            <div class="row">
+                                                <div class="subject">
+                                                    <div>{{ field_item.title }}</div>
+                                                </div>
+                                                <div class="text">
+                                                    {% if field_item.value == "on" %}
+                                                        <i class="fa fa-check" style="color: #409900"
+                                                           aria-hidden="true"></i>
+                                                    {% elif field_item.value == "off" %}
+                                                        <i class="fa fa-times" style="color: #FF004E"
+                                                           aria-hidden="true"></i>
+                                                    {% else %}
+                                                        <div>{{ field_item.value }}</div>
+                                                    {% endif %}
+
+                                                </div>
+                                            </div>
+                                        {% endfor %}
+                                    {% endfor %}
+                                {% else %}
+                                    <span>هیچ مشخصاتی برای این محصول وارد نشده است.</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {#                        <div role="tabpanel" class="tab-pane" id="product_comment">#}
+                        {#                            <div class="comment-list">#}
+                        {#                                <div class="comment-item">#}
+                        {#                                    <div class="number blue">#}
+                        {#                                        <h5 class="title">میانگین کلی امتیاز کاربران</h5>#}
+                        {#                                        <div class="comment-point-list">#}
+                        {#                                            <div>#}
+                        {#                                                <span>معیار 1</span>#}
+                        {#                                                <div>#}
+                        {#                                                    <div>#}
+                        {#                                                        <div style="width:50%;"></div>#}
+                        {#                                                    </div>#}
+                        {#                                                </div>#}
+                        {#                                            </div>#}
+                        {#                                            <div>#}
+                        {#                                                <span>معیار 1</span>#}
+                        {#                                                <div>#}
+                        {#                                                    <div>#}
+                        {#                                                        <div style="width:50%;"></div>#}
+                        {#                                                    </div>#}
+                        {#                                                </div>#}
+                        {#                                            </div>#}
+                        {#                                            <div>#}
+                        {#                                                <span>معیار 1</span>#}
+                        {#                                                <div>#}
+                        {#                                                    <div>#}
+                        {#                                                        <div style="width:50%;"></div>#}
+                        {#                                                    </div>#}
+                        {#                                                </div>#}
+                        {#                                            </div>#}
+                        {#                                            <div>#}
+                        {#                                                <span>معیار 1</span>#}
+                        {#                                                <div>#}
+                        {#                                                    <div>#}
+                        {#                                                        <div style="width:50%;"></div>#}
+                        {#                                                    </div>#}
+                        {#                                                </div>#}
+                        {#                                            </div>#}
+                        {#                                            <div>#}
+                        {#                                                <span>معیار 1</span>#}
+                        {#                                                <div>#}
+                        {#                                                    <div>#}
+                        {#                                                        <div style="width:50%;"></div>#}
+                        {#                                                    </div>#}
+                        {#                                                </div>#}
+                        {#                                            </div>#}
+                        {#                                        </div>#}
+                        {#                                    </div>#}
+                        {#                                    <div class="send">#}
+                        {#                                        <p>شما هم میتوانید نظری ارسال نمایید!</p>#}
+                        {#                                        <p>با ارسال نظر برای کالاهای در حال فروش در سایت، به بهتر شدن کیفیت کالاها کمک کنید</p>#}
+                        {#                                        <button type="button" data-target="#commentModal" data-toggle="modal" class="btn btn-warning">#}
+                        {#                                            ارسال نظر#}
+                        {#                                        </button>#}
+                        {#                                    </div>#}
+                        {#                                </div>#}
+                        {#                                <div class="comment-item">#}
+                        {#                                    <div class="number">#}
+                        {#                                        <div class="comment-point-list">#}
+                        {#                                            <div>#}
+                        {#                                                <span>معیار 1</span>#}
+                        {#                                                <div>#}
+                        {#                                                    <div>#}
+                        {#                                                        <div style="width:50%;"></div>#}
+                        {#                                                    </div>#}
+                        {#                                                </div>#}
+                        {#                                            </div>#}
+                        {#                                            <div>#}
+                        {#                                                <span>معیار 1</span>#}
+                        {#                                                <div>#}
+                        {#                                                    <div>#}
+                        {#                                                        <div style="width:50%;"></div>#}
+                        {#                                                    </div>#}
+                        {#                                                </div>#}
+                        {#                                            </div>#}
+                        {#                                            <div>#}
+                        {#                                                <span>معیار 1</span>#}
+                        {#                                                <div>#}
+                        {#                                                    <div>#}
+                        {#                                                        <div style="width:50%;"></div>#}
+                        {#                                                    </div>#}
+                        {#                                                </div>#}
+                        {#                                            </div>#}
+                        {#                                            <div>#}
+                        {#                                                <span>معیار 1</span>#}
+                        {#                                                <div>#}
+                        {#                                                    <div>#}
+                        {#                                                        <div style="width:50%;"></div>#}
+                        {#                                                    </div>#}
+                        {#                                                </div>#}
+                        {#                                            </div>#}
+                        {#                                            <div>#}
+                        {#                                                <span>معیار 1</span>#}
+                        {#                                                <div>#}
+                        {#                                                    <div>#}
+                        {#                                                        <div style="width:50%;"></div>#}
+                        {#                                                    </div>#}
+                        {#                                                </div>#}
+                        {#                                            </div>#}
+                        {#                                        </div>#}
+                        {#                                    </div>#}
+                        {#                                    <div class="text">#}
+                        {#                                        <div class="top">#}
+                        {#                                            <a><i class="fa fa-warning"></i></a>#}
+                        {#                                            <div class="image" style="background-image: url({% static 'asset/image/b2.png' %}"></div>#}
+                        {#                                            <span class="name">احسان احمدی</span>#}
+                        {#                                        </div>#}
+                        {#                                        <div class="content">#}
+                        {#                                            <p>#}
+                        {#                                                لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ و با استفاده از طراحان گرافیک است. چاپگرها و متون بل وزنامه و مجله در ستون و سطرآنچنان که لازم است و برای شرایط فعلی تکنولوژی مورد نیاز و کاربردهای متنوع با هدف بهبود های کاربردی می باشد.#}
+                        {#                                            </p>#}
+                        {#                                        </div>#}
+                        {#                                    </div>#}
+                        {#                                </div>#}
+                        {#                            </div>#}
+                        {#                        </div>#}
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <div class="modal fade" id="commentModal" tabindex="-1" role="dialog" aria-labelledby="commentModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+
+                    <h4 class="modal-title" id="commentModalLabel">ثبت نظر</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group style-1 fix-label m-b-60">
+                        <label for="">
+                            متن *
+                        </label>
+                        <div class="input">
+                            <textarea rows="4" class="form-control"></textarea>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-ps-3">
+
+                                <label class="m-b-10" for="">معیار 1</label>
+                            </div>
+                            <div class="col-ps-9">
+                                <div class="slider-input" value="0" from="0" to="100" step="5" type="single"
+                                     name="sort3"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-ps-3">
+
+                                <label class="m-b-10" for="">معیار 1</label>
+                            </div>
+                            <div class="col-ps-9">
+                                <div class="slider-input" value="0" from="0" to="100" step="5" type="single"
+                                     name="sort3"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-ps-3">
+
+                                <label class="m-b-10" for="">معیار 1</label>
+                            </div>
+                            <div class="col-ps-9">
+                                <div class="slider-input" value="0" from="0" to="100" step="5" type="single"
+                                     name="sort3"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer no-border">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">انصراف</button>
+                    <button type="button" class="btn btn-warning">ثبت</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--end content-->
+{% endblock %}
+
+{% block js_code %}
+    <!--for this page only-->
+    <script type="text/javascript" src="{% static 'asset/script/plugin/owl.carousel.js' %}"></script>
+    <script type="text/javascript" src="{% static 'asset/script/plugin/range.js' %}"></script>
+
+    <script type="text/javascript">
+
+        function addToBasket(product_id, e) {
+            $.ajax({
+                url: '{% url 'shopping_basket' %}',
+                type: 'POST',
+                data: {
+                    "product_id": product_id,
+                    "csrfmiddlewaretoken": '{{ csrf_token }}'
+                },
+                success: function (data) {
+                    if (data["message"] === "success") {
+                        toastr.success('محصول اضافه شد.');
+                        $(e).removeClass('btn-warning');
+                        $(e).attr('disabled', 'disabled');
+                        $("#basket_count").html(parseInt($("#basket_count").attr('data-val')) + 1)
+                        set_persian();
+
+                    } else {
+                        toastr.error('محصول اضافه نشد.');
+                    }
+                },
+                error: function (data) {
+                    toastr.error('لطفا بعدا سعی کنید.');
+                }
+            })
+        }
+
+        // Initialize the tour
+        tour.init();
+
+        // Start the tour
+        tour.start();
+
+    </script>
+{% endblock %}

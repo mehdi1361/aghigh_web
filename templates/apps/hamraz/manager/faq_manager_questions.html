@@ -1,0 +1,134 @@
+{% extends "apps/base.html" %}
+{% load static %}
+{% block title %}سامانه عقیق|سوالات{% endblock %}
+{% load main_extra %}
+
+{% block logo %}
+    {% if request.user.userbox.gender == 'male' %}
+        <img src="{% static "/asset/image/b5.png" %}" id="banner-image" alt="">
+    {% else %}
+        <img src="{% static "/asset/image_gr/b5.png" %}" id="banner-image" alt="">
+    {% endif %}
+{% endblock logo %}
+
+{% block page_content %}
+    <!--content-->
+    <div id="content" class="body_min_height">
+        {% if "top_expert" in request.user.userbox.user_level %}
+            <a data-toggle="modal" data-target="#faq_question" type="button" id="new_question_btn"
+               class="btn btn-blue btn-circle btn-fix">
+                <i class="fa fa-pencil"></i>
+            </a>
+        {% endif %}
+        <div class="container">
+            <div class="tab-content">
+                <div class="row search-list-row">
+                    <div class="col-md-12 col-xs-12">
+                        {% for question in faq_questions.results %}
+                            {% include "blocks/question_item.html" with item=question %}
+                        {% endfor %}
+
+                        {% include "blocks/pagination.html" with pagination_data=pagination_data %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="faq_question" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                    <h4 class="modal-title">سوالات متداول</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group style-1 fix-label m-b-30">
+                        <label for="">
+                            عنوان سوال *
+                        </label>
+                        <div class="input">
+                            <input id="faq_subject" class="form-control" required value="{{ question.subject }}">
+                        </div>
+                    </div>
+                    <div class="form-group style-1 fix-label m-b-30">
+                        <label for="">
+                            سوال خود را بطور کامل وارد نمایید *
+                        </label>
+                        <div class="input">
+                            <textarea rows="4" id="faq_body" class="form-control" required style="min-height: 150px;">{{ question.body }}</textarea>
+                        </div>
+                    </div>
+                    <div class="form-group style-1 fix-label m-b-30">
+                        <label for="">
+                            پاسخ خود را بطور کامل وارد نمایید *
+                        </label>
+                        <div class="input">
+                            <textarea rows="4" id="faq_answer" class="form-control" required style="min-height: 150px;"></textarea>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="faq_category">حوزه</label>
+                        <select name="faq_category" id="faq_category" class="select_wait">
+                            <option value="">همه حوزه ها</option>
+                            {% for category_item in categories.results %}
+                                <option {% if query_params.category == category_item.id|stringformat:"i" %}selected{% endif %} value="{{ category_item.id }}">{{ category_item.title }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="faq_sub_category">زیر حوزه</label>
+                        <select name="faq_sub_category" id="faq_sub_category" class="select_wait">
+
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer no-border">
+                    <button type="button" class="btn btn-success" onclick="faqInsertQuestion()">ثبت</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--end content-->
+{% endblock %}
+
+{% block js_code %}
+    <!--for this page only-->
+    <script type="text/javascript" src="{% static "asset/script/plugin/bootstrap-select.js" %}"></script>
+    <script type="text/javascript" src="{% static "asset/script/plugin/range.js" %}"></script>
+    <script type="text/javascript" src="{% static "js/question.js" %}"></script>
+    <script type="text/javascript">
+
+        function faqInsertQuestion() {
+            $.ajax({
+                url: '{% url 'faq_manager_question' %}',
+                type: 'POST',
+                data: {
+                    "action": "page_top_expert",
+                    "body": $("#faq_body").val(),
+                    "sub_category": $("#faq_sub_category").val(),
+                    "subject": $("#faq_subject").val(),
+                    "answer": $("#faq_answer").val(),
+                    "csrfmiddlewaretoken": '{{ csrf_token }}'
+                },
+                success: function (data) {
+                    if (data["message"] === 'success') {
+                        toastr.success('اضافه شد.');
+                        $('#faq_question').modal('hide');
+                        $('#faq_question_btn').remove()
+
+                    } else {
+                        toastr.error('لطفا بعدا سعی کنید.');
+                    }
+                },
+                error: function (data) {
+                    toastr.error('لطفا بعدا سعی کنید.');
+                }
+            })
+        }
+
+    </script>
+
+{% endblock %}

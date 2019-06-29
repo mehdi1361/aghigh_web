@@ -1,0 +1,77 @@
+{% extends "apps/base.html" %}
+{% load static %}
+{% load main_extra %}
+{% load date_to_persian %}
+{% block title %}سامانه عقیق| گزارشات ارسالی{% endblock %}
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static "asset/style/star-rating.min.css" %}">
+    <link rel="stylesheet" href="{% static "asset/style/theme.min.css" %}">
+
+{% endblock %}
+
+{% block page_content %}
+    <!--content-->
+
+    <div id="content" class="body_min_height">
+        <div class="container">
+            <div class="row">
+                <table class="table table-striped">
+                    <thead class="thead-dark">
+                    <tr>
+                        <th scope="col">ردیف</th>
+                        <th scope="col">عنوان دسته</th>
+                        <th scope="col">توضیحات</th>
+                        <th scope="col">دانش آموز</th>
+                        <th scope="col">مدرسه</th>
+                        <th scope="col">استان</th>
+                        <th scope="col">شهرستان</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for report in reports %}
+                        <tr>
+                            <td class="persian_number">{{ forloop.counter }}</td>
+                            <td>
+                                {{ report.category.title }}
+                            </td>
+                            <td>
+                                <span class="title">
+                                    {{ report.content|truncatechars:35 }}
+                                </span>
+                                {% if report.content|length > 35 %}
+                                    <a class="btn btn-primary btn-sm" type="button" data-toggle="collapse" data-target="#collapseExample{{ forloop.counter }}" aria-expanded="false" aria-controls="collapseExample{{ forloop.counter }}">
+                                        بیشتر
+                                    </a>
+                                {% endif %}
+                            </td>
+                            <td class="persian_number">
+                                {{ report.sender.full_name }}
+                            </td>
+                            <td>
+                                {{ report.sender.school }}
+                            </td>
+                            <td>
+                                {{ report.sender.province }}
+                            </td>
+                            <td>
+                                {{ report.sender.county.title }}
+                            </td>
+                        </tr>
+                        <tr class="collapse" id="collapseExample{{ forloop.counter }}">
+                            <td colspan="99">
+                                {{ report.content }}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+    </div>
+    <!--end content-->
+
+{% endblock %}
+
+{% block js_code %}
+{% endblock %}

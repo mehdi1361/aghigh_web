@@ -1,0 +1,31 @@
+{% load date_to_persian %}
+{% load main_extra %}
+
+<a href="{% url "hamraz_conversation_single" conversation_id=item.id|to_hash_id  %}" class="notification-item direct_link" >
+    <div>
+        <div class="top">
+            <h4 class="title">{{ item.subject }}</h4>
+            <time class="persian_number">{{ item.create_datetime | date_to_persian }}</time>
+        </div>
+        <div class="detail">
+            {% if item.code_state == "11" %}
+            <span class="text-danger">در انتظار بررسی</span>
+            {% elif item.code_state == "32" %}
+            <span class="text-danger">در حال پاسخگویی</span>
+            {% elif item.code_state == "52" %}
+            <span class="text-success">به جواب رسیدم</span>
+            {% elif item.code_state == "42" %}
+            <span class="text-success">پاسخ جدید</span>
+            {% elif item.code_state == "23" %}
+            <span class="text-danger">در حال بررسی بیشتر</span>
+            {% elif item.code_state == "33" %}
+            <span class="text-danger">در حال پاسخگویی توسط مشاور ارشد</span>
+            {% endif %}
+            <span>حوزه: {{ item.main_category.title }}</span>
+            <span>زیر حوزه: {{ item.category.title }}</span>
+        </div>
+        <p class="text">
+            {{ item.question }}
+        </p>
+    </div>
+</a>

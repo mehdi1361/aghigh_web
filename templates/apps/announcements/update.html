@@ -1,0 +1,447 @@
+{% extends "apps/base.html" %}
+{% load static %}
+{% load i18n %}
+{% load rand_bar_color %}
+{% load main_extra %}
+{% load date_to_persian %}
+{% block title %}سامانه عقیق|ویرایش اطلاعیه{% endblock %}
+{% block logo %}
+    {% if request.user.userbox.gender == 'male' %}
+        <img src="{% static "/asset/image/b3.png" %}" id="banner-image" alt="">
+    {% else %}
+        <img src="{% static "/asset/image_gr/b3.png" %}" id="banner-image" alt="">
+    {% endif %}
+{% endblock logo %}
+
+{% block page_content %}
+
+    <!--content-->
+    <div id="content" class="body_min_height">
+        <section>
+            <div class="container">
+                {% if response == 200 %}
+                    <div class="alert alert-success">اطلاعیه با موفقیت ویرایش شد.</div>
+                {% elif response %}
+                    {% for error in errors %}
+                        <div class="alert alert-danger">
+                            {% if error == "title" %}عنوان اطلاعیه را وارد کنید.
+                            {% elif error == "description" %}توضیحات مربوط به اطلاعیه را وارد کنید.
+                            {% elif error == "receivers" %}دریافت کنندگان اطلاعیه را مشخص کنید.
+                            {% elif error == "temp_has_date" %}تاریخ را وارد کنید.
+                            {% elif error == "server_error" %}خطایی در سامانه رخ داده لطفا بعدا تلاش کنید.
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+                <div class="search-detail">
+                    <form action="{% url 'update_announcement' announcement_id=update_id|to_hash_id %}" method="post"
+                          enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <!--top field-->
+                        <input name="receivers" type="hidden" value="[]">
+                        <input name="deleted_receivers" type="hidden" value="[]">
+                        <input name="deleted_image" type="hidden" value="">
+                        <input name="deleted_files" type="hidden" value="[]">
+                        <div class="row m-b-15">
+                            <div class="col-sm-3 col-xs-12">
+                                <div class="form-group style-1">
+                                    <label for="">عنوان *</label>
+                                    <div class="input">
+                                        <input required value="{{ announcement.title }}" type="text" id="title"
+                                               name="title"
+                                               class="form-control"
+                                               oninvalid="setCustomValidity('عنوان اجباری است')"
+                                               oninput="setCustomValidity('')">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!--end top field-->
+
+                        <!--text field-->
+                        <div class="form-group style-1 fix-label m-b-40">
+                            <label for="">
+                                توضیحات *
+                            </label>
+                            <div class="input">
+                                <textarea required oninvalid="setCustomValidity('توضیحات اجباری است')"
+                                          oninput="setCustomValidity('')" rows="4" class="form-control"
+                                          name="description">{{ announcement.description }}</textarea>
+                            </div>
+                        </div>
+                        <!--end text field-->
+
+                        <!--check field-->
+                        <div class="row m-b-15">
+                            <div class="col-sm-3 col-xs-12">
+                                <div class="form-group form-check">
+                                    <label class="form-check-label" for="calender_check">در تقویم قرار گیرد؟</label>
+                                    <input type="checkbox" class="form-check-input"
+                                           id="calender_check" name="has_date"
+                                            {% if announcement.has_date %}
+                                           checked
+                                            {% endif %}>
+                                </div>
+                            </div>
+                        </div>
+                        <!--check field-->
+
+                        <!--date field-->
+                        <div class="row m-b-15">
+                            <div class="col-sm-3 col-xs-12">
+                                <div class="form-group style-1 form-picker">
+                                    <label for="">تاریخ انتشار</label>
+                                    <div class="input">
+                                        <input type="text"
+                                               readonly data-time="true"
+                                                {% if announcement.release_time %}
+                                               value="{{ announcement.release_time |date_to_datepicker }}"
+                                                {% endif %}
+                                               class="form-control input-picker datepicker_ps" name="release_time">
+                                    </div>
+                                    <button type="button" class="btn-picker">
+                                        <i class="fa fa-calendar"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <!--date field-->
+
+                        <!--select option field-->
+                        <div class="section-title style-1">
+                            <h3 class="title">
+                                <span>دریافت کنندگان:</span>
+                            </h3>
+                        </div>
+                        <div class="row m-b-30">
+                            <div class="col-sm-3 col-xs-12">
+                                <div class="form-group">
+                                    <label>گیرنده :</label>
+                                    <select name="user_type" class="select_wait">
+                                        {% for level in sub_levels %}
+                                            <option value="{{ level.name }}">{{ level.display_name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            {% if request|has_perm_both_gender %}
+                                <div class="col-sm-3 col-xs-12">
+                                    <div class="form-group">
+                                        <label>جنسیت :</label>
+                                        <select name="gender_type" class="select_wait" id="gender_type">
+                                            <option value="female">زن</option>
+                                            <option value="male">مرد</option>
+                                            <option selected value="both">هردو</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="row">
+                            {% if top_level == 'country' %}
+                                <div class="col-sm-3 col-xs-12">
+                                    <label for="county">استان ها :</label>
+                                    <div class="form-group">
+                                        <select name="province" id="province_select" class="select_wait">
+                                            <option value="all">همه استان ها</option>
+
+                                            {% for province_db in provinces %}
+                                                <option {% if province_db.id == province %} selected {% endif %}
+                                                                                            value="{{ province_db.id }}">{{ province_db.title }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                            {% endif %}
+                            {% if top_level == "province"  or top_level == "country" %}
+                                <div class="col-sm-3 col-xs-12">
+                                    <label for="county">شهرها :</label>
+                                    <div class="form-group">
+                                        <select name="county" id="county_select" class="select_wait">
+                                            <option value="all">همه شهرها</option>
+
+                                            {% for county_db in counties %}
+                                                <option {% if county_db.id == county %} selected {% endif %}
+                                                                                        value="{{ county_db.id }}">{{ county_db.title }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                            {% endif %}
+                            <div class="col-sm-3 col-xs-12">
+                                <div class="form-group">
+                                    <label for="camp">قرارگاه ها :</label>
+                                    <select name="camp" id="camp_select" class="select_wait">
+                                        <option value="all">همه قرارگاه ها</option>
+                                        {% for camp_db in camps %}
+                                            <option {% if camp_db.id == camp %} selected {% endif %}
+                                                                                value="{{ camp_db.id }}">{{ camp_db.title }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row m-t-15 m-b-15 text-center">
+                            <p>
+                                <button onclick="add_announcement_receiver('{{ top_level }}', '{{ request|has_perm_both_gender }}')"
+                                        type="button" class="btn btn-primary">
+                                    افزودن دریافت کننده
+                                </button>
+                            </p>
+                        </div>
+                        <!--select option field-->
+
+                        <!--list announcement receiver-->
+                        <div class="row m-b-15">
+                            <table class="table table-striped">
+                                <thead class="thead-dark" id="header_table">
+                                <tr>
+                                    <th scope="col">گیرنده</th>
+                                    {% if top_level == 'country' %}
+                                        <th scope="col">استان</th>
+                                    {% endif %}
+                                    {% if top_level == "province"  or top_level == "country" %}
+                                        <th scope="col">شهرستان</th>
+                                    {% endif %}
+                                    {% if request|has_perm_both_gender %}
+                                        <th scope="col">جنسیت</th>
+                                    {% endif %}
+                                    <th scope="col">قرارگاهها</th>
+                                    <th scope="col">مدیریت</th>
+                                </tr>
+                                </thead>
+                                <tbody id="announcement_receiver_list">
+                                {% for receiver in announcement_receivers %}
+                                    <tr>
+                                        <td>{{ receiver.display_user_type }}</td>
+                                        {% if top_level == 'country' %}
+                                            <td>
+                                                {% if receiver.province %}
+                                                    {{ receiver.province.title }}
+                                                {% else %}
+                                                    همه استان ها
+                                                {% endif %}
+                                            </td>
+                                        {% endif %}
+                                        {% if top_level == "province"  or top_level == "country" %}
+                                            <td>
+                                                {% if receiver.county %}
+                                                    {{ receiver.county.title }}
+                                                {% else %}
+                                                    همه شهرستان ها
+                                                {% endif %}
+                                            </td>
+                                        {% endif %}
+                                        {% if request|has_perm_both_gender %}
+                                            <td>{{ receiver.display_gender }}</td>
+                                        {% endif %}
+                                        <td scope="col">
+                                            {% if receiver.camp %}
+                                                {{ receiver.camp.title }}
+                                            {% else %}
+                                                همه قرارگاه ها
+                                            {% endif %}
+                                        </td>
+                                        <td onclick="remove_previous_receivers(this, '{{ receiver.id }}')">
+                                            <button type="button" class="btn btn-danger">حذف</button>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                            <!--list announcement receiver-->
+
+                            <!--image-->
+                            <div class="section-title style-1">
+                                <h3 class="title">
+                                    <span>عکس اطلاعیه (اختیاری):</span>
+                                </h3>
+                            </div>
+                            <div class="multi-file-content" data-name="image" data-type="single-image">
+                                <div class="activity-image-list">
+                                    <div class="row">
+                                        {% if announcement.image_info %}
+                                            <div class="col-md-4 col-ps-6 col-xs-12" id="announcement_image">
+                                                <div class="activity-image">
+                                                    <a class="image"
+                                                       style="background-image: url({{ announcement.image_info.url|server_public_url }})"></a>
+                                                    <div class="content">
+                                                        <h4 class="title">{{ announcement.image_info.title }}</h4>
+                                                        <span class="size persian_number">{{ announcement.image_info.size|filesizeformat }}</span>
+                                                        <button onclick="delete_announcement_image()"
+                                                                type="button"
+                                                                class="btn btn-warning btn-sm multi-file-remove">حذف
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <p class="text-center m-b-40">
+                                    <button type="button" class="btn btn-primary multi-file-choose">
+                                        افزودن تصویر
+                                    </button>
+                                </p>
+                            </div>
+                            <!--end image-->
+
+                            <!--file-->
+                            <div class="section-title style-1">
+                                <h3 class="title">
+                                    <span>فایل های اطلاعیه (اختیاری):</span>
+                                </h3>
+                            </div>
+                            <div class="activity-file-list m-b-30">
+                                {% for file in announcement.files %}
+                                    <div id="file-{{ file.id }}" class="activity-file">
+                                        <span class="name">{{ file.title }}</span>
+                                        <span class="size persian_number">{{ file.size|filesizeformat }}</span>
+                                        {% if file.duration %}
+                                            <span class="size persian_number"> {{ file.duration }} :زمان فایل </span>
+                                        {% endif %}
+                                        <button onclick="delete_announcement_files('{{ file.id }}')"
+                                                class="btn btn-warning">حذف
+                                        </button>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                            <div class="multi-file-content" data-name="files" data-type="activity-file">
+                                <div class="activity-file-list m-b-30"></div>
+                                <p class="text-center m-b-40">
+                                    <button type="button" class="btn btn-primary multi-file-choose">
+                                        افزودن فایل
+                                    </button>
+                                </p>
+                                <script type="text/template" id="">
+                                    <div class="activity-file" data-number="">
+                                        <input type="file" name="files[]">
+                                        <span class="name">عنوان فایل در اینجا</span>
+                                        <span class="size persian_number">260 kb</span>
+                                        <button type="button" class="btn btn-warning">
+                                            حذف
+                                        </button>
+                                    </div>
+                                </script>
+                            </div>
+                            <!--end file-->
+                            <div class="col-sm-12 col-xs-12 m-t-5">
+                                <button class="btn btn-lg btn-success" type="submit">ویرایش</button>
+                                <a href="{% url 'posted_announcement' %}" class="btn btn-lg btn-warning" type="submit">بستن</a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </div>
+    <!--end content-->
+{% endblock %}
+
+{% block js_plugins %}
+    <!--for this page only-->
+    <script type="text/javascript" src="{% static "asset/script/plugin/bootstrap-select.js" %}"></script>
+    <script type="text/javascript" src="{% static "asset/script/plugin/range.js" %}"></script>
+    <script type="text/javascript" src="{% static "asset/script/plugin/picker.js" %}"></script>
+    {#    <script type="text/javascript" src="{% url 'javascript-catalog' %}"></script>#}
+    <script type="text/javascript" src="{% static "js/announcement.js" %}"></script>
+
+    <script>
+        {#        toastr.error(gettext("this receiver previous selected"));#}
+        var deleted_receivers = [];
+        var deleted_files = [];
+        $("#county_select").on('change', function () {
+            $.ajax({
+                url: '{% url "main_camps" "123456789" %}'.replace("123456789", $(this).val()),
+                type: "GET"
+            }).done(function (data) {
+                var camps = data["camps"];
+                var i;
+                var camp_item = {};
+                var data_len = camps.length;
+                $("#camp_select").find('option').remove();
+
+                var camp_select = document.getElementById("camp_select");
+                var option = document.createElement("option");
+                option.text = "همه قرارگاه ها";
+                option.value = "all";
+                camp_select.add(option);
+
+                for (i = 0; i < data_len; i++) {
+                    camp_item = camps[i];
+                    option = document.createElement("option");
+                    option.text = camp_item["title"];
+                    option.value = camp_item["id"];
+                    camp_select.add(option);
+                }
+                $("#camp_select").selectpicker("refresh");
+            });
+        });
+        $("#province_select").on('change', function () {
+            $.ajax({
+                url: '{% url "main_cities" "123456789" %}'.replace("123456789", $(this).val()),
+                type: "GET"
+            }).done(function (data) {
+                var camps = data["cities"];
+                var i;
+                var camp_item = {};
+                var data_len = camps.length;
+                var county_select = document.getElementById("county_select");
+
+                $("#county_select").find('option').remove();
+
+                var option = document.createElement("option");
+                option.text = "همه شهرها";
+                option.value = "all";
+                county_select.add(option);
+
+                for (i = 0; i < data_len; i++) {
+                    camp_item = camps[i];
+                    option = document.createElement("option");
+                    option.text = camp_item["title"];
+                    option.value = camp_item["id"];
+                    county_select.add(option);
+                }
+                $("#county_select").selectpicker("refresh");
+            });
+        });
+        {% for receiver in announcement_receivers %}
+            receivers.push({
+                "user_type": '{{ receiver.user_type }}',
+                "province": {% if reciver.province %}'{{ receiver.province }}'+
+                    {% elif receiver.province == None%}"all"{% else %}""{% endif %},
+                "county": {% if reciver.county %}'{{ receiver.county }}'+
+                    {% elif receiver.county == None%}"all"{% else %}""{% endif %},
+                "camp": {% if reciver.camp %}'{{ receiver.camp }}'+
+                    {% elif receiver.camp == None%}"all"{% else %}""{% endif %},
+                "gender": '{{ receiver.gender }}',
+                "dict_key": '{{ receiver.id }}'
+            });
+        {% endfor %}
+        function remove_previous_receivers(remove_button, receiver_id) {
+            deleted_receivers.push(receiver_id);
+            $("input[name=deleted_receivers]").val(JSON.stringify(deleted_receivers));
+            remove_button.parentElement.remove();
+            for (var j = 0; j < receivers.length; j++) {
+                var receiver2 = receivers[j];
+                if (receiver2['dict_key'] === receiver_id) {
+                    receivers.splice(j, 1)
+                }
+            }
+            if ($("#announcement_receiver_list > tr")['length'] === 0) {
+                $("#header_table").hide();
+            }
+        }
+
+        function delete_announcement_image() {
+            $("input[name=deleted_image]").val("yes");
+            $("#announcement_image").remove()
+        }
+
+        function delete_announcement_files(file_id) {
+            deleted_files.push(file_id);
+            $("input[name=deleted_files]").val(JSON.stringify(deleted_files));
+            $("#file-" + file_id).remove()
+        }
+    </script>
+{% endblock %}

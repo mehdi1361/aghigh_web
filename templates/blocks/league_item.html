@@ -1,0 +1,23 @@
+{% load static %}
+{% load main_extra %}
+
+<div class="league-item">
+    <a href="{% url "league_single_school" school_id=school.id|to_hash_id %}">
+        <div class="content">
+            <div class="top">
+                <h4 class="title">
+                    <span>{{ forloop.counter }}) {{ school.name }}</span>
+                </h4>
+                <span class="point">
+                    <i class="fa fa-star"></i>
+                    <span class="persian_number">{{ school.point }}</span>
+                </span>
+            </div>
+            <ul class="info">
+                <li style="font-weight: bold; color: #db4437"><i class="fa fa-map-marker"></i><span>{{ school.province.title }} - {{ school.county.title }}</span></li>
+                <li style="font-weight: bold; color: #009688"><i class="fa fa-check"></i>تعداد فعالیت های ثبت شده: <span>{{ school.count_in_queue_acc }}</span></li>
+                <li style="font-weight: bold; color: #e91e63"><i class="fa fa-star-o"></i>رتبه مدرسه: <span>{{ school.rank }}</span></li>
+            </ul>
+        </div>
+    </a>
+</div>

@@ -1,0 +1,33 @@
+{% load static %}
+{% load main_extra %}
+
+<div class="comment-item">
+    <div class="number">
+        <div class="comment-point-list">
+            {% for param_item in comment.params %}
+            <div>
+                <span>{{ param_item.param.title }}</span>
+                <div>
+                    <div>
+                        <div style="width: {% widthratio param_item.value 5 100 %}%"
+                             class="comment_{{ comment.id }}_param_{{ param_item.param.id }}"
+                             value="{{param_item.value}}"></div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="text">
+        <div class="top">
+            {% if comment_item.sender.id == request.user.userbox.api_user_id %}
+                    <a onclick="start_edit_comment({{ comment.id }})"
+                        data-target="#commentModal" data-toggle="modal"><i class="fa fa-edit m-r-20"></i></a>
+            {% endif %}
+            <a href="{% url "league_single_school" school_id=comment_item.sender.school.id|to_hash_id %}" class="name">{{ comment_item.sender.first_name }} {{ comment_item.sender.last_name }}</a>
+        </div>
+        <div class="content">
+            <p id="comment_title{{ comment.id }}">{{ comment.comment }}</p>
+        </div>
+    </div>
+</div>

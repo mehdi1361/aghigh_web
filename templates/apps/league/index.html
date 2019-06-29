@@ -1,0 +1,95 @@
+{% extends "apps/base.html" %}
+{% load static %}
+{% block title %}سامانه عقیق|لیگ{% endblock %}
+
+{% block logo %}
+    <img src="{% static "/asset/image/b6.png" %}" id="banner-image" alt="">
+{% endblock logo %}
+
+{% block page_content %}
+
+    <!--content-->
+    <div id="content" class="body_min_height">
+        {% if request|has_perm:"activity_submit" %}
+            <a href="{% url "activity_submit" %}" type="button" class="btn btn-blue btn-circle btn-fix">
+                <i class="fa fa-plus"></i>
+            </a>
+        {% endif %}
+        <section>
+            <div class="container">
+                <div class="row search-list-row">
+                    <div class="col-md-3 col-xs-12 pull-left m-b-40">
+                        <h4 class="aside-title style-1">فیلتر</h4>
+                        <form action="" class="search-form">
+                            <div class="form-group">
+                                <label for="point">بر اساس امتیاز مدرسه</label>
+                                <div>
+                                    <div class="slider-input" value="0" from="1" to="5" step="1" name="point"></div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="state">بر اساس استان</label>
+                                <select name="province" id="province" class="select_wait">
+                                    <option value="">همه استان ها</option>
+                                    {% for province_item in provinces %}
+                                        <option {% if query_params.province == province_item.id|stringformat:"i" %}selected{% endif %}
+                                                value="{{ province_item.id }}">{{ province_item.title }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="city">بر اساس شهرستان</label>
+                                <select name="county" id="county" class="select_wait"></select>
+                            </div>
+                            <div class="form-group">
+                                <label class="check-ps big fit-width">
+                                    <input type="checkbox"
+                                           {% if query_params.my_profile == "on" %}checked{% endif %}
+                                           name="my_profile">
+                                    <span></span>
+                                    <span>پروفایل قابل مشاهده برای من</span>
+                                </label>
+                            </div>
+                            <div class="form-group">
+                                <label class="check-ps fit-width big m-b-10">
+                                    <input type="radio" name="order"
+                                           {% if query_params.order == "1" %}checked{% endif %}
+                                           value="1">
+                                    <span></span>
+                                    <span>چینش صعودی</span>
+                                </label>
+                                <label class="check-ps fit-width big">
+                                    <input type="radio" name="order"
+                                           {% if query_params.order == "-1" %}checked{% endif %}
+                                           value="-1">
+                                    <span></span>
+                                    <span>چینش نزولی</span>
+                                </label>
+                            </div>
+                            <div class="form-button">
+                                <button type="submit" class="btn btn-warning">اعمال</button>
+                                <button type="reset" class="btn btn-primary">حذف</button>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="col-md-9 col-xs-12">
+
+                        <div class="league-list">
+                            {% for school_item in schools %}
+                                {% include "blocks/league_item.html" with school=school_item %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    <!--end content-->
+{% endblock %}
+
+{% block js_code %}
+    <!--for this page only-->
+    <script type="text/javascript" src="{% static "asset/script/plugin/bootstrap-select.js" %}"></script>
+    <script type="text/javascript" src="{% static "asset/script/plugin/range.js" %}"></script>
+
+{% endblock %}

@@ -1,0 +1,101 @@
+{% extends "apps/base.html" %}
+{% load static %}
+{% block page_header %}{% endblock %}
+{% block title %}سامانه عقیق | ورود{% endblock %}
+{% load main_extra %}
+{% block page_content %}
+    <div class="login-content body_min_height" style="display: flex;">
+        <div>
+            <div class="content">
+                <div class="slide-min style-3 m-b-55" style="text-align: center">
+                    <img src="{% static 'asset/image/rsz_institute_logo.png' %}" height="350">
+                </div>
+                {% if error %}
+                    <div class="alert alert-danger text-center">
+                        <p>کدملی یا شماره تلفن وارد شده در سامانه شهید باقری</p>
+                        <p>موجود نمی باشد.</p>
+                    </div>
+                {% endif %}
+                <form action="{% url 'access_login' %}" class="white-content" method="post">
+                    {% csrf_token %}
+                    <div class="section-title style-2 text-center">
+                        <h3 class="title">
+                            فرم ورود به سامانه عقیق
+                        </h3>
+                    </div>
+                    <h5 class="title-2">
+                        لطفا شماره همراه را بدون صفر های ابتدایی وارد کنید.
+                        <br>
+                        <br>
+                        لطفا صفحه کلید خود را به زبان انگلیسی تغییر دهید.
+                    </h5>
+                    <div class="form-group style-1 gray">
+                        <label for="">کد ملی *</label>
+                        <div class="input">
+                            <input type="text" autofocus class="form-control" maxlength="10" name="username" autocomplete="off"
+                                   required oninvalid="setCustomValidity('کد ملی اجباری است')"
+                                   oninput="setCustomValidity('')">
+                        </div>
+                    </div>
+                    <div class="form-group style-1 gray m-b-20">
+                        <label for="">شماره تلفن همراه *</label>
+                        <div class="input">
+                            <input type="text" class="form-control" maxlength="11" name="phone_number"
+                                   autocomplete="off" required
+                                   oninvalid="setCustomValidity('شماره تلفن همراه اجباری است')"
+                                   oninput="setCustomValidity('')">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-warning fit-width">
+                        ارسال کد تایید
+                    </button>
+                </form>
+                <div class="row text-center  m-t-15 m-b-15" style="color: #FFFFFF; font-weight: bolder">
+                    دانلود اپلیکیشن
+                </div>
+                <div class="row">
+                    <div class="col-sm-4">
+                        <a class="btn btn-warning btn-block bg-color-2 m-b-10" href="{{ ""|get_app_link_student }}" download>
+                            <i class="fa fa-android " style="font-size: 25px;vertical-align: middle;"></i>
+                            دانش آموز
+                        </a>
+                    </div>
+                    <div class="col-sm-4">
+                        <a class="btn btn-warning btn-block bg-color-1 m-b-10" href="{{ ""|get_app_link_teacher }}" download>
+                            <i class="fa fa-android" style="font-size: 25px;vertical-align: middle;"></i>
+                            مربی
+                        </a>
+                    </div>
+                    <div class="col-sm-4">
+                        <a class="btn btn-warning btn-block bg-color-5" href="{{ ""|get_app_link_hamraz }}" download>
+                            <i class="fa fa-android" style="font-size: 25px;vertical-align: middle;"></i>
+                            مربی همراز
+                        </a>
+                    </div>
+                </div>
+                <div class="row text-center">
+                    <a href="http://www.mehrparsict.com/" style="color: #fff; font-size: 12px">
+                        طراحی و توسعه توسط شرکت مهندسی توسعه فناوری اطلاعات و ارتباطات مهرپارس
+                    </a>
+                </div>
+                {#                <div class="row text-center">#}
+                {#                    <a href="http://www.mehrparsict.com/" style="color: #fff;">#}
+                {#                        <img src="{% static 'asset/image/logo-head.png' %}" style="height: 45px; width: 40px">#}
+                {#                    </a>#}
+                {#                </div>#}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block page_footer %}{% endblock %}
+{% block base_js_codes %}
+    <script type="text/javascript" src="{% static "asset/script/script.js" %}"></script>
+    <script type="text/javascript" src="{% static "asset/script/plugin/bootstrap.js" %}"></script>
+{% endblock %}
+
+
+{% block js_code %}
+    <!--for this page only-->
+    <script type="text/javascript" src="{% static "asset/script/plugin/owl.carousel.js" %}"></script>
+{% endblock %}

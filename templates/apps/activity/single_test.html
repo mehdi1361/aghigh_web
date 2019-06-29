@@ -1,0 +1,380 @@
+{% extends "apps/base.html" %}
+{% load static %}
+{% load main_extra %}
+{% load date_to_persian %}
+{% block title %}سامانه عقیق|نمایش فعالیت{% endblock %}
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static "asset/style/star-rating.min.css" %}">
+    <link rel="stylesheet" href="{% static "asset/style/theme.min.css" %}">
+{% endblock %}
+{% block logo %}
+    {% if request.user.userbox.gender == 'male' %}
+        <img src="{% static "/asset/image/b1.png" %}" id="banner-image" alt="">
+    {% else %}
+        <img src="{% static "/asset/image_gr/b1.png" %}" id="banner-image" alt="">
+    {% endif %}
+{% endblock logo %}
+{% block page_content %}
+    <!--content-->
+
+    <div id="content" class="body_min_height">
+        <section>
+            <div class="container">
+                <div class="row row-min m-b-45">
+                    <div class="col-lg-6 m-b-20">
+                        <!--slide-->
+                        <div class="slide-min slide-2">
+                            <div class="owl-carousel single-activity-slider">
+                                <div class="item">
+                                    <img src="{% static "/asset/image/activity_1.jpg" %}" alt="" height="400">
+                                </div>
+                                <div class="item">
+                                    <img src="{% static "/asset/image/activity_2.jpg" %}" alt="" height="400">
+                                </div>
+                            </div>
+                        </div>
+                        <!--end slide-->
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="product-detail">
+                            <h3 class="title">این فعالیت به عنوان تست می باشد.
+                            </h3>
+                            <ul class="product-info-1">
+                                <li id="stars" class="single-rating ea-pos-rel">
+                                    <span class="persian_number"
+                                          id="activity_rate_average_span">4</span>:
+                                    <input id="activity_rate_average" class="rating-view" type="text"
+                                           value="4" title="">
+                                    <a href="#" class="ea-pos-cover"
+                                       data-target="#ratingModal"
+                                       data-toggle="modal"
+                                    >
+                                    </a>
+                                </li>
+
+                                <li id="rate_users" data-toggle="tooltip" class="ea-cursor-p"
+                                    data-placement="bottom" title="نفرات ستاره دهنده">
+                                    <i class="fa fa-user"></i>
+                                    <span class="persian_number"
+                                          id="activity_rate_count">100</span>
+                                </li>
+
+                                <li id="view_users" data-toggle="tooltip" data-placement="bottom" title="تعداد بازدید فعالیت">
+                                    <i class="fa fa-eye"></i>
+                                    <span class="persian_number">500</span>
+                                </li>
+
+                                <li id="point" data-toggle="tooltip" data-placement="bottom" title="امتیاز ارزیابی در بخش نظرات">
+                                    <i class="fa fa-trophy"></i>
+                                    <span class="persian_number">150</span>
+                                </li>
+
+                                <li class="ea-cursor-p">
+                                    <i data-toggle="tooltip" class="fa fa-warning" data-placement="bottom" title="گزارش مشکل"></i>
+                                </li>
+
+                            </ul>
+                            <ul class="product-info-2 m-b-40">
+                                <li>
+                                    <i class="fa fa-calendar"></i> <span class="subject">تاریخ برگزاری:</span>
+                                    <span> یک شنبه, ۱ مهر ۱۳۹۷, ۰۸:۰۰ </span></li>
+                                <li>
+                                    <i class="fa fa-map-marker"></i><span class="subject">مکان:</span>
+                                    <span>کشور ایران</span>
+                                </li>
+                                <li>
+                                    <i class="fa fa-bank"></i> <span class="subject">مدرسه:</span> <a><span>ایران</span></a>
+                                </li>
+                                <li>
+                                    <i class="fa fa-database"></i> <span class="subject">دسته بندی:</span>
+                                    <a><span>فعالیت های برتر</span></a>
+                                </li>
+                                <li>
+                                    <i class="fa fa-globe"></i> <span class="subject"></span>
+                                    <a><span>استان ایران</span></a>
+                                    <span>-</span>
+                                    <a><span>شهرستان ایران</span></a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section>
+            <div class="container">
+                <div class="section-title style-1 m-b-10">
+                    <h3 class="title">
+                        <span>توضیحات فعالیت:</span>
+                    </h3>
+                </div>
+                <div class="product-text m-b-60">
+                    <p>لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ و با استفاده از طراحان گرافیک است. چاپگرها و متون بلکه روزنامه و مجله در ستون و سطرآنچنان که لازم است و برای شرایط فعلی تکنولوژی مورد نیاز و کاربردهای متنوع با هدف بهبود ابزارهای کاربردی می باشد. کتابهای زیادی در شصت و سه درصد گذشته، حال و آینده شناخت فراوان جامعه و متخصصان را می طلبد تا با نرم افزارها شناخت بیشتری را برای طراحان رایانه ای علی الخصوص طراحان خلاقی و فرهنگ پیشرو در زبان فارسی ایجاد کرد. در این صورت می توان امید داشت که تمام و دشواری موجود در ارائه راهکارها و شرایط سخت تایپ به پایان رسد وزمان مورد نیاز شامل حروفچینی دستاوردهای اصلی و جوابگوی سوالات پیوسته اهل دنیای موجود طراحی اساسا مورد استفاده قرار گیرد.</p>
+                </div>
+            </div>
+        </section>
+        {% if activity.files %}
+            <section>
+
+                <div class="container">
+
+                    <div class="section-title style-1 m-b-10">
+                        <h3 class="title">
+                            <span>فایل های فعالیت:</span>
+                        </h3>
+                    </div>
+                    <div class="activity-file-list m-b-50">
+                        {% for file_item in activity.files %}
+                            <div class="activity-file">
+                                <span class="name">{{ file_item.title }}</span>
+                                <span class="size persian_number">{{ file_item.size|filesizeformat }}</span>
+                                <a class="btn btn-warning" href="{{ file_item.file|server_public_url }}" download>
+                                    دانلود
+                                </a>
+                                {% if file_item.file|check_extension %}
+                                    <button class="btn btn-primary" data-play="{{ file_item.file|server_public_url }}">
+                                        پخش
+                                    </button>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+
+                    </div>
+                </div>
+
+            </section>
+        {% endif %}
+        <section>
+            <div class="container">
+                <div>
+
+                    <!-- Nav tabs -->
+                    <ul class="nav nav-tabs" role="tablist">
+                        <li role="presentation" class="active"><a data-target="#product_info"
+                                                                  aria-controls="product_info" role="tab"
+                                                                  data-toggle="tab">اطلاعات فعالیت</a></li>
+                        <li id="comments" role="presentation"><a data-target="#product_comment" aria-controls="product_comment"
+                                                                 role="tab" data-toggle="tab">نظرات</a></li>
+                    </ul>
+
+                    <!-- Tab panes -->
+                    <div class="tab-content">
+                        <div role="tabpanel" class="tab-pane active" id="product_info">
+                            <div class="product-info-3">
+
+                                    <div class="row additionalfields-title">
+                                        <div>مصوبات</div>
+                                    </div>
+
+                                        <div class="row">
+                                            <div class="subject">
+                                                <div>تعداد مصوبات</div>
+                                            </div>
+                                            <div class="text">
+
+                                                    <div>20</div>
+
+
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="subject">
+                                                <div>دستور جلسه</div>
+                                            </div>
+                                            <div class="text">
+
+                                                    <div>طرح انسجام</div>
+
+
+                                            </div>
+                                        </div>
+
+
+                                    <div class="row additionalfields-title">
+                                        <div>مخاطبان</div>
+                                    </div>
+
+                                        <div class="row">
+                                            <div class="subject">
+                                                <div>مخاطبان</div>
+                                            </div>
+                                            <div class="text">
+
+                                                    <div>کادر مدرسه</div>
+
+
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="subject">
+                                                <div>تعداد حاضران در جلسه</div>
+                                            </div>
+                                            <div class="text">
+
+                                                    <div>10</div>
+
+
+                                            </div>
+                                        </div>
+
+
+                                    <div class="row additionalfields-title">
+                                        <div>مسئولین مصوبات</div>
+                                    </div>
+
+                                        <div class="row">
+                                            <div class="subject">
+                                                <div>مسئول پیگیری مصوبه اول</div>
+                                            </div>
+                                            <div class="text">
+
+                                                    <div>مسئول انجمن اسلامی</div>
+
+
+                                            </div>
+                                        </div>
+
+
+                            </div>
+                        </div>
+
+                        <div role="tabpanel" class="tab-pane" id="product_comment">
+                            <div class="comment-list">
+                                <div class="comment-item">
+                                    <div class="number blue">
+                                        <h5 class="title">میانگین کلی امتیاز کاربران</h5>
+                                        <div class="comment-point-list">
+
+                                                <div>
+                                                    <span class="">عکس ها و سایر مستندات برنامه منطبق با توضیحات دوست عزیزم بود.</span>
+                                                    <div>
+                                                        <div>
+                                                            <div style="width: 75%"></div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div>
+                                                    <span class="">برنامه جذابی بود و ابتکارات جالبی داشت.</span>
+                                                    <div>
+                                                        <div>
+                                                            <div style="width: 75%"></div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div>
+                                                    <span class="">برنامه کاملا دانش اموزی برگزار شده بود.</span>
+                                                    <div>
+                                                        <div>
+                                                            <div style="width: 80%"></div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div>
+                                                    <span class="">از این برنامه الگو گرفتم و بنا دارم در مدرسه خودمان اجرایش کنم.</span>
+                                                    <div>
+                                                        <div>
+                                                            <div style="width: 75%"></div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                        </div>
+                                    </div>
+
+                                        <div class="send">
+
+                                                <p class="">شما هم میتوانید نظری ارسال نمایید!</p>
+                                                <p class="">با ارسال نظر، دوستان خود را در بهتر شدن فعالیت هایشان یاری
+                                                    نمایید.</p>
+
+                                                    <button type="button" data-target="#commentModal" data-toggle="modal" class="btn btn-warning">
+                                                        ارسال نظر
+                                                    </button>
+
+
+                                        </div>
+
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+    </div>
+    <!--end content-->
+{% endblock %}
+
+{% block js_code %}
+    <!--for this page only-->
+    <script type="text/html" id='activity_rate_users'>
+        <tr>
+            <th scope="row">
+                <%= id %>
+            </th>
+            <td>
+                <%= name_link_to_school %>
+            </td>
+            <td>
+                <input class="rating" type="text" title="" value="<%= rate %>" id="rate-<%= id %>">
+            </td>
+        </tr>
+    </script>
+    <script type="text/javascript" src="{% static "asset/script/plugin/owl.carousel.js" %}"></script>
+    <script type="text/javascript" src="{% static "asset/script/plugin/range.js" %}"></script>
+    <script type="text/javascript" src="{% static "js/single_activity.js" %}"></script>
+    <script type="text/javascript" src="{% static "asset/script/plugin/star-rating.min.js" %}"></script>
+    <script type="text/javascript" src="{% static "asset/script/plugin/theme.min.js" %}"></script>
+    <script type="text/javascript" src="{% static "asset/script/plugin/Underscore_1.8.3.js" %}"></script>
+    <script type="text/javascript">
+        var rate_options = {
+            'theme': 'krajee-fa',
+            'showCaption': false,
+            'rtl': true,
+            'animate': false,
+            'showClear': false,
+            'disabled': false,
+            'stars': '5',
+            'min': '0',
+            'max': '5',
+            'step': '1',
+            'size': 'md'
+            // 'starCaptions': {0: 'status:nix', 1: 'status:wackelt', 2: 'status:geht', 3: 'status:laeuft'}
+        };
+        $('.rating-view').rating(rate_options);
+
+        $('.rating').rating(rate_options);
+    </script>
+
+    <script type="text/javascript">
+        var rate_options = {
+            'theme': 'krajee-fa',
+            'showCaption': false,
+            'rtl': true,
+            'animate': false,
+            'showClear': false,
+            'disabled': true,
+            'stars': '5',
+            'min': '0',
+            'max': '5',
+            'step': '1',
+            'size': '100'
+            // 'starCaptions': {0: 'status:nix', 1: 'status:wackelt', 2: 'status:geht', 3: 'status:laeuft'}
+        };
+
+        // Initialize the tour
+        tour.init();
+
+        // Start the tour
+        tour.start();
+    </script>
+
+{% endblock %}

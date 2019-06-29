@@ -1,0 +1,100 @@
+{% extends "apps/base.html" %}
+{% load static %}
+{% load date_to_persian %}
+{% load main_extra %}
+{% block title %}سامانه عقیق|سوالات{% endblock %}
+{% block logo %}
+    {% if request.user.userbox.gender == 'male' %}
+        <img src="{% static "/asset/image/b5.png" %}" id="banner-image" alt="">
+    {% else %}
+        <img src="{% static "/asset/image_gr/b5.png" %}" id="banner-image" alt="">
+    {% endif %}
+{% endblock logo %}
+
+{% block page_content %}
+
+    <!--content-->
+    <div id="content" class="body_min_height">
+    <div id="content" class="body_min_height">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3 col-xs-12 m-b-30 pull-left">
+                    <div class="hamraz-detail">
+                        <h3 class="title">اطلاعات سوال</h3>
+                        <ul>
+                            <li><span>حوزه</span><a class="name">{{ question.main_category.title }}</a></li>
+                            <li><span>زیر حوزه</span><a class="name">{{ question.category.title }}</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-9">
+                    <div class="hamraz-text m-b-20">
+                        <div class="top">
+                            <span class="time">
+                                <span><i class="fa fa-clock-o"></i> <span class="persian_number">{{ question.create_datetime |date_to_persian }}</span></span>
+                            </span>
+                        </div>
+                        <div class="text">
+                            <p>{{ question.body|linebreaks }}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="activity-file-list m-b-30">
+                        {% for question_file in question.files %}
+                            <div class="activity-file">
+                                <span class="name">{{ question_file.title }}</span>
+                                <span class="size persian_number">{{ question_file.size | filesizeformat }}</span>
+                                <a class="btn btn-warning" href="{{ file_item.file|server_public_url }}"> دانلود
+                                </a>
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    <hr class="divider">
+                    <h3 style="color: #0a0000">گفتگو ها:</h3>
+
+                    <hr class="divider">
+
+                    {% for answer_item in question.answers %}
+                        <div class="hamraz-text m-b-20">
+                            <div class="top">
+                                {% if answer_item.user_type == "student" %}
+                                    <span class="name">دانش آموز:<span></span></span>
+                                {% else %}
+                                    <span class="name-h">همراز:<span></span></span>
+                                {% endif %}
+
+                                <span class="time">
+                                <span><i class="fa fa-clock-o"></i> <span class="persian_number">{{ answer_item.create_datetime |date_to_persian }}</span></span>
+                            </span>
+                            </div>
+                            <div class="text">
+                                <p>{{ answer_item.body | linebreaksbr }}
+                                </p>
+                            </div>
+                            <div class="activity-file-list m-b-30 m-t-35">
+                                {% for answer_item_file in answer_item.files %}
+                                    <div class="activity-file">
+                                        <span class="name">{{ answer_item_file.title }}</span>
+                                        <span class="size persian_number">{{ answer_item_file.size | filesizeformat }}</span>
+                                        <a class="btn btn-warning" href="{{ answer_item_file.file|server_public_url }}">
+                                            دانلود
+                                        </a>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <hr class="divider">
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--end content-->
+{% endblock %}
+
+{% block js_plugins %}
+    <!--for this page only-->
+    <script type="text/javascript" src="{% static "asset/script/plugin/bootstrap-select.js" %}"></script>
+{% endblock %}

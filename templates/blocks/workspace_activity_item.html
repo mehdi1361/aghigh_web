@@ -1,0 +1,89 @@
+{% load static %}
+{% load main_extra %}
+
+{% if  query_params.role == "coach" or page_name != "workspace" %}
+    <div class="activity-item"
+            {% if activity.state == 'NEW' or activity.state == 'SHR' %}
+                style="{% if activity.review_state == "dark" %}opacity:0.5;{% endif %}
+                border-bottom: 5px solid {{ activity.review_state|get_color_review_state }}
+            {% endif %}">
+
+        {% if activity.state == 'NEW' or activity.state == 'SHR' %}
+            <a href="{% url "activity_check" activity_id=activity.id|to_hash_id %}"
+               class="image image_loader set_activity">
+        {% else %}
+            <a href="{% url "single_activity" activity_id=activity.id|to_hash_id %}"
+               class="image image_loader set_activity">
+        {% endif %}
+        {% if activity.state == 'NEW' or activity.state == 'SHR' %}
+            <span class="green">در انتظار بررسی</span>
+        {% elif activity.state == "SHE" %}
+            <span class="red">رد شده</span>
+        {% elif activity.state == "ACCEPT" %}
+            <span class="green">تایید شده</span>
+        {% elif activity.state == "BAN" %}
+            <span class="red">عدم رعایت ضوابط شیوه‌نامه</span>
+        {% endif %}
+
+
+        <div class="image_set"></div>
+        <img data-src="{{ activity.image|server_public_url:"711x400" }}"
+             data-target="image_set"
+             onload="image_load(this,true)"
+             onerror="image_load(this,false)">
+        </a>
+        <div class="content">
+            {% if activity.state == 'NEW' or activity.state == 'SHR' %}
+                <a href="{% url "activity_check" activity_id=activity.id|to_hash_id %}"><h4 class="title" {% if activity.title|length > 35 %}data-toggle="tooltip" data-placement="top" title="{{ activity.title }}"{% endif %}>{{ activity.title|truncatechars:35 }}</h4></a>
+            {% else %}
+                <a href="{% url "single_activity" activity_id=activity.id|to_hash_id %}"><h4 class="title" {% if activity.title|length > 35 %}data-toggle="tooltip" data-placement="top" title="{{ activity.title }}"{% endif %}>{{ activity.title|truncatechars:35 }}</h4></a>
+            {% endif %}
+            <ul>
+                <li style="width: 100%;margin: 0;">
+                    <a href="{% url "league_single_school" school_id=activity.school.id|to_hash_id %}">
+                        <i class="fa fa-bank"></i>
+                        <span>{{ activity.school.name }}</span>
+                    </a>
+                </li>
+                <li style="width: 100%;margin: 0;">
+                    <p><i class="fa fa-map-marker"></i><span>{{ activity.location }}</span></p>
+                </li>
+                {#                {% if activity.state == "ACCEPT" %}#}
+                {#                    <li><i class="fa fa-eye"></i><span class="persian_number">{{ activity.view_count }}</span></li>#}
+                {#                    <li><i class="fa fa-trophy"></i> <span class="persian_number">{{ activity.point }}</span></li>#}
+                {#                {% endif %}#}
+            </ul>
+        </div>
+    </div>
+{% else %}
+    <div class="activity-item"
+         style="{% if activity.review_state == "dark" %}background-color: #ffbcbc;{% endif %}
+                 border-bottom: 5px solid {{ activity.review_state|get_color_review_state }}">
+
+        <a href="{% url "activity_check" activity_id=activity.id|to_hash_id %}" class="image image_loader set_activity">
+            {% if show_states %}
+                {% if activity.state == 'NEW' or activity.state == 'SHR' %}
+                    <span class="green">در انتظار بررسی سریع</span>
+                {% elif activity.state == "TIL" %}
+                    <span class="green">در لیگ نمایش داده شده</span>
+                {% endif %}
+            {% endif %}
+            <div class="image_set"></div>
+            <img data-src="{{ activity.image|server_public_url:"711x400" }}"
+                 data-target="image_set"
+                 onload="image_load(this,true)"
+                 onerror="image_load(this,false)">
+        </a>
+        <div class="content">
+            <a href="{% url "activity_check" activity_id=activity.id|to_hash_id %}"><h4 class="title" {% if activity.title|length > 35 %}data-toggle="tooltip" data-placement="top" title="{{ activity.title }}"{% endif %}>{{ activity.title|truncatechars:35 }}</h4></a>
+            <ul>
+                <li style="width: 100%;margin: 0;"><a
+                        href="{% url "league_single_school" school_id=activity.school.id|to_hash_id %}"><i
+                        class="fa fa-bank"></i><span>{{ activity.school.name }}</span></a></li>
+                <li style="width: 100%;margin: 0;"><p><i
+                        class="fa fa-map-marker"></i><span>{{ activity.location }}</span>
+                </p></li>
+            </ul>
+        </div>
+    </div>
+{% endif %}

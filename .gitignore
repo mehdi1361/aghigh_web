@@ -1,0 +1,7 @@
+.idea
+__pycache__
+*.pyc
+*.sqlite3
+media
+logs
+celerybeat*

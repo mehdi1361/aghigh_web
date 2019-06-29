@@ -1,0 +1,272 @@
+{% extends "apps/base.html" %}
+{% load static %}
+{% load main_extra %}
+{% block title %} {{ report_title }} {% endblock %}
+{% block page_content %}
+
+    <!--content-->
+    <div id="content" class="body_min_height">
+        <section>
+            <div class="container">
+                <div class="row">
+                    <form id="visited_filter_form" method="get" action="{% url 'datedone_day_activity_reports' %}" class="search-form col-md-3 pull-left">
+                        <div class="row search-list-row">
+                            <div class="m-b-40">
+                                <h4 class="aside-title style-1">فیلتر</h4>
+                                <div class="form-group">
+                                    <label for="state">بر اساس استان</label>
+                                    <select name="province" id="province" class="select_wait">
+                                        <option value="">همه استان ها</option>
+                                        {% for province_item in provinces %}
+                                            <option {% if query_params.province|add:"0" == province_item.id %}selected{% endif %}
+                                                    value="{{ province_item.id }}">{{ province_item.title }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="county">بر اساس شهرستان</label>
+                                    <select name="county" id="county" class="select_wait">
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="camp">بر اساس قرارگاه</label>
+                                    <select name="camp" id="camp" class="select_wait">
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="school">بر اساس مدرسه</label>
+                                    <select name="school" id="school" class="select_wait">
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="state">بر اساس شاخه</label>
+                                <select name="category" id="category" class="select_wait">
+                                    <option value="">همه شاخه ها</option>
+                                    {% for category in categories %}
+                                        <option {% if query_params.category|add:"0" == category.id %}selected{% endif %}
+                                                value="{{ category.id }}">{{ category.title }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-button">
+                                <button type="submit" class="btn btn-warning">اعمال</button>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="users_visit" class="col-md-9 col-xs-12" style="height: 400px; direction: ltr">
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    <!--end content-->
+{% endblock %}
+
+{% block js_plugins %}
+    <!--for this page only-->
+    <script type="text/javascript" src='{% static "asset/script/plugin/bootstrap-select.js" %}'></script>
+    <script type="text/javascript" src="{% static "asset/script/plugin/picker.js" %}"></script>
+    <script src="{% static 'amcharts/amcharts.js' %}"></script>
+    <script src="{% static 'amcharts/serial.js' %}"></script>
+
+{% endblock %}
+{% block js_code %}
+
+    <script type="text/javascript">
+        var datedone_day_report = [];
+        {% for report_item in datedone_day_report %}
+            datedone_day_report.push({
+                "day": '{{ report_item.day }}',
+                "count": '{{ report_item.count }}'
+            });
+        {% endfor %}
+        show_chart();
+        function show_chart() {
+            AmCharts.makeChart("users_visit", {
+                "type": "serial",
+                "theme": "light",
+                "dataProvider": datedone_day_report,
+                "valueAxes": [{
+                     "position": "left",
+                    "integersOnly": true,
+                    "title": "فعالیت های انجام شده بر اساس روز"
+                }],
+                "startDuration": 1,
+                "graphs": [{
+                    "balloonText": "<b class='persian_chart_number'>تعداد فعالیت: [[value]]</b>",
+                    "fillAlphas": 0.9,
+                    "lineAlpha": 0.2,
+                    "type": "column",
+                    "valueField": "count"
+                }],
+                "chartCursor": {
+                    "categoryBalloonEnabled": true,
+                    "cursorAlpha": 0,
+                    "zoomable": false
+                },
+                "categoryField": "day",
+                "categoryAxis": {
+                    "gridPosition": "start",
+                    "labelRotation": 0
+                }
+            });
+            $('tspan').each(function () {
+                $(this).html(getArabicNumbers($(this).html()));
+            });
+        }
+    </script>
+    <script type="text/javascript">
+        $("#county").on('change', function () {
+            $.ajax({
+                url: '{% url "main_camps" "123456789" %}'.replace("123456789", $(this).val()),
+                type: "GET"
+            }).done(function (data) {
+                var camps = data["camps"];
+                var i;
+                var camp_item = {};
+                var data_len = camps.length;
+                $("#camp").find('option').remove();
+
+                var camp = document.getElementById("camp");
+                var option = document.createElement("option");
+                option.text = "همه قرارگاه ها";
+                option.value = "";
+                camp.add(option);
+
+                camp.add(option);
+
+                for (i = 0; i < data_len; i++) {
+                    camp_item = camps[i];
+                    option = document.createElement("option");
+                    option.text = camp_item["title"];
+                    option.value = camp_item["id"];
+                    camp.add(option);
+                }
+                $("#camp").selectpicker("refresh");
+            });
+        });
+        $("#camp").on('change', function () {
+            $.ajax({
+                url: '{% url "main_schools" "123456789" %}'.replace("123456789", $(this).val()),
+                type: "GET"
+            }).done(function (data) {
+                var schools = data["schools"];
+                var i;
+                var school_item = {};
+                var data_len = schools.length;
+                $("#school").find('option').remove();
+
+                var school = document.getElementById("school");
+                var option = document.createElement("option");
+                option.text = "همه مدارس";
+                option.value = "";
+                school.add(option);
+
+                school.add(option);
+
+                for (i = 0; i < data_len; i++) {
+                    school_item = schools[i];
+                    option = document.createElement("option");
+                    option.text = school_item["name"];
+                    option.value = school_item["id"];
+                    school.add(option);
+                }
+                $("#school").selectpicker("refresh");
+            });
+        });
+    </script>
+{#    <script type="text/javascript">#}
+{##}
+{#        setTimeout(function () {#}
+{#            $('tspan').each(function () {#}
+{#                $(this).html(getArabicNumbers($(this).html()));#}
+{#            });#}
+{##}
+{#            $('path').mouseout(function () {#}
+{#                $('.persian_chart_number').each(function () {#}
+{#                    $(this).html(getArabicNumbers($(this).html()));#}
+{#                });#}
+{#            });#}
+{##}
+{#        }, 1000);#}
+{##}
+{#        $("#visited_filter_form").submit(function (event) {#}
+{#            event.preventDefault();#}
+{#            $.ajax({#}
+{#                url: '{% url 'user_reports' %}',#}
+{#                type: 'post',#}
+{#                data: {#}
+{#                    "csrfmiddlewaretoken": '{{ csrf_token }}',#}
+{#                    "province": $("#province").val(),#}
+{#                    "county": $("#county").val(),#}
+{#                    "camp": $("#camp").val(),#}
+{#                    "school": $("#school").val()#}
+{#                },#}
+{#                success: function (data) {#}
+{#                    var message = data["message"];#}
+{#                    if (message === "error") {#}
+{#                        toastr.error('لطفا بعدا تلاش کنید.');#}
+{#                    } else {#}
+{#                        var results = [{#}
+{#                                "country": "همه کاربران",#}
+{#                                "visits": data["data"]["all_user"],#}
+{#                                "color": "#C5000F"#}
+{#                            }, {#}
+{#                                "country": "همه مسولین",#}
+{#                                "visits": data["data"]["teachers"],#}
+{#                                "color": "#009587"#}
+{#                            }, {#}
+{#                                "country": "پسران",#}
+{#                                "visits": data["data"]["male"],#}
+{#                                "color": "#6c4cc9"#}
+{#                            }, {#}
+{#                                "country": "دختران",#}
+{#                                "visits": data["data"]["female"],#}
+{#                                "color": "#EB6BD8"#}
+{#                            }];#}
+{#                        AmCharts.makeChart("users_visit", {#}
+{#                            "type": "serial",#}
+{#                            "theme": "light",#}
+{#                            "marginRight": 70,#}
+{#                            "dataProvider": results,#}
+{#                            "valueAxes": [{#}
+{#                                "axisAlpha": 0,#}
+{#                                "position": "left",#}
+{#                                "title": "اخرین بازدیدها"#}
+{#                            }],#}
+{#                            "startDuration": 1,#}
+{#                            "graphs": [{#}
+{#                                "balloonText": "<b class='persian_chart_number'>[[category]]: [[value]]</b>",#}
+{#                                "fillColorsField": "color",#}
+{#                                "fillAlphas": 0.9,#}
+{#                                "lineAlpha": 0.2,#}
+{#                                "type": "column",#}
+{#                                "valueField": "visits"#}
+{#                            }],#}
+{#                            "chartCursor": {#}
+{#                                "categoryBalloonEnabled": false,#}
+{#                                "cursorAlpha": 0,#}
+{#                                "zoomable": false#}
+{#                            },#}
+{#                            "categoryField": "country",#}
+{#                            "categoryAxis": {#}
+{#                                "gridPosition": "start",#}
+{#                                "labelRotation": 45#}
+{#                            }#}
+{#                        });#}
+{#                        $('tspan').each(function () {#}
+{#                            $(this).html(getArabicNumbers($(this).html()));#}
+{#                        });#}
+{#                        $(".loading-box").css('visibility', 'hidden')#}
+{#                    }#}
+{#                },#}
+{#                error: function (e) {#}
+{#                    toastr.error('شما دسترسی ندارید.');#}
+{#                }#}
+{#            });#}
+{##}
+{#        });#}
+{##}
+{#    </script>#}
+{% endblock %}

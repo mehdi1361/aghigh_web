@@ -1,0 +1,207 @@
+{% extends "apps/base.html" %}
+{% load static %}
+{% block title %}سامانه عقیق|ثبت فعالیت{% endblock %}
+
+{% block logo %}
+    {% if request.user.userbox.gender == 'male' %}
+        <img src="{% static "/asset/image/b1.png" %}" id="banner-image" alt="">
+    {% else %}
+        <img src="{% static "/asset/image_gr/b1.png" %}" id="banner-image" alt="">
+    {% endif %}
+{% endblock logo %}
+{% block page_content %}
+    <!--content-->
+    <div id="content" class="body_min_height">
+        <div class="container">
+            {% if response == 201 %}
+                <div class="alert alert-success">فعالیت با موفقیت ثبت شد.</div>
+            {% elif response %}
+                {% for error in errors %}
+                    <div class="alert alert-danger">
+                        {% if error == "start_date" %}تاریخ شروع را وارد کنید.
+                        {% elif error == "end_date" %}تاریخ پایان را وارد کنید.
+                        {% elif error == "start_date_lower" %}تاریخ شروع و پایان ناهماهنگ می باشد.
+                        {% elif error == "date_future" %}شما نمی توانید که فعالیت برای اینده ثبت کنید.
+                        {% elif error == "location" %}نام مکان را وارد کنید
+                        {% elif error == "title" %}عنوان فعالیت را وارد کنید.
+                        {% elif error == "category" %}دسته فعالیت را وارد نمایید.
+                        {% elif error == "description" %}توضیحات مربوط به فعالیت را وارد کنید.
+                        {% elif error == "additional_fields" %}                                فیلد های اضافه درست وارد نشده است.
+                        {% elif error == "images" %}عکس ها درست وارد نشده اند. حداقل سه عکس الزامیست.
+                        {% elif error == "additional_files_count" %}تعداد فایل های انتخاب شده برای ادیشنال فیلدها صحیح نیست.
+                        {% elif error == "additional_files_type" %}فرمت فایل های انتخاب شده برای ادیشنال فیلدها صحیح نیست.
+                        {% elif error == "additional_files_size" %}حجم فایل های انتخاب شده برای ادیشنال فیلدها صحیح نیست.
+                        {% elif error == "additional_fields_too_long" %}متن وارد شده در توضیحات مربوط به اطلاعات دسته فعالیت خیلی طولانی است نباید توضیحات بیش از ۲۵۵ کارکتر باشد
+                        {% else %}خطا در اطلاعات وارد شده لطفا اطلاعات مربوط به دسته فعالیت را با دقت وارد کنید.
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            {% endif %}
+            <form action="{% url 'activity_submit' %}" method="post" enctype="multipart/form-data" id="activityForm">
+                {% csrf_token %}
+                <!--top field-->
+                <div class="row m-b-15">
+                    <div class="col-sm-3 col-xs-12">
+                        <div class="form-group style-1">
+                            <label for="">عنوان *</label>
+                            <div class="input">
+                                <input value="{{ activity.title }}" type="text" id="title" name="title"
+                                       class="form-control" required oninvalid="setCustomValidity('عنوان اجباری است')" oninput="setCustomValidity('')">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-3 col-xs-12">
+                        <div class="form-group style-1">
+                            <label for="location">مکان *</label>
+                            <div class="input">
+                                <input value="{{ activity.location }}" id="location" name="location" type="text"
+                                       class="form-control" required oninvalid="setCustomValidity('مکان اجباری است')" oninput="setCustomValidity('')">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-3 col-xs-12">
+                        <div class="form-group style-1 form-picker">
+                            <label for="">تاریخ شروع *</label>
+                            <div class="input">
+                                <input type="text"
+                                       readonly data-time="true"
+                                       class="form-control input-picker datepicker_ps" required oninvalid="setCustomValidity('تاریخ شروع اجباری است')" oninput="setCustomValidity('')" name="start_date">
+                            </div>
+                            <button type="button" class="btn-picker">
+                                <i class="fa fa-calendar"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-sm-3 col-xs-12">
+                        <div class="form-group style-1 form-picker">
+                            <label for="">تاریخ پایان *</label>
+                            <div class="input">
+                                <input type="text"
+                                       readonly data-time="true"
+                                       class="form-control input-picker datepicker_ps" required oninvalid="setCustomValidity('تاریخ پایان اجباری است')" oninput="setCustomValidity('')" name="end_date">
+                            </div>
+                            <button type="button" class="btn-picker">
+                                <i class="fa fa-calendar"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <!--end top field-->
+
+                <!--text field-->
+                <div class="form-group style-1 fix-label m-b-40">
+                    <label for="">
+                        خلاصه شرح فعالیت/شرح مختصر جلسه و مصوبات *
+                    </label>
+                    <div class="input">
+                        <textarea required oninvalid="setCustomValidity('خلاصه شرح فعالیت اجباری است')" oninput="setCustomValidity('')" rows="4" class="form-control" name="description">{{ activity.description }}</textarea>
+                    </div>
+                </div>
+                <!--end text field-->
+
+                <!--image-->
+                <div id="activity_image">
+                    <div class="section-title style-1">
+                        <h3 class="title">
+                            <span>عکس های فعالیت (حداقل سه عکس)*:</span>
+                        </h3>
+                    </div>
+                    <div class="multi-file-content" data-name="images" data-type="activity-image">
+                        <div class="activity-image-list">
+                            <div class="row">
+                            </div>
+                        </div>
+                        <p class="text-center m-b-40">
+                            <button type="button" class="btn btn-primary multi-file-choose">
+                                افزودن تصویر
+                            </button>
+                        </p>
+                    </div>
+                </div>
+                <!--end image-->
+
+                <!--file-->
+                <div class="section-title style-1">
+                    <h3 class="title">
+                        <span>فایل های صوتی و ویدیویی فعالیت (اختیاری):</span>
+                    </h3>
+                </div>
+                <div class="multi-file-content" data-name="files" data-type="activity-file">
+                    <div class="activity-file-list m-b-30"></div>
+                    <p class="text-center m-b-40">
+                        <button type="button" class="btn btn-primary multi-file-choose">
+                            افزودن فایل
+                        </button>
+                    </p>
+                    <script type="text/template" id="">
+                        <div class="activity-file" data-number="">
+                            <input type="file" name="files[]">
+                            <span class="name">عنوان فایل در اینجا</span>
+                            <span class="size persian_number">260 kb</span>
+                            <button type="button" class="btn btn-warning">
+                                حذف
+                            </button>
+                        </div>
+                    </script>
+                </div>
+                <!--end file-->
+
+                <div class="row m-b-40">
+                    <div class="col-sm-4 col-xs-12">
+                        <div id="activity_cat" class="form-group">
+                            <select name="category" title="دسته بندی فعالیت *" id="category" class="select_wait"
+                                    oninvalid="setCustomValidity('دسته فعالیت اجباری است')" oninput="setCustomValidity('')">
+                                {% for category in categories %}
+                                    <option value="{{ category.id }}">{{ category.title }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row m-b-20" id="additional_fields_container" style="min-height: 100px;">
+
+                </div>
+
+                <div>
+                    <button class="btn btn-lg btn-warning" id="submit_activty" type="submit">ذخیره</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!--end content-->
+{% endblock %}
+
+{% block js_code %}
+    <!--for this page only-->
+    <script type="text/javascript" src="{% static "asset/script/plugin/bootstrap-select.js" %}"></script>
+    <script type="text/javascript" src="{% static "asset/script/plugin/picker.js" %}"></script>
+    <script type="text/javascript" src="{% static "js/activity.js" %}"></script>
+
+    <script>
+        if (getCookie("resanesh_submit")) {
+            // call this page from main page (click on jashnvare resanesh
+            setCookie("resanesh_submit", "false", 0);
+            {% for category in categories %}
+                {% if category.slug == "resanesh" %}
+                    $("#category").val({{ category.id }}).change();
+                {% endif %}
+            {% endfor %}
+        }
+        if (getCookie("revolution_submit")) {
+            // call this page from main page (click on revolution school
+            setCookie("revolution_submit", "false", 0);
+            {% for category in categories %}
+                {% if category.slug == "main_activity" %}
+                    $("#category").val({{ category.id }}).change();
+                {% endif %}
+            {% endfor %}
+        }
+        // Initialize the tour
+        tour.init();
+
+        // Start the tour
+        tour.start();
+        page_name = "submit";
+    </script>
+{% endblock %}

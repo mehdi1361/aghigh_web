@@ -1,0 +1,192 @@
+{% extends "apps/base.html" %}
+{% load static %}
+{% load main_extra %}
+{% block title %}سامانه عقیق|امتیازبده بگیر{% endblock %}
+{% block extra_css %}
+    <!--for this page only-->
+    <link rel="stylesheet" href="{% static "asset/style/activity.css" %}">
+{% endblock %}
+{% block logo %}
+    {% if request.user.userbox.gender == 'male' %}
+        <img src="{% static "/asset/image/b1.png" %}" id="banner-image" alt="">
+    {% else %}
+        <img src="{% static "/asset/image_gr/b1.png" %}" id="banner-image" alt="">
+    {% endif %}
+{% endblock logo %}
+{% block page_content %}
+
+    <!--content-->
+    <div id="content" class="body_min_height">
+        <a id="search" href="{% url "search_activity" %}" type="button" class="btn btn-blue btn-circle btn-fix">
+            <i class="fa fa-search"></i>
+        </a>
+        <section>
+            <div class="container">
+                <div class="row row-min">
+                    <div class="col-lg-6 m-b-20">
+                        <!--slide-->
+                        <div class="slide-min style-1">
+                            <div class="owl-carousel owl-carousel-slide">
+                                {% for vip_item in vip_activities %}
+                                    <div class="item">
+                                        <a href="{% url "single_activity" activity_id=vip_item.id|to_hash_id %}"
+                                           class="slide-item style-3">
+                                            <!-- <img src="{{ vip_item.image |server_public_url:"711x400" }}" alt=""> -->
+                                            <div class="image"
+                                                 style="background-image: url('{{ vip_item.image |server_public_url:"711x400" }}')"></div>
+                                            <h4 class="title">{{ vip_item.title }}</h4>
+                                        </a>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <!--end slide-->
+                    </div>
+                    <div class="col-lg-6">
+                        <!--widget-->
+                        <div id="quick_access" class="row activity-widget-row">
+                            <div class="col-ps-6">
+                                <a href="{% url 'search_activity' %}?point=0,0" class="activity-widget">
+                                    <div>
+                                        <div>
+                                            <div class="ac1 img"></div>
+                                        </div>
+                                        <div>
+                                            <h4 class="title">
+                                                فعالیت های
+                                                بدون امتیاز
+                                            </h4>
+                                        </div>
+                                    </div>
+                                    <span class="border border-1"></span>
+                                </a>
+                            </div>
+                            <div class="col-ps-6">
+                                <a href="{% url 'search_activity' %}?order=trend" class="activity-widget">
+                                    <div>
+                                        <div>
+                                            <div class="ac2 img"></div>
+                                        </div>
+                                        <div>
+                                            <h4 class="title">
+                                                داغ ترین ها
+                                            </h4>
+                                        </div>
+                                    </div>
+                                    <span class="border border-2"></span>
+                                </a>
+                            </div>
+                            <div class="col-ps-6">
+                                <a href="{% url 'search_activity' %}?order=most_view" class="activity-widget">
+                                    <div>
+                                        <div>
+                                            <div class="ac3 img"></div>
+                                        </div>
+                                        <div>
+                                            <h4 class="title">
+                                                پربازدیدترین ها
+                                            </h4>
+                                        </div>
+                                    </div>
+                                    <span class="border border-3"></span>
+                                </a>
+                            </div>
+                            <div class="col-ps-6">
+                                <a href="{% url 'search_activity' %}?random=1" class="activity-widget">
+                                    <div>
+                                        <div>
+                                            <div class="ac4 img"></div>
+                                        </div>
+                                        <div>
+                                            <h4 class="title">
+                                                فعالیت های
+                                                اتفاقی
+                                            </h4>
+                                        </div>
+                                    </div>
+                                    <span class="border border-4"></span>
+                                </a>
+                            </div>
+                        </div>
+                        <!--end widget-->
+                    </div>
+                </div>
+                <div class="ea-pos-rel">
+                    <div class="owl-carousel owl-carousel-tag-slide m-b-30">
+                        {% for item in special_filters %}
+                            <div class="item">
+                                {% if item.action == "person" %}
+                                    <a href="{% url 'specific_student' %}?{{ item.param }}"
+                                       class="btn btn-warning" style="background-color: {{ item.color }}">
+                                        {{ item.title }}
+                                    </a>
+                                {% else %}
+                                    <a href="{% url 'specific_activity' %}?action={{ item.action }}&{{ item.param }}"
+                                       class="btn btn-warning" style="background-color: {{ item.color }}">
+                                        {{ item.title }}
+                                    </a>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    <div id="owl-carousel-tag-slide-right" class="ea-pos-r ea-z-3 ea-fff ea-opc-70 p-10"
+                         style="cursor: pointer;"><i class="fa fa-chevron-right"></i></div>
+                    <div id="owl-carousel-tag-slide-left" class="ea-pos-l ea-z-3 ea-fff ea-opc-70 p-10"
+                         style="cursor: pointer;"><i class="fa fa-chevron-left"></i></div>
+                </div>
+            </div>
+        </section>
+        {% for activity_box in emtiaz %}
+            <section class="m-b-25">
+                <div class="container">
+                    <div class="section-title style-1">
+                        <h3 class="title">
+                            <i class="fa fa-star"></i>
+                            <span>{{ activity_box.title }}</span>
+                        </h3>
+                        <div class="pull-left">
+                            <a href="{% url 'search_activity' %}?order={{ activity_box.order }}{% if activity_box.category != 0 %}&category={{ activity_box.category }}{% endif %}"
+                               class="btn btn-sm btn-warning">بیشتر
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="activity-list-slide">
+                        {% if activity_box.activities %}
+                            <div class="owl-carousel owl-carousel-activity">
+                                {% for activity_item in activity_box.activities %}
+                                    <div class="item">
+                                        {% include "blocks/activity_item.html" with activity=activity_item %}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </section>
+        {% endfor %}
+    </div>
+    <!--end content-->
+{% endblock %}
+
+{% block js_code %}
+    <!--for this page only-->
+    <script type="text/javascript" src='{% static "asset/script/plugin/owl.carousel.js" %}'></script>
+    <script type="text/javascript">
+        var owl = $('.owl-carousel-tag-slide');
+        $('#owl-carousel-tag-slide-left').click(function () {
+            owl.trigger('next.owl.carousel');
+        });
+        $('#owl-carousel-tag-slide-right').click(function () {
+            owl.trigger('prev.owl.carousel');
+        })
+
+        // Initialize the tour
+        tour.init();
+
+        // Start the tour
+        tour.start();
+    </script>
+{% endblock %}
+

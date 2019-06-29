@@ -1,0 +1,22 @@
+{% load date_to_persian %}
+{% load main_extra %}
+<a class="faq_{{ question.id|to_hash_id }} notification-item">
+    <div>
+        <div class="top">
+            <h4 class="title">{{ item.subject }}</h4>
+            <time class="persian_number">{{ item.create_datetime |date_to_persian}}</time>
+        </div>
+        <div class="detail">
+{#            <span><i class="fa fa-heart"></i> : {{ item.point }}</span>#}
+{#            <span><i class="fa fa-eye"></i> : {{ item.view_count }}</span>#}
+            <span>حوزه: {{ item.category.title }}</span>
+            <span>زیر حوزه: {{ item.sub_category.title }}</span>
+        </div>
+        <div class="text">
+            <h5>سوال:</h5>
+            <p>{{ item.question }}</p>
+            <h5 class="m-t-35">پاسخ:</h5>
+            <p>{{ item.answer|linebreaks }}</p>
+        </div>
+    </div>
+</a>

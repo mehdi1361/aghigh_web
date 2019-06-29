@@ -1,0 +1,144 @@
+{% extends "apps/base.html" %}
+{% load static %}
+{% load date_to_persian %}
+{% load main_extra %}
+{% block title %}سامانه عقیق|پیام ها{% endblock %}
+{% block logo %}
+    {% if request.user.userbox.gender == 'male' %}
+        <img src="{% static "/asset/image/b4.png" %}" id="banner-image" alt="">
+    {% else %}
+        <img src="{% static "/asset/image_gr/b4.png" %}" id="banner-image" alt="">
+    {% endif %}
+{% endblock logo %}
+
+{% block page_content %}
+    <!--content-->
+    <div id="content" class="body_min_height">
+        <div class="container">
+            <div class="notification-list">
+                {% if notifications.results %}
+                    {% for notification_item in notifications.results %}
+                        <div class="notification-item">
+                            <div class="{% if not notification_item.seen %}new{% endif %}"
+                                 onclick="readNotification(this, '{{ notification_item.id }}')">
+                                <div class="top">
+                                    <h4 class="title">{{ notification_item.title }}</h4>
+                                    <time class="persian_number">{{ notification_item.created_date|date_to_persian }}</time>
+                                </div>
+                                <p class="text">
+                                    {{ notification_item.body }}
+                                </p>
+                            </div>
+                            {% if notification_item.body_action.action == "edit_activity" %}
+                                <div class="text-left">
+                                    <a onclick="readNotificationGoUrl(this, '{{ notification_item.id }}' ,'{% url 'activity_update' notification_item.body_action.activity_id|to_hash_id %}' )"
+                                       class="btn btn-primary" >
+{#                                       href="{% url 'activity_update' notification_item.body_action.activity_id|to_hash_id %}">#}
+                                        ویرایش فعالیت
+                                    </a>
+                                </div>
+                            {% elif notification_item.body_action.action == "open_activity" %}
+                                <div class="text-left">
+                                    <a onclick="readNotificationGoUrl(this, '{{ notification_item.id }}' ,'{% url 'single_activity' notification_item.body_action.activity_id|to_hash_id %}' )"
+                                       class="btn btn-primary" >
+{#                                       href="{% url 'single_activity' notification_item.body_action.activity_id|to_hash_id %}">#}
+                                        نمایش فعالیت
+                                    </a>
+                                </div>
+                            {% elif notification_item.body_action.action == "check_activity" %}
+                                <div class="text-left">
+                                    <a onclick="readNotificationGoUrl(this, '{{ notification_item.id }}' ,'{% url 'activity_check' notification_item.body_action.activity_id|to_hash_id %}' )"
+                                        class="btn btn-primary">
+                                            {#                                       href="{% url 'activity_check' notification_item.body_action.activity_id|to_hash_id %}">#}
+                                        بررسی فعالیت
+                                    </a>
+                                </div>
+                            {% elif notification_item.body_action.action == "new_answer" %}
+                                {% if request.user.userbox.user_type == "student" %}
+                                    <div class="text-left">
+                                        <a onclick="readNotificationGoUrl(this, '{{ notification_item.id }}' ,'{% url 'hamraz_conversation_single' notification_item.body_action.question_id|to_hash_id %}' )"
+                                           class="btn btn-primary">
+{#                                           href="{% url 'hamraz_conversation_single' notification_item.body_action.question_id|to_hash_id %}">#}
+                                            نمایش پاسخ
+                                        </a>
+                                    </div>
+                                {% else %}
+                                    <div class="text-left">
+                                        <a onclick="readNotificationGoUrl(this, '{{ notification_item.id }}' ,'{% url 'answer_question' notification_item.body_action.question_id|to_hash_id %}' )"
+                                           class="btn btn-primary">
+{#                                           href="{% url 'answer_question' notification_item.body_action.question_id|to_hash_id %}">#}
+                                            نمایش پاسخ
+                                        </a>
+                                    </div>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="row text-center">
+                        <div class="col-xs-12">
+                            <span>
+                              شما هیچ پیغامی ندارید.
+                            </span>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+            {% include "blocks/pagination.html" with pagination_data=pagination_data %}
+        </div>
+    </div>
+    <!--end content-->
+{% endblock %}
+{% block js_code %}
+    <script>
+        function readNotification(e, notify_id) {
+            $.ajax({
+                url: '{% url 'notification_index' %}',
+                type: 'post',
+                data: {
+                    "notify_id": notify_id,
+                    "csrfmiddlewaretoken": '{{ csrf_token }}'
+                },
+                success: function (data) {
+                    if($(e).hasClass('new'))
+                    {
+                        var count = $('#notification-count').attr('data-value');
+                        if(count > 0){
+                            count -= 1
+                        }
+                        $('#notification-count').attr('data-value', count).html(count);
+                        if(!count){
+                            $('#notification-count').remove()
+                        }else {
+                            set_persian()
+                        }
+                    }
+                    $(e).removeClass('new')
+
+                }
+            });
+        }
+
+        function readNotificationGoUrl(e, notify_id, url_add) {
+            var url_mask = url_add;
+
+            $.ajax({
+                url: '{% url 'notification_index' %}',
+                type: 'post',
+                data: {
+                    "notify_id": notify_id,
+                    "csrfmiddlewaretoken": '{{ csrf_token }}'
+                },
+                success: function (data) {
+                    $(e).removeClass('new');
+                    if(url_mask!=="")
+                        window.location.href = url_mask;
+                }
+            });
+        }
+    </script>
+{% endblock %}
+{% block js_plugins %}
+    <!--for this page only-->
+    <script type="text/javascript" src="{% static "asset/script/plugin/owl.carousel.js" %}"></script>
+{% endblock %}

@@ -1,0 +1,725 @@
+{% extends "apps/base.html" %}
+{% load static %}
+{% load main_extra %}
+{% block title %}سامانه عقیق| محصول{% endblock %}
+{% block logo %}
+    <img src="{% static "/asset/image/b2.png" %}" id="banner-image" alt="">
+{% endblock logo %}
+{% block page_content %}
+    <!--content-->
+    <div id="content" class="body_min_height">
+        <div class="container">
+            {% if response == 201 %}
+                <div class="alert alert-success">فعالیت با موفقیت ثبت شد.</div>
+            {% elif response %}
+                {% for error in errors %}
+                    <div class="alert alert-danger">
+                        {{ error }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+            <form id="product_from" method="post" enctype="multipart/form-data">
+                <input type="hidden" name="deleted_images" id="deleted_images">
+                <input type="hidden" name="deleted_files" id="deleted_files">
+                <input type="hidden" name="product_id" id="product_id" value="{{ product.id }}">
+                {% csrf_token %}
+                <section style="min-height: 600px">
+                    <div class="container">
+                        <div>
+                            <!-- Nav tabs -->
+                            <ul class="nav nav-tabs" role="tablist">
+                                <li role="presentation" class="active">
+                                    <a class="ea-p-0" data-target="#product_info"
+                                       aria-controls="product_info" role="tab"
+                                       data-toggle="tab" aria-expanded="true">اطلاعات کلی محصول
+                                        <p class="text-center ea-font-11">(مرحله 1)
+                                        </p>
+                                    </a>
+                                </li>
+                                <li role="presentation">
+                                    <a class="ea-p-0" data-target="#product_price"
+                                       aria-controls="product_price" role="tab"
+                                       data-toggle="tab" aria-expanded="false">اطلاعات مالی محصول
+                                        <p class="text-center ea-font-11">(مرحله 2)
+                                        </p>
+                                    </a>
+
+                                </li>
+                                <li role="presentation">
+                                    <a class="ea-p-0" data-target="#product_sample_form"
+                                       aria-controls="product_sample_form" role="tab"
+                                       data-toggle="tab" aria-expanded="false">مشخصات فنی
+                                        <p class="text-center ea-font-11">(مرحله 3)
+                                        </p>
+                                    </a>
+                                </li>
+                                <li role="presentation">
+                                    <a class="ea-p-0" data-target="#product_image"
+                                       aria-controls="product_image" role="tab"
+                                       data-toggle="tab" aria-expanded="false">عکس های محصول
+                                        <p class="text-center ea-font-11">(مرحله 4)
+                                        </p>
+                                    </a>
+
+                                </li>
+                                <li role="presentation">
+                                    <a class="ea-p-0" data-target="#product_file"
+                                       aria-controls="product_file" role="tab"
+                                       data-toggle="tab" aria-expanded="false">فایل های محصول
+                                        <p class="text-center ea-font-11">(مرحله 5)
+                                        </p>
+                                    </a>
+                                </li>
+                            </ul>
+                            <!-- Tab panes -->
+                            <div class="tab-content">
+                                <div role="tabpanel" class="tab-pane active" id="product_info">
+                                    <div class="row m-b-15">
+                                        <div class="col-sm-4 col-xs-12">
+                                            <div class="form-group style-1">
+                                                <label for="">عنوان *</label>
+                                                <div class="input">
+                                                    <input type="text" id="title" name="title" class="form-control"
+                                                           value="{{ product.title }}">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row m-b-15">
+                                        <div class="col-sm-3 col-xs-12">
+                                            <div class="form-group">
+                                                <select name="published" title="وضعیت محصول" id="published"
+                                                        class="select_wait">
+                                                    <option {% if product.published %}selected{% endif %} value="1">
+                                                        منتشر شود
+                                                    </option>
+                                                    <option {% if not product.published %}selected{% endif %} value="0">
+                                                        منتشر نشود
+                                                    </option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row m-b-15">
+                                        <div class="col-sm-3 col-xs-12">
+                                            <div class="form-group">
+                                                <select name="gender" title="جنسیت" id="gender" class="select_wait">
+                                                    <option {% if product.gender == "both" %}selected{% endif %}
+                                                            value="both">هردو
+                                                    </option>
+                                                    <option {% if product.gender == "male" %}selected{% endif %}
+                                                            value="male">مرد
+                                                    </option>
+                                                    <option {% if product.gender == "female" %}selected{% endif %}
+                                                            value="female">زن
+                                                    </option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row m-b-15">
+                                        <div class="col-sm-3 col-xs-12">
+                                            <div class="form-group">
+                                                <select name="group" id="parent_category" title="نوع شاخه" class="select_wait" onchange="get_sub_categories(this)">
+                                                    {% for category in categories %}
+                                                        <option {% if product.category.parent.id == category.id %} selected {% endif %} value="{{ category.id }}">{{ category.title }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row m-b-15">
+                                        <div class="col-sm-12" id="categories">
+                                            <div class="col-sm-3 col-xs-12">
+                                                <div class="form-group">
+                                                    <select name="category"
+                                                            title="دسته بندی محصول *" id="sub_category"
+                                                            class="select_wait">
+                                                        {% for sub_category in sub_categories %}
+                                                            <option {% if product.category.id == sub_category.id %}selected{% endif %} value="{{ sub_category.id }}">{{ sub_category.title }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row m-b-15">
+                                        <div class="col-sm-3 col-xs-12  m-t-10">
+                                            <div class="form-group style-1">
+                                                <label class="check-ps big fit-width">
+                                                    <input type="checkbox"
+                                                           name="for_student"
+                                                            {% if not product %}
+                                                           checked
+                                                            {% else %}
+                                                           {% if product.for_student %}checked{% endif %}
+                                                            {% endif %}
+                                                    >
+                                                    <span></span><span class="">قابل نمایش برای دانش آموزان</span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row m-b-15">
+                                        <div class="col-sm-3 col-xs-12  m-t-10">
+                                            <div class="form-group style-1">
+                                                <label class="check-ps big fit-width">
+                                                    <input type="checkbox"
+                                                           name="for_teacher"
+                                                            {% if not product %}
+                                                           checked
+                                                            {% else %}
+                                                           {% if product.for_teacher %}checked{% endif %}
+                                                            {% endif %}
+                                                    >
+                                                    <span></span><span class="">قابل نمایش برای مربی</span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row m-b-15">
+                                        <div class="col-sm-4 col-xs-12">
+                                            <div class="form-group style-1">
+                                                <label for="">فروشنده</label>
+                                                <div class="input">
+                                                    <input type="text" id="seller_name" name="seller_name" class="form-control"
+                                                           value="{{ product.seller_name|default:"" }}">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                    <div class="form-group style-1 fix-label m-b-40">
+                                        <label for="">
+                                            توضیحات کلی محصول *
+                                        </label>
+                                        <div class="input">
+                                            <textarea rows="4" class="form-control"
+                                                      name="description">{{ product.description }}</textarea>
+                                        </div>
+                                    </div>
+
+
+                                </div>
+
+                                <div role="tabpanel" class="tab-pane" id="product_price">
+                                    <div class="row m-b-15">
+                                        <div class="col-sm-3 col-xs-12  m-t-10">
+                                            <div class="form-group style-1">
+                                                <label class="check-ps big fit-width">
+                                                    <input type="checkbox" onchange="changePriceInput()"
+                                                           name="status_price"
+                                                            {% if not product %}
+                                                           checked
+                                                            {% else %}
+                                                           {% if product.is_free %}checked{% endif %}
+                                                            {% endif %}
+                                                    >
+                                                    <span></span><span class="">محصول رایگان</span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-3 col-xs-12">
+                                            <div class="form-group style-1">
+                                                <label for="">قیمت(تومان)</label>
+                                                <div class="input">
+                                                    <input min="0"
+                                                            {% if not product %}
+                                                           disabled
+                                                            {% else %}
+                                                           {% if product.is_free %}disabled{% endif %}
+                                                            {% endif %}
+                                                           type="number"
+                                                           id="price" name="price" class="form-control"
+                                                           value="{{ product.price }}">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row m-b-15">
+                                        <div class="col-sm-3 col-xs-12 m-t-10">
+                                            <div class="form-group style-1">
+                                                <label class="check-ps big fit-width">
+                                                    {#                                                    <input type="checkbox" onchange="changeStatusInput('discount')"#}
+                                                    <input type="checkbox" onchange="change_status_discount()"
+                                                           name="status_discount" id="status_discount"
+                                                            {% if not product or product.is_free %}
+                                                           disabled
+                                                            {% endif %}
+                                                           {% if product.has_discount %}checked{% endif %}>
+                                                    <span class="{% if not product or product.is_free %}
+                                                                ea-cursor-not-e
+                                                            {% endif %}"></span><span class="">محصول تخفیف دارد</span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-3 col-xs-12">
+                                            <div class="form-group style-1">
+                                                <label for="">تخفیف (درصد)</label>
+                                                <div class="input">
+                                                    <input min="0" max="90" {% if not product.has_discount %}disabled{% endif %}
+                                                           type="number" id="discount" name="discount"
+                                                           class="form-control" value="{{ product.discount }}">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group style-1">
+                                        <label for="link_buy_direct">لینک محصول خارجی</label>
+                                        <div class="input">
+                                            <textarea type="url" {% if not product or product.is_free %} disabled {% endif %} name="link_buy_direct" id="link_buy_direct" class="form-control">{% if  product.link_buy_direct %} {{ product.link_buy_direct }} {% endif %}</textarea>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div role="tabpanel" class="tab-pane" id="product_sample_form">
+
+                                    <div class="row m-b-15">
+                                        <div class="col-sm-3 col-xs-12">
+                                            <div class="form-group">
+                                                <select onchange="sampleFormLoadFields()" name="sample_form"
+                                                        title="فرم خود را انتخاب کنید *" id="sample_form"
+                                                        class="select_wait">
+                                                    {% for sample_form in sample_forms %}
+                                                        <option {% if product.sample_form ==  sample_form.id %}selected{% endif %}
+                                                                value="{{ sample_form.id }}">{{ sample_form.title }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row m-b-15">
+                                        <div id="sample_form_container" class="col-sm-12 col-xs-12">
+
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div role="tabpanel" class="tab-pane" id="product_image">
+                                    <!--image-->
+                                    <div class="multi-file-content m-t-50" data-name="images"
+                                         data-type="activity-image">
+                                        <div class="activity-image-list">
+                                            <div class="row">
+                                                {% for image in product.images %}
+                                                    <div class="col-md-4 col-ps-6 col-xs-12" id="image-{{ image.id }}">
+                                                        <div class="activity-image">
+                                                            <a href="{{ image.image|server_public_url }}"
+                                                               target="_blank" class="image"
+                                                               style="background-image: url({{ image.image|server_public_url:"711x400" }})"
+                                                               download></a>
+                                                            <div class="content">
+                                                                <h4 class="title">{{ image.title }}</h4>
+                                                                <span class="size persian_number">{{ image.size|filesizeformat }}</span>
+                                                                <a onclick="delete_image('{{ image.id }}')"
+                                                                   type="button"
+                                                                   class="btn btn-warning btn-sm multi-file-remove">حذف</a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                        <p class="text-center m-b-40">
+                                            <button type="button" class="btn btn-primary multi-file-choose">
+                                                افزودن تصویر
+                                            </button>
+                                        </p>
+                                    </div>
+                                    <!--end image-->
+                                </div>
+
+                                <div role="tabpanel" class="tab-pane" id="product_file">
+                                    <!--file-->
+                                    <div class="multi-file-content m-t-50" data-name="files" data-type="activity-file">
+                                        <div class="activity-file-list">
+                                            {% for file in product.files %}
+                                                <div id="file-{{ file.id }}" class="activity-file">
+                                                    <span class="name">{{ file.title }}</span>
+                                                    <span class="size persian_number">{{ file.size|filesizeformat }}</span>
+                                                    {% if file.duration %}
+                                                        <span class="size persian_number"> {{ file.duration }} :زمان فایل </span>
+                                                    {% endif %}
+                                                    <a class="btn btn-primary" href="{{ file.file|server_public_url }}"
+                                                       download>
+                                                        دانلود
+                                                    </a>
+                                                    <button onclick="delete_file('{{ file.id }}')"
+                                                            class="btn btn-warning">حذف
+                                                    </button>
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                        <p class="text-center m-b-40">
+                                            <button type="button" class="btn btn-primary multi-file-choose">
+                                                افزودن فایل
+                                            </button>
+                                        </p>
+                                        <script type="text/template" id="">
+                                            <div class="activity-file" data-number="">
+                                                <input type="file" name="files[]">
+                                                <span class="name">عنوان فایل در اینجا</span>
+                                                <span class="size persian_number">260 kb</span>
+                                                <button type="button" class="btn btn-warning">
+                                                    حذف
+                                                </button>
+                                            </div>
+                                        </script>
+                                    </div>
+                                    <!--end file-->
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <section>
+                    <div>
+                        <button class="btn btn-lg btn-warning" type="submit">ذخیره همه تغییرات</button>
+                    </div>
+                </section>
+            </form>
+        </div>
+    </div>
+
+    <!--end content-->
+{% endblock %}
+
+{% block js_code %}
+    <!--for this page only-->
+    <script type="text/javascript" src="{% static "asset/script/plugin/bootstrap-select.js" %}"></script>
+    <script>
+
+        var sample_form_fields = '{{ product.sample_form_fields }}';
+        {% if product %}
+            sample_form_fields = JSON.parse(sample_form_fields.replace(/&quot;/g, '"')
+                .replace(/\\n/g, "\\n")
+                .replace(/\\'/g, "\\'")
+                .replace(/\\"/g, '\\"')
+                .replace(/\\&/g, "\\&")
+                .replace(/\\r/g, "\\r")
+                .replace(/\\t/g, "\\t")
+                .replace(/\\b/g, "\\b")
+                .replace(/\\f/g, "\\f")
+                .replace(/[\u0000-\u0019]+/g, "")
+            );
+            sampleFormLoadFields();
+
+        {% endif %}
+        var categories = [];
+        var deleted_images = [];
+        var deleted_files = [];
+
+        {% for category in categories %}
+            categories.push({
+                "id": '{{ category.id }}',
+                "parent": '{{ category.parent }}',
+                "title": '{{ category.title }}'
+            });
+        {% endfor %}
+
+        loadCategorySubGroup('{{ product.category.id }}');
+
+        function loadCategorySubGroup(category) {
+            var obj = getObjectsById(category);
+            while (obj) {
+                if (obj) {
+                    loadSubGroup(this, obj["parent"], obj["id"]);
+                    obj = getObjectsById(obj["parent"]);
+                }
+            }
+
+        }
+
+        function loadSubGroup(e, id_parent, own_id) {
+            var id_parent_selected = id_parent;
+            if (!id_parent) {
+                id_parent_selected = $(e).val();
+                removeOldGroup(e);
+
+            }
+            var childes = getObjectsByParent(id_parent_selected);
+            var options = "";
+            if (childes.length > 0) {
+                for (var i = 0; i < childes.length; i++) {
+                    var selected = "";
+                    if (own_id === childes[i]["id"]) {
+                        selected = "selected"
+                    }
+                    options += "<option value=" + childes[i]["id"] + " " + selected + " >" + childes[i]["title"] + "</option>"
+                }
+                if (!id_parent) {
+                    $("#categories").append(
+                        '<div class="col-sm-3 col-xs-12 cat-class">' +
+                        '<div class="form-group">' +
+                        '<select onchange="loadSubGroup(this)" name="category" title="دسته بندی محصول *" id="category" class="select_wait">' +
+                        options +
+                        '</select>' +
+                        '</div>' +
+                        '</div>'
+                    );
+
+                } else {
+                    $("#categories").prepend(
+                        '<div class="col-sm-3 col-xs-12 cat-class">' +
+                        '<div class="form-group">' +
+                        '<select onchange="loadSubGroup(this)" name="category" title="دسته بندی محصول *" id="category" class="select_wait">' +
+                        options +
+                        '</select>' +
+                        '</div>' +
+                        '</div>'
+                    );
+                }
+            }
+            set_select()
+        }
+
+        function removeOldGroup(e) {
+            $(e).parent().parent().parent().nextAll('.cat-class').remove()
+        }
+
+        function getObjectsByParent(id_parent) {
+            var list_child = [];
+            for (var i = 0; i < categories.length; i++) {
+                if (categories[i]["parent"] === id_parent) {
+                    list_child.push(categories[i])
+                }
+            }
+            return list_child
+        }
+
+        function getObjectsById(id_o) {
+            for (var i = 0; i < categories.length; i++) {
+                if (categories[i]["id"] === id_o) {
+                    return categories[i]
+                }
+            }
+        }
+
+        function change_status_discount() {
+
+            var _element = $("#status_discount");
+            var attr = $(_element).attr('checked');
+            var attr = $('#status_discount:checked').val();
+
+            {#var _element = $("#status_discount");#}
+            {#var attr = $(status_discount).attr('disabled');#}
+
+            if (typeof attr !== typeof undefined && attr !== false) {
+                {#$(status_discount).removeAttr('disabled');#}
+                $(discount).removeAttr('disabled');
+
+
+            } else {
+                {#$(status_discount).attr('disabled', 'disabled');#}
+                $(discount).attr('disabled', 'disabled');
+
+                {#$(_element).val("")#}
+
+            }
+        }
+
+        function changeStatusInput(id_element) {
+            var _element = $("#" + id_element);
+            var attr = $(_element).attr('disabled');
+
+            if (typeof attr !== typeof undefined && attr !== false) {
+                $(_element).removeAttr('disabled');
+
+            } else {
+                $(_element).attr('disabled', 'disabled');
+                $(_element).val("")
+
+            }
+        }
+
+        function changePriceInput() {
+            var _element = $("#price");
+            var attr = $(_element).attr('disabled');
+            {#var status_discount = $("input[name=status_discount]");#}
+
+            if (typeof attr !== typeof undefined && attr !== false) {
+                $(_element).removeAttr('disabled');
+                $(status_discount).removeAttr('disabled');
+                $(link_buy_direct).removeAttr('disabled');
+                {#$(discount).removeAttr('disabled');#}
+                $(status_discount).removeAttr('disabled');
+                {#$(status_discount).siblings("span").removeClass("ea-cursor-not-e")#}
+
+            } else {
+                $(_element).attr('disabled', 'disabled');
+                $(status_discount).attr('disabled', 'disabled');
+                $(link_buy_direct).attr('disabled', 'disabled');
+                {#$(discount).attr('disabled', 'disabled');#}
+                $(status_discount).attr('disabled', 'disabled');
+                {#status_discount.prop("checked", false);#}
+                {#                status_discount.attr('readonly',true);#}
+                {#$(_element).val("");#}
+                {#$("#discount").val("");#}
+
+            }
+        }
+
+        function sampleFormLoadFields() {
+            $.ajax({
+                url: '{% url 'load_sample_form_field' %}',
+                type: 'post',
+                data: {
+                    "sample_form_id": $("#sample_form").val(),
+                    "csrfmiddlewaretoken": '{{ csrf_token }}'
+                },
+                success: function (data) {
+                    if (data["message"] === "success") {
+                        generateHtmlSampleForm(data["sample_form"]["groups"])
+                    } else {
+                        toastr.error('لطفا بعدا سعی کنید.');
+                    }
+                }
+            });
+        }
+
+        function generateHtmlSampleForm(groups) {
+            $("#sample_form_container").html('');
+            var item = {};
+            for (var k = 0; k < groups.length; k++) {
+                $("#sample_form_container").append(
+                    '<div class="section-title style-1" style="display: grid">' +
+                    '<h3 class="title">' +
+                    '<span>' + groups[k]["label"] + ':</span>' +
+                    '</h3>' +
+                    '<div id="group_' + groups[k]["id"] + '"></div>' +
+                    '</div>'
+                )
+            }
+            for (var j = 0; j < groups.length; j++) {
+                var data_len = groups[j]["fields"].length;
+                var col_md = getColmd(data_len);
+                for (var i = 0; i < data_len; i++) {
+
+                    item = groups[j]["fields"][i];
+                    var group_div = "#group_" + groups[j]["id"];
+                    switch (item["type"]) {
+
+                        case "text_box":
+                            $(group_div).append(render_textbox(item, col_md, "sample_forms"));
+                            break;
+
+                        case "number":
+                            $(group_div).append(render_number(item, col_md, "sample_forms"));
+                            break;
+
+                        case "check_box":
+                            $(group_div).css("margin-bottom", "52px");
+                            $(group_div).append(render_checkbox(item, col_md, "sample_forms"));
+                            break;
+
+                    }
+                }
+            }
+
+            add_sample_form_field_value();
+            load_selected_box();
+
+        }
+
+        function add_sample_form_field_value() {
+            for (var item in sample_form_fields) {
+                var db_id = sample_form_fields[item]["sample_form_field"].toString();
+                var id_element = "#sample_forms" + db_id;
+                var value_element = sample_form_fields[item]["value"];
+                $(id_element).val(value_element);
+
+                if ($(id_element) === '') {
+                    $(id_element).parents('.form-group').removeClass('full');
+                } else {
+                    $(id_element).parents('.form-group').addClass('full');
+                }
+
+                if ($("#check_" + sample_form_fields[item]["sample_form_field"]).is(':checkbox')) {
+                    if (value_element === "on") {
+                        $("#check_" + (sample_form_fields[item]["sample_form_field"]).toString()).prop('checked', true);
+                        $(id_element).val('on')
+                    }
+                }
+            }
+        }
+
+        $("#product_from").submit(function (e) {
+            console.log("update");
+            e.preventDefault();
+            var formData = new FormData(this);
+
+            $.ajax({
+                url: '{% url 'product_insert_manager' %}',
+
+                type: 'POST',
+                data: formData,
+                cache: false,
+                contentType: false,
+                processData: false,
+                success: function (data) {
+                    $(".loading-box").css('visibility', 'hidden');
+                    var errors = data["errors"];
+                    if (errors.length > 0) {
+                        for (var i = 0; i < errors.length; i++) {
+                            toastr.error(errors[i]);
+                        }
+                    } else {
+                        if (data["message"] === "insert") {
+                            toastr.success('محصول ایجاد شد.');
+                            $("#product_id").val(data["product_id"])
+                        } else {
+                            toastr.success('محصول ویرایش شد.');
+                        }
+                    }
+
+                },
+                error: function (data) {
+                    $(".loading-box").css('visibility', 'hidden');
+                    toastr.error('لطفا بعدا سعی کنید.');
+                }
+            });
+        });
+
+        function delete_image(id) {
+            deleted_images.push(id);
+            $("#image-" + id).remove();
+            $("#deleted_images").val(deleted_images)
+
+        }
+
+        function delete_file(id) {
+            deleted_files.push(id);
+            $("#file-" + id).remove();
+            $("#deleted_files").val(deleted_files)
+        }
+
+        {#        $("#parent_category").change();#}
+
+        function get_sub_categories(element) {
+            $.ajax({
+                url: "{% url 'sub_category' category_id=1234578 %}".replace("1234578", $(element).val()),
+                type: 'GET',
+                success: function (data) {
+                    if (data['success']) {
+                        var str = "";
+                        for (var i = 0; i < data['categories'].length; i++) {
+                            var category = data['categories'][i];
+                            str += '<option value="' + category['id'] + '">' + category['title'] + '</option>';
+                        }
+                        $("#sub_category").html(str);
+                        $("#sub_category").selectpicker("refresh");
+                    } else {
+                        toastr.error('اطلاعات ارسالی نامعتبر می باشد.');
+                    }
+                },
+                error: function (data) {
+                    toastr.error('لطفا بعدا سعی کنید.');
+                }
+            })
+        }
+    </script>
+{% endblock %}

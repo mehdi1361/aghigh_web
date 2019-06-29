@@ -1,0 +1,186 @@
+{% extends "apps/base.html" %}
+{% load static %}
+{% load main_extra %}
+{% load date_to_persian %}
+{% block title %}سامانه عقیق|اطلاعیه ها{% endblock %}
+{% block logo %}
+    {% if request.user.userbox.gender == 'male' %}
+        <img src="{% static "/asset/image/b1.png" %}" id="banner-image" alt="">
+    {% else %}
+        <img src="{% static "/asset/image_gr/b1.png" %}" id="banner-image" alt="">
+    {% endif %}
+{% endblock logo %}
+{% block page_content %}
+    <style>
+        .user-profile-image {
+            height: 200px;
+            width: 200px;
+            padding: 10px;
+            box-shadow: 0 1px 3px rgba(34, 25, 25, 0.4);
+            -moz-box-shadow: 0 1px 2px rgba(34, 25, 25, 0.4);
+            -webkit-box-shadow: 0 1px 3px rgba(34, 25, 25, 0.4);
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .star-student {
+            font-weight: bold;
+            color: #ffae00;
+            font-size: 20px;
+        }
+    </style>
+    <!--content-->
+    <div id="content" class="body_min_height">
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="card text-center">
+                        <img onclick="$('#image-file').click()" class="card-img-top user-profile-image"
+                             src="
+                            {% if not request.user.userbox.image %}
+                                 {% if request.user.userbox.gender == "male" %}
+                                    {% static "/asset/image/avatar_male.png" %}
+                                {% else %}
+                                    {% static "/asset/image/avatar_female.png" %}
+                                {% endif %}
+                            {% else %}
+                                {{ request.user.userbox.image|server_public_url:"200x200" }}
+                            {% endif %}" alt="Card image">
+
+                        <form method="post" enctype="multipart/form-data" id="image-form">
+                            {% csrf_token %}
+                            <input type="file" name="image" class="hidden" id="image-file" onchange="readURL(this)">
+                            <div class="card-body">
+                                <h4 class="card-title">{{ request.user.userbox.full_name }}</h4>
+                                <p class="card-text" style="display: none" id="parent_student_point">
+                                    <span class="star-student">
+                                        <i class="fa fa-star-o"></i>
+                                        <span id="student_point"></span>
+                                    </span>
+                                </p>
+                                <button id="restart_tour" type="button" class="btn btn-lg btn-warning btn-sm" onclick="restart_tour()">مشاهده دوباره تور آموزشی</button>
+                                <button type="submit" id="confirm-image" class="btn btn-primary hidden">تایید عکس
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <hr>
+            <div class="product-info-3">
+                {% if request.user.userbox.user_type == "student" %}
+                    <div class="row">
+                        <div class="subject">
+                            <div class="highlighted">نام مدرسه:</div>
+                        </div>
+                        <div class="text">
+                            {{ request.user.userbox.school_name }}
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="row">
+                        <div class="subject">
+                            <div class="highlighted">نقش ها:</div>
+                        </div>
+                        <div class="text">
+                            {{ request|show_levels }}
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!--end content-->
+{% endblock %}
+
+{% block js_plugins %}
+    <script type="text/javascript" src="{% static "asset/script/plugin/owl.carousel.js" %}"></script>
+    <script>
+        function readURL(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                var fileType = input.files[0].type;
+                var ValidImageTypes = ["image/jpeg", "image/png"];
+
+                if ($.inArray(fileType, ValidImageTypes) < 0) {
+                    toastr.error('فقط فایل های jpg و png');
+                    return;
+                }
+
+                reader.onload = function (e) {
+                    $('.user-profile-image').attr({'src': e.target.result})
+
+                };
+
+                reader.readAsDataURL(input.files[0]);
+            }
+            $("#confirm-image").removeClass('hidden')
+        }
+    </script>
+    <script>
+        $("#image-form").submit(function (e) {
+            e.preventDefault();
+            var formData = new FormData(this);
+            $("#confirm-image").addClass('hidden');
+
+            $.ajax({
+                url: '{% url 'update_profile_image' %}',
+                type: 'POST',
+                data: formData,
+                cache: false,
+                contentType: false,
+                processData: false,
+                success: function (data) {
+                    $(".loading-box").css('visibility', 'hidden');
+                    if (data["message"] === "success") {
+                        toastr.success('عکس شما تغییر پیدا کرد.');
+
+                    } else {
+                        toastr.error('بعدا سعی کنین.');
+                    }
+                },
+                error: function (data) {
+                    $(".loading-box").css('visibility', 'hidden');
+                    toastr.error('لطفا بعدا سعی کنید.');
+                }
+            });
+        })
+    </script>
+
+    <script>
+        {% if request.user.userbox.user_type == "student" %}
+            $.ajax({
+                url: '{% url 'student_point' %}',
+                type: 'get',
+                success: function (data) {
+                    var student_point = 0;
+                    if (data["message"] === "success") {
+                        student_point = data['data'];
+                    }
+                    $("#parent_student_point").show();
+                    if (student_point) {
+                        $("#student_point").text(student_point);
+                    } else {
+                        $("#student_point").text(0);
+                    }
+                }
+            });
+        {% endif %}
+    </script>
+
+    <script>
+        $('#restart_tour').click(function () {
+            localStorage.removeItem('tour_current_step');
+            localStorage.removeItem('tour_end');
+            localStorage.removeItem('tour_redirect_to');
+            window.location = "/";
+        });
+
+        // Initialize the tour
+        tour.init();
+
+        // Start the tour
+        tour.start();
+    </script>
+{% endblock %}

@@ -1,0 +1,272 @@
+{% extends "apps/base.html" %}
+{% load static %}
+{% load date_to_persian %}
+{% load main_extra %}
+{% block title %}سامانه عقیق|سوالات{% endblock %}
+{% block logo %}
+    {% if request.user.userbox.gender == 'male' %}
+        <img src="{% static "/asset/image/b5.png" %}" id="banner-image" alt="">
+    {% else %}
+        <img src="{% static "/asset/image_gr/b5.png" %}" id="banner-image" alt="">
+    {% endif %}
+{% endblock logo %}
+
+{% block page_content %}
+
+    <!--content-->
+    <div id="content" class="body_min_height">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3 col-xs-12 m-b-30 pull-left">
+                    <div class="hamraz-detail">
+                        <h3 class="title">اطلاعات سوال</h3>
+                        <ul>
+                            <li><span>حوزه</span><a class="name">{{ question.main_category.title }}</a></li>
+                            <li><span>زیر حوزه</span><a class="name">{{ question.category.title }}</a></li>
+                            <li>
+                                <a class="btn btn-blue-light" style="width: 100%" data-toggle="modal" data-target="#comment_question">اضافه کردن یاداشت</a>
+                            </li>
+                            <li>
+                                <a class="btn btn-success" target="_blank" style="width: 100%" href="{% url 'comment_manager_question' %}?question={{ question.id|to_hash_id }}">یاداشت های مشاورین</a>
+                            </li>
+                            <li>
+                                <a class="btn btn-warning" target="_blank" style="width: 100%" href="{% url 'records_question' %}?question_id={{ question.id|to_hash_id }}">سوابق سوالات مشابه</a>
+                            </li>
+                            <li>
+                                {% if not question.has_in_faq %}
+                                    <a id="faq_question_btn" class="btn btn-blue" style="width: 100%" data-toggle="modal" data-target="#faq_question">اضافه کردن به پرسش های متداول</a>
+                                {% else %}
+                                    این سوال به سوالات متداول اضافه شده است
+                                {% endif %}
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-9">
+                    <div class="hamraz-text m-b-20">
+                        <div class="top">
+                            <span class="name">عنوان:{{ question.subject }}</span>
+                            <span class="time">
+                                <span><i class="fa fa-clock-o"></i> <span class="persian_number">{{ question.create_datetime |date_to_persian }}</span></span>
+                            </span>
+                        </div>
+                        <div class="text">
+                            <p>{{ question.body|linebreaks }}</p>
+                        </div>
+                    </div>
+
+                    <div class="activity-file-list m-b-30">
+                        {% for question_file in question.files %}
+                            <div class="activity-file">
+                                <span class="name">{{ question_file.title }}</span>
+                                <span class="size persian_number">{{ question_file.size | filesizeformat }}</span>
+                                <a class="btn btn-warning" href="{{ file_item.file|server_public_url }}"> دانلود
+                                </a>
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    <hr class="divider">
+                    <h3 style="color: #0a0000">گفتگو ها:</h3>
+                    <hr class="divider">
+
+                    {% for answer_item in question.answers %}
+                        <div class="hamraz-text m-b-20">
+                            <div class="top">
+                                {% if answer_item.user_type == "student" %}
+                                    <span class="name">دانش آموز:<span></span></span>
+                                {% else %}
+                                    <span class="name-h">همراز:<span></span></span>
+                                {% endif %}
+
+                                <span class="time">
+                                <span><i class="fa fa-clock-o"></i> <span class="persian_number">{{ answer_item.create_datetime |date_to_persian }}</span></span>
+                            </span>
+                            </div>
+                            <div class="text">
+                                <p>{{ answer_item.body | linebreaksbr }}
+                                </p>
+                            </div>
+                            <div class="activity-file-list m-b-30 m-t-35">
+                                {% for answer_item_file in answer_item.files %}
+                                    <div class="activity-file">
+                                        <span class="name">{{ answer_item_file.title }}</span>
+                                        <span class="size persian_number">{{ answer_item_file.size | filesizeformat }}</span>
+                                        <a class="btn btn-warning" href="{{ answer_item_file.file|server_public_url }}" download>
+                                            دانلود
+                                        </a>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <hr class="divider">
+                    {% endfor %}
+                    {% if question.code_state == "132" or question.code_state == "133" %}
+                        <form action="{% url 'answer_question' question_id=question.id|to_hash_id %}"
+                              method="post"
+                              enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="form-group style-1 fix-label m-b-30">
+                                <label for="">
+                                    پاسخ خود را بطور کامل و واضح وارد نمایید *
+                                </label>
+                                <div class="input">
+                                    <textarea rows="4" name="question_body" class="form-control" required></textarea>
+                                </div>
+                            </div>
+
+                            <!--file-->
+                            <div class="section-title style-1">
+                                <h3 class="title">
+                                    <span>فایل های پاسخ:</span>
+                                </h3>
+                            </div>
+                            <div class="multi-file-content" data-name="files" data-type="activity-file">
+                                <div class="activity-file-list m-b-30"></div>
+                                <p class="text-center m-b-40">
+                                    <button type="button" class="btn btn-primary multi-file-choose">
+                                        افزودن فایل
+                                    </button>
+                                </p>
+                            </div>
+                            <!--end file-->
+                            <button type="submit" class="btn btn-primary">ارسال</button>
+                        </form>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="comment_question" tabindex="-1" role="dialog" aria-labelledby="commentQuestionModalLabel">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                    <h4 class="modal-title" id="commentQuestionModalLabel">یاداشت گزاری</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group style-1 fix-label m-b-30">
+                        <label for="">
+                            یاداشت خود را بطور کامل وارد نمایید *
+                        </label>
+                        <div class="input">
+                            <textarea rows="4" id="comment_body" class="form-control" required style="min-height: 300px;"></textarea>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer no-border">
+                    <button type="button" class="btn btn-success" onclick="commentQuestion('{{ question.id|to_hash_id }}')">ارسال</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="faq_question" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                    <h4 class="modal-title">سوالات متداول</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group style-1 fix-label m-b-30">
+                        <label for="">
+                            عنوان سوال *
+                        </label>
+                        <div class="input">
+                            <input id="faq_subject" class="form-control" required value="{{ question.subject }}">
+                        </div>
+                    </div>
+                    <div class="form-group style-1 fix-label m-b-30">
+                        <label for="">
+                            سوال خود را بطور کامل وارد نمایید *
+                        </label>
+                        <div class="input">
+                            <textarea rows="4" id="faq_body" class="form-control" required style="min-height: 150px;">{{ question.body }}</textarea>
+                        </div>
+                    </div>
+                    <div class="form-group style-1 fix-label m-b-30">
+                        <label for="">
+                            پاسخ خود را بطور کامل وارد نمایید *
+                        </label>
+                        <div class="input">
+                            <textarea rows="4" id="faq_answer" class="form-control" required style="min-height: 150px;"></textarea>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer no-border">
+                    <button type="button" class="btn btn-success" onclick="faqQuestion('{{ question.id|to_hash_id }}')">ثبت</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--end content-->
+{% endblock %}
+
+{% block js_plugins %}
+    <!--for this page only-->
+    <script type="text/javascript" src="{% static "asset/script/plugin/bootstrap-select.js" %}"></script>
+{% endblock %}
+{% block js_code %}
+    <script type="text/javascript">
+        function commentQuestion(question_id) {
+            $.ajax({
+                url: '{% url 'comment_manager_question' %}',
+                type: 'POST',
+                data: {
+                    "question_id": question_id,
+                    "body": $("#comment_body").val(),
+                    "csrfmiddlewaretoken": '{{ csrf_token }}'
+                },
+                success: function (data) {
+                    if (data["message"] === 'success') {
+                        toastr.success('اضافه شد.');
+                        $("#comment_body").val('');
+                        $('#comment_question').modal('hide');
+
+                    } else {
+                        toastr.error('لطفا بعدا سعی کنید.');
+                    }
+                },
+                error: function (data) {
+                    toastr.error('لطفا بعدا سعی کنید.');
+                }
+            })
+        }
+
+        function faqQuestion(question_id) {
+            $.ajax({
+                url: '{% url 'faq_manager_question' %}',
+                type: 'POST',
+                data: {
+                    "question_id": question_id,
+                    "body": $("#faq_body").val(),
+                    "action": 'page_question',
+                    "subject": $("#faq_subject").val(),
+                    "answer": $("#faq_answer").val(),
+                    "csrfmiddlewaretoken": '{{ csrf_token }}'
+                },
+                success: function (data) {
+                    if (data["message"] === 'success') {
+                        toastr.success('اضافه شد.');
+                        $('#faq_question').modal('hide');
+                        $('#faq_question_btn').remove()
+
+                    } else {
+                        toastr.error('لطفا بعدا سعی کنید.');
+                    }
+                },
+                error: function (data) {
+                    toastr.error('لطفا بعدا سعی کنید.');
+                }
+            })
+        }
+
+    </script>
+{% endblock %}

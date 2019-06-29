@@ -1,0 +1,224 @@
+{% extends "apps/base.html" %}
+{% load static %}
+{% load date_to_persian %}
+{% load main_extra %}
+{% block title %}سامانه عقیق|فعالیت ها به تفکیک محور و شاخه{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'amcharts/plugins/export/export.css' %}" type="text/css" media="all"/>
+{% endblock %}
+
+{% block page_content %}
+    <!--content-->
+    <div id="content" class="body_min_height">
+        <div class="container">
+            <h3 class="text-center ea-mar-t-0 ea-mar-b-20">فعالیت ها به تفکیک محور و شاخه</h3>
+            <div class="search-detail">
+                <form method="get">
+                    <div class="col-sm-3 col-xs-12">
+                        <label for="county">استان ها :</label>
+                        <div class="form-group">
+                            <select name="province" id="province_select" class="select_wait">
+                                <option value="">همه استان ها</option>
+                                {% for province_db in provinces %}
+                                    <option {% if province_db.id == province %} selected {% endif %} value="{{ province_db.id }}">{{ province_db.title }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-sm-3 col-xs-12">
+                        <label for="county">شهرها :</label>
+                        <div class="form-group">
+                            <select name="county" id="county_select" class="select_wait">
+                                <option value="">همه شهرها</option>
+
+                                {% for county_db in counties %}
+                                    <option {% if county_db.id == county %} selected {% endif %} value="{{ county_db.id }}">{{ county_db.title }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-sm-3 col-xs-12">
+                        <div class="form-group">
+                            <label for="gender">جنسیت:</label>
+                            <select name="gender" id="gender_select" class="select_wait">
+                                <option selected value="">هر دو</option>
+                                <option {% if gender == "male" %} selected {% endif %} value="male">پسرانه</option>
+                                <option {% if gender == "female" %} selected {% endif %} value="female">دخترانه</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-sm-2 col-xs-12 pull-left">
+                        <button class="btn btn-warning" type="submit">اعمال</button>
+                    </div>
+                </form>
+            </div>
+            <div class="alert alert-info" role="alert">
+                <div class="row">
+                    <div class="col-sm-11">
+                        <span>
+                            هر یک از فعالیت های ثبت شده شامل 5 محور اصلی و هر یک از محور ها دارای شاخه هایی هستند در اینجا ما تعداد فعالیت های ثبت شده برای هر یک از محور ها و شاخه های آن را در قالب یک نمودار به شما نشان می دهیم.
+                        </span>
+                    </div>
+                    <div class="col-sm-1 text-center">
+                        <i class="fa fa-info-circle" style="font-size: 30px"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="row" id="activity_chart"></div>
+        </div>
+    </div>
+    <!--end content-->
+{% endblock %}
+{% block js_plugins %}
+    <!--for this page only-->
+    <script type="text/javascript" src="{% static "asset/script/plugin/bootstrap-select.js" %}"></script>
+
+    <script type="text/javascript" src="{% static "asset/script/plugin/owl.carousel.js" %}"></script>
+    <script src="{% static 'amcharts/amcharts.js' %}"></script>
+    <script src="{% static 'amcharts/pie.js' %}"></script>
+    <script src="{% static 'amcharts/plugins/export/export.min.js' %}"></script>
+    <script src="{% static 'amcharts/light.js' %}"></script>
+
+{% endblock %}
+{% block js_code %}
+    <script>
+
+        {% for activity_cat in  activities %}
+            $("#activity_chart").append('<div class="col-md-12 col-sm-12"><div id="dep_{{ activity_cat.id }}" style="height: 400px; width: 100%; direction: ltr"></div></div>');
+            var data = [];
+            {% for item in activity_cat.categories %}
+                data.push({
+                    "title": "{{ item.title }}",
+                    "count": {{ item.count }}
+                });
+            {% endfor %}
+            var chart = AmCharts.makeChart("dep_{{ activity_cat.id }}", {
+                "type": "pie",
+                "startDuration": 0,
+                "theme": "light",
+                "titles": [{
+                    "text": "{{ activity_cat.title }} تعداد کل مقدار {{ activity_cat.count }}",
+                    "size": 16
+                }],
+                "addClassNames": true,
+                "legend": {
+                    "position": "right",
+                    "marginRight": 100,
+                    "autoMargins": false
+                },
+                "innerRadius": "30%",
+                "defs": {
+                    "filter": [{
+                        "id": "shadow",
+                        "width": "200%",
+                        "height": "200%",
+                        "feOffset": {
+                            "result": "offOut",
+                            "in": "SourceAlpha",
+                            "dx": 0,
+                            "dy": 0
+                        },
+                        "feGaussianBlur": {
+                            "result": "blurOut",
+                            "in": "offOut",
+                            "stdDeviation": 5
+                        },
+                        "feBlend": {
+                            "in": "SourceGraphic",
+                            "in2": "blurOut",
+                            "mode": "normal"
+                        }
+                    }]
+                },
+                "dataProvider": data,
+                "valueField": "count",
+                "titleField": "title",
+                "export": {
+                    "enabled": true
+                }
+            });
+
+        {% endfor %}
+        chart.addListener("init", handleInit);
+
+        chart.addListener("rollOverSlice", function (e) {
+            handleRollOver(e);
+        });
+
+        function handleInit() {
+            chart.legend.addListener("rollOverItem", handleRollOver);
+        }
+
+        function handleRollOver(e) {
+            var wedge = e.dataItem.wedge.node;
+            wedge.parentNode.appendChild(wedge);
+        }
+    </script>
+    <script>
+        $("#county_select").on('change', function () {
+            $.ajax({
+                url: '{% url "main_camps" "123456789" %}'.replace("123456789", $(this).val()),
+                type: "GET"
+            }).done(function (data) {
+                var camps = data["camps"];
+                var i;
+                var camp_item = {};
+                var data_len = camps.length;
+                $("#camp_select").find('option').remove();
+
+                var camp_select = document.getElementById("camp_select");
+                var option = document.createElement("option");
+                option.text = "همه قرارگاه ها";
+                option.value = "";
+                camp_select.add(option);
+
+                option = document.createElement("option");
+                option.text = "بدون قرارگاه";
+                option.value = "without_camp";
+                camp_select.add(option);
+
+                for (i = 0; i < data_len; i++) {
+                    camp_item = camps[i];
+                    option = document.createElement("option");
+                    option.text = camp_item["title"];
+                    option.value = camp_item["id"];
+                    camp_select.add(option);
+                }
+                $("#camp_select").selectpicker("refresh");
+            });
+        });
+
+        $("#province_select").on('change', function () {
+            $.ajax({
+                url: '{% url "main_cities" "123456789" %}'.replace("123456789", $(this).val()),
+                type: "GET"
+            }).done(function (data) {
+                var camps = data["cities"];
+                var i;
+                var camp_item = {};
+                var data_len = camps.length;
+                var county_select = document.getElementById("county_select");
+
+                $("#county_select").find('option').remove();
+
+                var option = document.createElement("option");
+                option.text = "همه شهرها";
+                option.value = "";
+                county_select.add(option);
+
+                for (i = 0; i < data_len; i++) {
+                    camp_item = camps[i];
+                    option = document.createElement("option");
+                    option.text = camp_item["title"];
+                    option.value = camp_item["id"];
+                    county_select.add(option);
+                }
+                $("#county_select").selectpicker("refresh");
+            });
+        })
+
+
+    </script>
+{% endblock %}
+

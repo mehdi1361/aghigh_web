@@ -1,0 +1,79 @@
+@import 'var';
+
+
+.svg-wrapper svg {
+  display: block;
+  max-width: 100%;
+  margin-right: auto;
+  margin-left: auto;
+  width: 100%;
+}
+.map-border {
+  fill: $border-color;
+}
+.map-province {
+  fill: $province-color;
+  transition: fill 0.3s ease;
+
+  &:hover {
+    fill: $hover-color;
+  }
+}
+
+.map-sea {
+  fill: $sea-color;
+}
+
+.map-island {
+  fill: $island-color;
+}
+
+
+.map-sea-names {
+  fill: $sea-text-color;
+}
+
+.map-province-names {
+  fill: $province-text-color;
+}
+
+.map-link {
+
+}
+
+.map-province {
+
+  .khorasan-r,
+  .khorasan-j,
+  .kerman,
+  .azarbaijan-sh,
+  .azarbaijan-gh,
+  .ardebil,
+  .sistan,
+  .semnan,
+  .hormozgan,
+  .yazd,
+  .khorasan-sh,
+  .isfahan,
+  .fars,
+  .khoozestan,
+  .tehran,
+  .ghom,
+  .kermanshah,
+  .kordestan,
+  .zanjan,
+  .gilan,
+  .lorestan,
+  .markazi,
+  .hamedan,
+  .mazandaran,
+  .ilam,
+  .ghazvin,
+  .alborz,
+  .booshehr,
+  .kohkilooyeh,
+  .charmahal,
+  .golestan {
+
+  }
+}

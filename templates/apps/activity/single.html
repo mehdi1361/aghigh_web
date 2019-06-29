@@ -1,0 +1,649 @@
+{% extends "apps/base.html" %}
+{% load static %}
+{% load main_extra %}
+{% load date_to_persian %}
+{% block title %}سامانه عقیق|نمایش فعالیت{% endblock %}
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static "asset/style/star-rating.min.css" %}">
+    <link rel="stylesheet" href="{% static "asset/style/theme.min.css" %}">
+{% endblock %}
+{% block logo %}
+    {% if request.user.userbox.gender == 'male' %}
+        <img src="{% static "/asset/image/b1.png" %}" id="banner-image" alt="">
+    {% else %}
+        <img src="{% static "/asset/image_gr/b1.png" %}" id="banner-image" alt="">
+    {% endif %}
+{% endblock logo %}
+{% block page_content %}
+    <!--content-->
+
+    <div id="content" class="body_min_height">
+        <section>
+            <div class="container">
+                <div class="row row-min m-b-45">
+                    <div class="col-lg-6 m-b-20">
+                        <!--slide-->
+                        <div class="slide-min slide-2">
+                            <div class="owl-carousel single-activity-slider">
+                                {% for image_item in activity.images %}
+                                    <div class="item">
+                                        <img src="{{ image_item.image|server_public_url:"711x400" }}" alt=""
+                                             height="400">
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <!--end slide-->
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="product-detail">
+                            <h3 class="title">{{ activity.title }}
+                            </h3>
+                            <ul class="product-info-1">
+                                <li id="stars" class="single-rating ea-pos-rel">
+                                    <span class="persian_number"
+                                          id="activity_rate_average_span">{{ activity.rate.average }}</span>:
+                                    <input id="activity_rate_average" class="rating-view" type="text"
+                                           value="{{ activity.rate.average }}" title="">
+                                    <a href="#" class="ea-pos-cover"
+                                            {% if not "activity_rate" in app_list_disable %}
+                                                {% if request|has_perm:"activity_rate" and activity.student.id != request.user.userbox.api_user_id and activity.state == "ACCEPT" or activity.state == "TIL" %}
+
+                                       data-target="#ratingModal"
+                                       data-toggle="modal"
+                                                {% else %}
+                                       onclick="showToastPermRating()"
+                                                {% endif %} {% endif %}>
+                                    </a>
+                                </li>
+                                {% if not "activity_rate_users" in app_list_disable %}
+                                    <li id="rate_users" data-toggle="tooltip" class="ea-cursor-p" onclick="show_rate_users()"
+                                        data-placement="bottom" title="نفرات ستاره دهنده">
+                                        <i class="fa fa-user"></i>
+                                        <span class="persian_number"
+                                              id="activity_rate_count">{{ activity.rate.count }}</span>
+                                    </li>
+                                {% endif %}
+                                <li id="view_users" data-toggle="tooltip" data-placement="bottom" title="تعداد بازدید فعالیت">
+                                    <i class="fa fa-eye"></i>
+                                    <span class="persian_number">{{ activity.view_count }}</span>
+                                </li>
+
+                                <li id="point" data-toggle="tooltip" data-placement="bottom" title="امتیاز ارزیابی در بخش نظرات">
+                                    <i class="fa fa-trophy"></i>
+                                    <span class="persian_number">{{ activity.point_star.sum }}</span>
+                                </li>
+                                {% if request|has_perm:"activity_report_abuses" %}
+                                    <li data-toggle="modal" data-target="#ReportAbuseModal" class="ea-cursor-p">
+                                        <i data-toggle="tooltip" class="fa fa-warning" data-placement="bottom" title="گزارش مشکل"></i>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                            <ul class="product-info-2 m-b-40">
+                                <li>
+                                    <i class="fa fa-calendar"></i> <span class="subject">تاریخ برگزاری:</span>
+                                    <span>{{ activity.start_date |date_to_persian }}</span></li>
+                                <li>
+                                    <i class="fa fa-map-marker"></i> <span class="subject">مکان:</span>
+                                    <span>{{ activity.location }}</span>
+                                </li>
+                                <li>
+                                    <i class="fa fa-bank"></i> <span class="subject">مدرسه:</span> <a
+                                        href="{% url "league_single_school" school_id=activity.school.id|to_hash_id %}"><span>{{ activity.school.name }}</span></a>
+                                </li>
+                                <li>
+                                    <i class="fa fa-database"></i> <span class="subject">دسته بندی:</span>
+                                    <a href="{% url 'search_activity' %}?category={{ activity.category.id }}"><span>{{ activity.category.title }}</span></a>
+                                </li>
+                                <li>
+                                    <i class="fa fa-globe"></i> <span class="subject"></span>
+                                    <a href="{% url 'search_activity' %}?province={{ activity.school.province.id }}"><span>{{ activity.school.province.title }}</span></a>
+                                    <span>-</span>
+                                    <a href="{% url 'search_activity' %}?province={{ activity.school.province.id }}&county={{ activity.school.county.id }}"><span>{{ activity.student.school.county.title }}</span></a>
+                                </li>
+                            </ul>
+                            {% if request.user.userbox.role_select == "country" %}
+                                <div class="row">
+                                    <div class="col-lg-6 col-md-3 col-sm-6 col-xs-12 pull-left">
+                                        <button class="btn btn-warning fit-width" data-target="#ChangeStateModal" data-toggle="modal">
+                                            عدم رعایت ضوابط
+                                        </button>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section>
+            <div class="container">
+                <div class="section-title style-1 m-b-10">
+                    <h3 class="title">
+                        <span>توضیحات فعالیت:</span>
+                    </h3>
+                </div>
+                <div class="product-text m-b-60">
+                    <p>{{ activity.description|linebreaksbr }}</p>
+                </div>
+            </div>
+        </section>
+        {% if activity.files %}
+            <section>
+
+                <div class="container">
+
+                    <div class="section-title style-1 m-b-10">
+                        <h3 class="title">
+                            <span>فایل های فعالیت:</span>
+                        </h3>
+                    </div>
+                    <div class="activity-file-list m-b-50">
+                        {% for file_item in activity.files %}
+                            <div class="activity-file">
+                                <span class="name">{{ file_item.title }}</span>
+                                <span class="size persian_number">{{ file_item.size|filesizeformat }}</span>
+                                <a class="btn btn-warning" href="{{ file_item.file|server_public_url }}" download>
+                                    دانلود
+                                </a>
+                                {% if file_item.file|check_extension %}
+                                    <button class="btn btn-primary" data-play="{{ file_item.file|server_public_url }}">
+                                        پخش
+                                    </button>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+
+                    </div>
+                </div>
+
+            </section>
+        {% endif %}
+        <section>
+            <div class="container">
+                <div>
+
+                    <!-- Nav tabs -->
+                    <ul class="nav nav-tabs" role="tablist">
+                        <li role="presentation" class="active"><a data-target="#product_info"
+                                                                  aria-controls="product_info" role="tab"
+                                                                  data-toggle="tab">اطلاعات فعالیت</a></li>
+                        <li id="comments" role="presentation"><a data-target="#product_comment" aria-controls="product_comment"
+                                                                 role="tab" data-toggle="tab">نظرات</a></li>
+                    </ul>
+
+                    <!-- Tab panes -->
+                    <div class="tab-content">
+                        <div role="tabpanel" class="tab-pane active" id="product_info">
+                            <div class="product-info-3">
+                                {% for group in groups %}
+                                    <div class="row additionalfields-title">
+                                        <div>{{ group.label }}</div>
+                                    </div>
+                                    {% for field_item in group.additional_fields %}
+                                        <div class="row">
+                                            <div class="subject ver-m">
+                                                <div>{{ field_item.label }}</div>
+                                            </div>
+                                            {% if field_item.field_type == "file_upload" %}
+                                                <div class="m-b-50 files">
+                                                    {% for file_item in field_item.files %}
+                                                        <div class="activity-file-show no-border-rad">
+                                                            <span class="name">{{ file_item.title }}</span>
+                                                            <span class="size persian_number">{{ file_item.size }}</span>
+                                                            <a class="btn btn-warning ea-z-3" style="margin-right: 15px;padding: 5px 35px;" href="{{ file_item.path|server_public_url }}" download>
+                                                                <i class="fa fa-download" style="margin-left: 5px;vertical-align: middle"></i>
+                                                                دانلود
+                                                            </a>
+                                                            {% if file_item.path|check_extension %}
+                                                                <button class="btn btn-primary ea-z-3" style="margin-right: 15px;padding: 5px 35px;" data-play="{{ file_item.path|server_public_url }}">
+                                                                    <i class="fa fa-play" style="margin-left: 5px;vertical-align: middle"></i>
+                                                                    پخش
+                                                                </button>
+                                                            {% endif %}
+                                                        </div>
+                                                    {% endfor %}
+                                                </div>
+                                            {% else %}
+                                                <div class="text">
+                                                    {% if field_item.value == "on" %}
+                                                        <i class="fa fa-check" style="color: #409900"
+                                                           aria-hidden="true"></i>
+                                                    {% elif field_item.value == "off" %}
+                                                        <i class="fa fa-times" style="color: #FF004E"
+                                                           aria-hidden="true"></i>
+                                                    {% else %}
+                                                        <div>{{ field_item.value }}</div>
+                                                    {% endif %}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    {% endfor %}
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <div role="tabpanel" class="tab-pane" id="product_comment">
+                            <div class="comment-list">
+                                <div class="comment-item">
+                                    <div class="number blue">
+                                        <h5 class="title">میانگین کلی امتیاز کاربران</h5>
+                                        <div class="comment-point-list">
+                                            {% for param_item in activity.params %}
+                                                <div>
+                                                    <span>{{ param_item.title }}</span>
+                                                    <div>
+                                                        <div>
+                                                            <div style="width: {% widthratio param_item.value 5 100 %}%"></div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                    {% if request.user.userbox.api_user_id != activity.student.id and request|has_perm:"activity_comment" %}
+                                        <div class="send">
+                                            {% if not activity.user_has_comment %}
+                                                <p>شما هم میتوانید نظری ارسال نمایید!</p>
+                                                <p>با ارسال نظر، دوستان خود را در بهتر شدن فعالیت هایشان یاری
+                                                    نمایید.</p>
+                                                {% if not "activity_comment" in app_list_disable %}
+                                                    <button type="button" data-target="#commentModal" data-toggle="modal"
+                                                            class="btn btn-warning">
+                                                        ارسال نظر
+                                                    </button>
+                                                {% endif %}
+                                            {% else %}
+                                                <p>نظر شما با موفقیت ثبت گردیده است.</p>
+                                                <p></p>
+                                            {% endif %}
+                                        </div>
+                                    {% endif %}
+
+                                </div>
+                                {% for comment_item in comments %}
+                                    {% include "blocks/comment_item.html" with comment=comment_item %}
+                                {% endfor %}
+                                {% include "blocks/pagination.html" with pagination_data=pagination_data %}
+
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+    </div>
+    <!--end content-->
+    {% if activity.state == "ACCEPT" or activity.state == "TIL" %}
+        {% if request|has_perm:"activity_rate" %}
+            <div class="modal fade" id="ratingModal" tabindex="-1" role="dialog" aria-labelledby="ratingModalLabel">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">×</span>
+                            </button>
+                            <h4 class="modal-title" id="ratingModalLabel">ثبت امتیاز</h4>
+                        </div>
+                        <div class="modal-body text-center">
+                            <div class="row">
+                                <input id="activity_rate" class="rating" type="text"
+                                       value="{{ activity.rate.user_rate }}"
+                                       title="">
+                            </div>
+                            <p id="activity_rate_comment" class="text-right m-t-10 m-b-0"></p>
+                        </div>
+                        <div class="modal-footer no-border">
+                            <button type="button" class="btn btn-primary" data-dismiss="modal">بستن</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+        {% if request|has_perm:"activity_comment" %}
+            <div class="modal fade" id="commentModal" tabindex="-1" role="dialog" aria-labelledby="commentModalLabel">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">×</span>
+                            </button>
+                            <h4 class="modal-title" id="commentModalLabel">ثبت نظر</h4>
+                        </div>
+                        <div class="modal-body">
+                            {% csrf_token %}
+                            <input type="hidden" value="{{ activity.id|to_hash_id }}" name="activity" id="activity">
+                            <input type="hidden" value="-1" name="activity" id="edit_comment_id">
+                            <div class="form-group style-1 fix-label m-b-60">
+                                <label for="">
+                                    متن *
+                                </label>
+                                <div class="input">
+                                    <textarea rows="4" class="form-control" name="comment" id="comment"></textarea>
+                                </div>
+                            </div>
+                            {% if not activity.user_has_comment %}
+                                {% for param_item in params %}
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <div class="col-ps-12">
+                                                <label class="m-b-10" for="">{{ param_item.title }}</label>
+                                            </div>
+                                            <div class="col-ps-12">
+                                                <div class="slider-input rohola" value="0" from="0" to="5" step="1"
+                                                     type="single"
+                                                     name="params{{ param_item.id }}" id="{{ param_item.id }}"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            {% else %}
+                                {% for param_item in params %}
+                                    <div style="margin-top: -55px;"></div>
+                                    <div class="form-group hidden">
+                                        <div class="row">
+                                            <div class="col-ps-12">
+                                                <div class="slider-input rohola" value="0" from="0" to="5" step="1"
+                                                     type="single"
+                                                     name="params{{ param_item.id }}" id="{{ param_item.id }}"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+                        <div class="modal-footer no-border">
+                            <button type="button" class="btn btn-primary" data-dismiss="modal">انصراف</button>
+                            <button type="button" id="save_comment" class="btn btn-warning">ثبت</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    {% endif %}
+    <!-- modal show rate users -->
+    <div class="modal fade" id="rateUsersModal" tabindex="-1" role="dialog" aria-labelledby="rateUsersModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                    <h4 class="modal-title" id="rateUsersModalLabel">امتیاز دهندگان</h4>
+                </div>
+                <div class="modal-body text-center">
+                    <table class="table ea-text-right table-striped">
+                        <thead class="thead-dark">
+                        <tr>
+                            <th scope="col">ردیف</th>
+                            <th scope="col">نام کاربر</th>
+                            <th scope="col">امتیاز</th>
+                        </tr>
+                        </thead>
+                        <tbody id="users_list">
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer no-border">
+                    <a href="{% url 'activity_rate_users' activity_id=activity.id|to_hash_id %}"
+                       id="more_items" class="btn btn-warning pull-right ea-dis-none">
+                        بیشتر
+                    </a>
+                    <button type="button" class="btn btn-primary pull-right" data-dismiss="modal">بستن</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- modal change state activity -->
+    {% if request.user.userbox.role_select == "country" %}
+        <div class="modal fade" id="ChangeStateModal" tabindex="-1" role="dialog" aria-labelledby="ChangeStateModal"
+             style="display: none;">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                        <h4 class="modal-title" id="noteModalLabel">برای تغییر وضعیت فعالیت به عدم رعایت ضوابط مطمئن هستید؟</h4>
+                    </div>
+                    <div class="modal-footer no-border">
+                        <input type="hidden" name="activity_id" value="{{ activity.id|to_hash_id }}">
+                        <button type="button" class="btn btn-primary" data-dismiss="modal">
+                            انصراف
+                        </button>
+                        <button type="button" class="btn btn-warning" data-dismiss="modal" onclick="change_state_activity()">تایید
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+    <!-- modal send report abuse -->
+    {% if request|has_perm:"activity_report_abuses" %}
+        <div class="modal fade" id="ReportAbuseModal" tabindex="-1" role="dialog" aria-labelledby="ReportAbuseModalLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                        <h4 class="modal-title" id="ReportAbuseModalLabel">ثبت تخلف برای این فعالیت</h4>
+                    </div>
+                    <div class="modal-body">
+                        <label for="county">تخلف مربوط به کدام یک از موارد زیر می باشد :</label>
+                        <div class="form-group">
+                            <select name="category" id="category" class="select_wait">
+                                {% for category in categories_reports %}
+                                    <option value="{{ category.id }}">{{ category.title }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="form-group style-1 fix-label m-b-60">
+                            <label for="">
+                                توضیحات
+                            </label>
+                            <div class="input">
+                                <textarea rows="4" class="form-control" name="report_content"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer no-border">
+                        <button type="button" class="btn btn-primary" data-dismiss="modal">انصراف</button>
+                        <button type="button" onclick="save_report_abuse()" class="btn btn-warning">ثبت</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}
+
+{% block js_code %}
+    <!--for this page only-->
+    <script type="text/html" id='activity_rate_users'>
+        <tr>
+            <th scope="row">
+                <%= id %>
+            </th>
+            <td>
+                <%= name_link_to_school %>
+            </td>
+            <td>
+                <input class="rating" type="text" title="" value="<%= rate %>" id="rate-<%= id %>">
+            </td>
+        </tr>
+    </script>
+    <script type="text/javascript" src="{% static "asset/script/plugin/owl.carousel.js" %}"></script>
+    <script type="text/javascript" src="{% static "asset/script/plugin/range.js" %}"></script>
+    <script type="text/javascript" src="{% static "js/single_activity.js" %}"></script>
+    <script type="text/javascript" src="{% static "asset/script/plugin/star-rating.min.js" %}"></script>
+    <script type="text/javascript" src="{% static "asset/script/plugin/theme.min.js" %}"></script>
+    <script type="text/javascript" src="{% static "asset/script/plugin/Underscore_1.8.3.js" %}"></script>
+    <script type="text/javascript">
+        var rate_options = {
+            'theme': 'krajee-fa',
+            'showCaption': false,
+            'rtl': true,
+            'animate': false,
+            'showClear': false,
+            'disabled': false,
+            'stars': '5',
+            'min': '0',
+            'max': '5',
+            'step': '1',
+            'size': 'md'
+            // 'starCaptions': {0: 'status:nix', 1: 'status:wackelt', 2: 'status:geht', 3: 'status:laeuft'}
+        };
+        $('.rating-view').rating(rate_options);
+
+        $('.rating').rating(rate_options);
+
+        function showToastPermRating() {
+            {% if not request|has_perm:"activity_rate" %}
+                toastr.error('شما نمی توانید به فعالیت امتیاز دهید.');
+            {% else %}
+                toastr.error('اجازه بدهید دیگران به فعالیت شما امتیاز بدهند.');
+            {% endif %}
+        }
+        {% if request.user.userbox.role_select == "country" %}
+            function change_state_activity() {
+                var activity_id = $("input[name=activity_id]").val();
+                $.ajax({
+                    url: '{% url 'change_state_activity' '123456' %}'.replace('123456', activity_id),
+                    type: 'post',
+                    data: {
+                        "state": 'BAN',
+                        "csrfmiddlewaretoken": '{{ csrf_token }}'
+                    },
+                    success: function (data) {
+                        if (data['success']) {
+                            toastr.success('درخواست با موفقیت انجام شد.');
+                            window.location.href = '{% url 'search_activity' %}'
+                        } else {
+                            toastr.error('درخواست نامعتبر می باشد.');
+                        }
+                    }
+                });
+            }
+        {% endif %}
+    </script>
+
+    {% if request|has_perm:"activity_rate" and activity.student.id != request.user.userbox.api_user_id and activity.state == "ACCEPT" or activity.state == "TIL" %}
+
+        <script type="text/javascript">
+            if ($('#activity_rate').val()) {
+                var activity_old_rate = $('#activity_rate').val();
+                $("#activity_rate_comment").text('امتیاز شما به فعالیت ' + activity_old_rate + ' می باشد.');
+            }
+            $('#activity_rate').on('rating:change', function (event, value, caption) {
+                $.ajax({
+                    url: '{% url 'activity_rate' %}',
+                    type: 'post',
+                    data: {
+                        "rate": value,
+                        "activity_id": '{{ activity.id|to_hash_id }}',
+                        "csrfmiddlewaretoken": '{{ csrf_token }}'
+                    },
+                    success: function (data) {
+                        var message = data["message"];
+                        if (message === "success") {
+                            toastr.success('امتیاز شما ثبت شد.');
+                            $("#activity_rate_comment").text('امتیاز شما به فعالیت ' + value + ' می باشد.');
+                            $("#activity_rate_count").html(getArabicNumbers(data["data"]["count"]));
+                            $('.rating-view').rating('update', data["data"]["average"]);
+                            $('#activity_rate_average_span').html(getArabicNumbers(data["data"]["average"]));
+                        }
+                    }
+                });
+            });
+        </script>
+    {% endif %}
+
+    <script type="text/javascript">
+        var rate_options = {
+            'theme': 'krajee-fa',
+            'showCaption': false,
+            'rtl': true,
+            'animate': false,
+            'showClear': false,
+            'disabled': true,
+            'stars': '5',
+            'min': '0',
+            'max': '5',
+            'step': '1',
+            'size': '100'
+            // 'starCaptions': {0: 'status:nix', 1: 'status:wackelt', 2: 'status:geht', 3: 'status:laeuft'}
+        };
+
+        function show_rate_users() {
+            $("#users_list").html("");
+            $.ajax({
+                url: '{% url 'activity_rate_users' activity_id=activity.id|to_hash_id %}',
+                type: 'post',
+                data: {
+                    "activity_id": '{{ activity.id|to_hash_id }}',
+                    "csrfmiddlewaretoken": '{{ csrf_token }}'
+                },
+                success: function (response) {
+                    var message = response["message"];
+                    var rate_info = response["data"];
+                    if (message === "success") {
+                        for (var i = 0; i < rate_info.length && i < 8; i++) {
+                            var number = i + 1;
+                            var name_link = "";
+                            name_link = "<a href='{% url 'league_single_school' school_id='12345' %}'".replace(/12345/, rate_info[i]['school_id']) + ">" +
+                                rate_info[i]['name'] + "</a>";
+                            $("#users_list").append(_.template($("#activity_rate_users").html())({
+                                id: number,
+                                name_link_to_school: name_link,
+                                rate: rate_info[i]['rate']
+                            }));
+                            $('#rate-' + number).rating(rate_options);
+                        }
+                        if (rate_info.length > 8) {
+                            $("#more_items").show();
+                        }
+                        $("#rateUsersModal").modal('show');
+                    }
+                }
+            });
+        }
+
+        {% if request|has_perm:"activity_report_abuses" %}
+            function save_report_abuse() {
+                $.ajax({
+                    url: '{% url 'activity_report_abuses' %}',
+                    type: 'post',
+                    data: {
+                        "activity_id": '{{ activity.id|to_hash_id }}',
+                        "category_id": $("#category").val(),
+                        "csrfmiddlewaretoken": '{{ csrf_token }}',
+                        "content": $("textarea[name=report_content]").val()
+                    },
+                    success: function (data) {
+                        var response = data["response"];
+                        if (response === 201) {
+                            toastr.success('گزارش شما ثبت شد.');
+                            $("#ReportAbuseModal").modal('hide');
+                        }
+                        else {
+                            toastr.error('فیلد های الزامی را وارد کنید.');
+                        }
+                    },
+                    error: function () {
+                        toastr.error('گزارش شما ثبت نشد.');
+                    }
+                });
+            }
+        {% endif %}
+
+        // Initialize the tour
+        tour.init();
+
+        // Start the tour
+        tour.start();
+    </script>
+
+{% endblock %}

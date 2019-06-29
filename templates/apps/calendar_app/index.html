@@ -1,0 +1,721 @@
+{% extends "apps/base.html" %}
+{% load static %}
+{% load main_extra %}
+{% block title %}سامانه عقیق| تقویم{% endblock %}
+{% block logo %}
+    {% if request.user.userbox.gender == 'male' %}
+        <img src="{% static "/asset/image/b9.png" %}" id="banner-image" alt="">
+    {% else %}
+        <img src="{% static "/asset/image_gr/b9.png" %}" id="banner-image" alt="">
+    {% endif %}
+{% endblock logo %}
+
+{% block extra_css %}
+    <link href='{% static "asset/style/animate.css" %}' rel='stylesheet'/>
+    <link href='{% static "asset/calendar/dist/fullcalendar.css" %}' rel='stylesheet'/>
+{% endblock %}
+{% block page_content %}
+    <!--content-->
+    <div id="content" class="body_min_height">
+        <button type="button" class="btn btn-blue btn-circle btn-fix" id="create_new_event" data-toggle="modal"
+                data-target="#createTaskModal">
+            <i class="fa fa-pencil"></i>
+        </button>
+        <div class="container">
+            <hr>
+            <div class="row">
+                <div class="pull-left col-md-2 col-sm-12 col-xs-12 annual_events">
+                    <h4>
+                        مناسبت ها:
+                    </h4>
+                    <ul id="annual_events">
+                        {% if annual_events %}
+                            {% for event in annual_events %}
+                                <li>{{ event.title }}</li>
+                            {% endfor %}
+                        {% else %}
+                            <li>در این روز هیچ مناسبتی یافت نشد.</li>
+                        {% endif %}
+                    </ul>
+                </div>
+
+                <div id='calendar' class="col-md-10 col-sm-12 col-xs-12 pull-right"></div>
+            </div>
+            <div class="row m-t-20" id="calendar_color">
+                <div class="col-md-2">
+                    <label>راهنمای رنگ ها:</label>
+                </div>
+                <div class="col-md-12">
+                    <div class="col-md-1">
+                        <span style="display: inherit">اطلاعیه و محتوا:</span>
+                        <div style="background: #00BAD0;" class="input-color-picker"></div>
+                    </div>
+                    <div class="col-md-1">
+                        <span style="display: inherit">فعالیت:</span>
+                        {% if request.user.userbox.gender == 'female' %}
+                            <div style="background: #e645d0;" class="input-color-picker"></div>
+                        {% else %}
+                            <div style="background: #6C4CC7;" class="input-color-picker"></div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-1">
+                        <span style="display: inherit">کنسل ها:</span>
+                        <div style="background: #c7c7c7;" class="input-color-picker"></div>
+                    </div>
+                    <div class="col-md-5">
+                        <span style="display: inherit">سایر:</span>
+                        <div style="background: #D32F2F;" class="input-color-picker"></div>
+                        <div style="background: #689F38;" class="input-color-picker"></div>
+                        <div style="background: #0288D1;" class="input-color-picker"></div>
+                        <div style="background: #455A64;" class="input-color-picker"></div>
+                        <div style="background: #FF9716;" class="input-color-picker"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--end content-->
+    <div class="modal fade" id="createTaskModal" tabindex="-1" role="dialog" aria-labelledby="createTaskModalLabel"
+         data-toggle="modal" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                    <h4 class="modal-title">ثبت کار جدید</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="m-b-30">
+                        <div class="row">
+
+                            <div class="col-xs-6">
+                                <div class="form-group style-1">
+                                    <label for="">عنوان *</label>
+                                    <div class="input">
+                                        <input type="text" id="title" name="title"
+                                               class="form-control" required
+                                               oninvalid="setCustomValidity('عنوان اجباری است')"
+                                               oninput="setCustomValidity('')">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xs-6">
+                                <div><label class="m-b-10">رنگ</label></div>
+                                <div class="pull-right ea-pos-rel" onclick="checkedColor(this, '#D32F2F')">
+                                    <div style="background: #D32F2F;" class="input-color-picker"></div>
+                                    <div class="color-select ea-pos-m ea-text-fff"><i class="fa fa-check"></i></div>
+                                </div>
+                                <div class="pull-right m-r-10 ea-pos-rel"
+                                     onclick="checkedColor(this, '#689F38')">
+                                    <div style="background: #689F38;" class="input-color-picker"></div>
+                                    <div class="color-select ea-pos-m ea-text-fff hidden"><i
+                                            class="fa fa-check"></i></div>
+                                </div>
+                                <div class="pull-right m-r-10 ea-pos-rel"
+                                     onclick="checkedColor(this, '#0288D1')">
+                                    <div style="background: #0288D1;" class="input-color-picker"></div>
+                                    <div class="color-select ea-pos-m ea-text-fff hidden"><i
+                                            class="fa fa-check"></i></div>
+                                </div>
+                                <div class="pull-right m-r-10 ea-pos-rel"
+                                     onclick="checkedColor(this, '#455A64')">
+                                    <div style="background: #455A64;" class="input-color-picker"></div>
+                                    <div class="color-select ea-pos-m ea-text-fff hidden"><i
+                                            class="fa fa-check"></i></div>
+                                </div>
+                                <div class="pull-right m-r-10 ea-pos-rel"
+                                     onclick="checkedColor(this, '#FF9716')">
+                                    <div style="background: #FF9716;" class="input-color-picker"></div>
+                                    <div class="color-select ea-pos-m ea-text-fff hidden"><i
+                                            class="fa fa-check"></i></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="m-b-30">
+                        <div class="row">
+                            <div class="col-xs-6">
+                                <div class="form-group style-1 form-picker">
+                                    <label for="">تاریخ شروع*</label>
+                                    <div class="input">
+                                        <input type="text"
+                                               class="form-control input-picker datepicker_ps"
+                                               id="start_date" name="start_date">
+                                    </div>
+                                    <button type="button" class="btn-picker">
+                                        <i class="fa fa-calendar"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="m-b-30">
+                        <div class="row">
+                            <div class="col-xs-3">
+                                <div class="form-group style-1">
+                                    <label class="check-ps big fit-width">
+                                        <input type="checkbox" id="has_time" onchange="showTime(this)">
+                                        <span></span><span>ساعت دارد؟</span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-xs-4 select_time hidden">
+                                <div class="form-group style-1">
+                                    <select name="start_time" id="start_time" title="ساعت شروع" class="select_wait">
+                                        {% for i in "xxxxxxxxxxxxxxxxxxxxxxx" %}
+                                            <option value="{{ forloop.counter }}">{{ forloop.counter|get_zfill }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-xs-1 select_time hidden">
+                                <div class="form-group style-1">
+                                    <label>تا</label>
+                                </div>
+                            </div>
+                            <div class="col-xs-4 select_time hidden">
+                                <div class="form-group style-1">
+                                    <select name="end_time" id="end_time" title="ساعت پایان" class="select_wait">
+                                        {% for i in "xxxxxxxxxxxxxxxxxxxxxxxx" %}
+                                            <option value="{{ forloop.counter }}">{{ forloop.counter|get_zfill }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="m-b-30">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <div class="form-group style-1">
+                                    <label for="">شرح</label>
+                                    <div class="input">
+                                        <textarea type="text" id="description" name="description"
+                                                  class="form-control"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="m-b-30">
+                        <div class="row">
+                            <div class="col-xs-2">
+                                <div class="form-group style-1">
+                                    <label class="check-ps big fit-width">
+                                        <input id="has_repeat" type="checkbox" onchange="showRepeatTime(this)">
+                                        <span></span><span>تکرار</span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-xs-5 hidden repeat_time">
+                                <div class="form-group style-1">
+                                    <select name="rule" id="rule" title="نوع تکرار"
+                                            class="select_wait">
+                                        {% for key, value in repeat_type.items %}
+                                            <option value="{{ key }}">{{ value }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-xs-5 hidden repeat_time">
+                                <div class="form-group style-1 form-picker">
+                                    <label for="">تاریخ پایان دوره*</label>
+                                    <div class="input">
+                                        <input type="text"
+                                               class="form-control input-picker datepicker_ps"
+                                               id="end_recurring_period">
+                                    </div>
+                                    <button type="button" class="btn-picker">
+                                        <i class="fa fa-calendar"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="m-b-30">
+                        <div class="row">
+                            <div class="col-xs-12 hidden" id="all-day">
+                                {% for i in "xxxxxxx" %}
+                                    <div class="pull-right m-l-20 ea-pos-rel" onclick="checkedDay(this)">
+                                        <div><label style="color: #808080">{{ forloop.counter0|get_day_name }}</label>
+                                        </div>
+                                        <div style="background: #ccc;" class="input-color-picker"
+                                             data-val="{{ forloop.counter0 }}"></div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer no-border">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">بستن</button>
+                    <button class="btn btn-warning" onclick="submitEvent(this)">ثبت</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="showTaskModal" tabindex="-1" role="dialog" aria-labelledby="showTaskModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                    <h4 class="modal-title" id="showTaskModalLabel">نمایش رویداد</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="m-b-30">
+                        <div class="row">
+                            <div class="col-xs-6">
+                                <span>عنوان</span>:
+                                <span id="event_s_title"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="m-b-30">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <span>توضیحات</span>:
+                                <p id="event_s_description"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer no-border show-task-footer">
+                    <button id="remove_event" class="btn btn-large btn-danger"
+                            data-toggle="confirmation"
+                            data-singleton="true"
+                            data-btn-ok-label="بله"
+                            data-btn-ok-icon="glyphicon glyphicon-share-alt"
+                            data-btn-ok-class="btn-success"
+                            data-btn-cancel-label="خیر"
+                            data-btn-cancel-icon="glyphicon glyphicon-ban-circle"
+                            data-btn-cancel-class="btn-danger"
+                            data-title="آیا رویدادها را حذف می کنید؟"
+                            data-content="">
+                        حذف رویداد های مرتبط
+                    </button>
+                    <button id="remove_occurrence" class="btn btn-large btn-danger"
+                            data-toggle="confirmation"
+                            data-singleton="true"
+                            data-btn-ok-label="بله"
+                            data-btn-ok-icon="glyphicon glyphicon-share-alt"
+                            data-btn-ok-class="btn-success"
+                            data-btn-cancel-label="خیر"
+                            data-btn-cancel-icon="glyphicon glyphicon-ban-circle"
+                            data-btn-cancel-class="btn-danger"
+                            data-title="آیا رویداد را حذف می کنید؟"
+                            data-content="">
+                        حذف همین رویداد
+                    </button>
+
+                    <button id="cancelled_event" class="btn btn-large btn-warning"
+                            data-toggle="confirmation"
+                            data-singleton="true"
+                            data-btn-ok-label="بله"
+                            data-btn-ok-icon="glyphicon glyphicon-share-alt"
+                            data-btn-ok-class="btn-success"
+                            data-btn-cancel-label="خیر"
+                            data-btn-cancel-icon="glyphicon glyphicon-ban-circle"
+                            data-btn-cancel-class="btn-danger"
+                            data-title="آیا رویداد را کنسل می کنید؟"
+                            data-content="">
+                        کنسل کردن
+                    </button>
+
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock page_content %}
+
+{% block js_plugins %}
+    <script type="text/javascript" src="{% static "asset/script/plugin/picker.js" %}"></script>
+    <script type="text/javascript" src="{% static "asset/script/plugin/bootstrap-select.js" %}"></script>
+
+    <script type="text/javascript" src='{% static "asset/calendar/lib/jquery-ui/jquery-ui.js" %}'></script>
+    <script type="text/javascript" src='{% static "asset/calendar/lib/moment/moment.js" %}'></script>
+    <script type="text/javascript" src='{% static "asset/calendar/lib/moment/moment-jalaali.js" %}'></script>
+    <script type="text/javascript" src='{% static "asset/calendar/dist/fullcalendar.js" %}'></script>
+    <script type="text/javascript" src='{% static "asset/calendar/lang/fa.js" %}'></script>
+
+    <script type="text/javascript" src='{% static "asset/script/plugin/bootstrap-confirmation.min.js" %}'></script>
+
+{% endblock js_plugins %}
+
+{% block js_code %}
+    <!--for this page only-->
+    <script>
+        $('#cancelled_event').confirmation({
+            popout: true,
+            onConfirm: function () {
+                cancelledOccurrence('true')
+            }
+        });
+        $('#remove_occurrence').confirmation({
+            popout: true,
+            onConfirm: function () {
+                removeOccurrence()
+            }
+        });
+        $('#remove_event').confirmation({
+            popout: true,
+            onConfirm: function () {
+                removeEvent()
+            }
+        });
+
+        $('[data-toggle=confirmation]').confirmation('show', function (e) {
+            var singleton = $(this).attr("data-singleton");
+            if (singleton === "true") {
+                $('[data-toggle=confirmation]').not($(this)).confirmation('hide');
+            }
+        });
+    </script>
+    <script>
+
+        var day_select = ".fc-day.fc-widget-content.fc-today.fc-state-highlight";
+        var event_id = "";
+        var occurrence_id = "";
+
+        $('#calendar').fullCalendar({
+            header: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'month,agendaWeek,agendaDay'
+            },
+            lang: 'fa',
+            isJalaali: true,
+            isRTL: true,
+            editable: true,
+            droppable: false,
+            events: '{% url 'occurrence' %}',
+            dayClick: function (date, jsEvent, view) {
+                day_select = $(day_select).css('background-color', '#fff');
+                day_select = $(this).css('background-color', '#FFF176');
+
+                var day = date.date();
+                var month = date.month() + 1;
+                var year = date.year();
+                $.ajax({
+                    url: '{% url 'get_annual_events' %}',
+                    type: 'post',
+                    data: {
+                        "day": day,
+                        "month": month,
+                        "year": year,
+                        "csrfmiddlewaretoken": '{{ csrf_token }}'
+                    },
+                    success: function (data) {
+                        var message = data["message"];
+                        if (message === "success") {
+                            var events = data["events"];
+                            $("#annual_events").html('');
+                            for (var i = 0; i < events.length; i++) {
+                                $("#annual_events").append('<li>' + events[i]["title"] + '</li>')
+                            }
+                            if (events.length === 0) {
+                                $("#annual_events").append('<li>در این روز هیچ مناسبتی یافت نشد.</li>')
+                            }
+                        }
+                    }
+                });
+            },
+            eventDrop: function (event, delta, revertFunc) {
+                updateOccurrence(event);
+            },
+            eventResize: function (event, delta, revertFunc) {
+                updateOccurrence(event);
+            },
+            eventClick: function (calEvent, jsEvent, view) {
+                event_id = calEvent.event_id;
+                occurrence_id = calEvent.id;
+                $("#event_s_description").html(calEvent.description);
+                $("#event_s_title").html(calEvent.title);
+                $("#showTaskModal").modal('show');
+                $(".show-event").remove();
+                var url_mask = "";
+                $("#remove_occurrence").addClass('hidden');
+
+                if (calEvent.type === "activity") {
+                    url_mask = "{% url 'single_activity' activity_id=12345 %}".replace(/12345/, calEvent.id_href);
+                    $(".show-task-footer").append("<a class='show-event btn btn-large btn-info'  href='" + url_mask + "'>نمایش فعالیت</a>");
+                }
+                else if (calEvent.type === "announcement") {
+                    url_mask = "{% url "single_announcement" announcement_id=12345 %}".replace(/12345/, calEvent.id_href);
+                    $(".show-task-footer").append("<a class='show-event btn btn-large btn-info'  href='" + url_mask + "'>نمایش اطلاعیه و محتوا</a>");
+                } else {
+                    $("#remove_occurrence").removeClass('hidden');
+
+                }
+
+                if (calEvent.editable) {
+                    if (calEvent.cancelled) {
+                        $("#cancelled_event").addClass('hidden');
+                    }
+                } else {
+                    $("#cancelled_event").addClass('hidden');
+                    $("#remove_event").addClass('hidden');
+                }
+            }
+        });
+
+    </script>
+    <script>
+        var color = "#e91e63";
+
+        function checkedColor(e, s_color) {
+            $('.color-select').addClass("hidden");
+            $(e).find('.color-select').removeClass("hidden");
+            color = s_color;
+        }
+
+        function checkedDay(e) {
+            if ($(e).find('.input-color-picker').hasClass('selected_day')) {
+
+                $(e).find('.input-color-picker').removeClass("selected_day");
+                $(e).find('.input-color-picker').css("background", "#ccc")
+            } else {
+                $(e).find('.input-color-picker').addClass("selected_day");
+                $(e).find('.input-color-picker').css("background", "#e91e63");
+            }
+        }
+
+        function showTime(e) {
+            var checked = $(e).prop('checked');
+            if (checked) {
+                $(".select_time").removeClass('hidden');
+            } else {
+                $(".select_time").addClass('hidden');
+            }
+        }
+
+        function showRepeatTime(e) {
+            var checked = $(e).prop('checked');
+            if (checked) {
+                $(".repeat_time").removeClass('hidden');
+            } else {
+                $(".repeat_time").addClass('hidden');
+                $("#all-day").removeClass('fadeIn').addClass('hidden')
+            }
+        }
+
+        function pad(num, size) {
+            var s = num + "";
+            while (s.length < size) s = "0" + s;
+            return s;
+        }
+
+        function submitEvent(e) {
+            $(e).attr('disabled', 'disabled');
+            var data = {
+                "start_date": $("#start_date").val(),
+                "title": $("#title").val(),
+                "color": color,
+                "description": $("#description").val(),
+                "csrfmiddlewaretoken": '{{ csrf_token }}'
+            };
+
+            var has_repeat = $("#has_repeat").prop('checked');
+
+            if (has_repeat) {
+                var week_days = "";
+                $(".selected_day").each(function (index, e) {
+                    week_days = week_days + "," + e.getAttribute('data-val')
+                });
+
+                data["end_recurring_period"] = $("#end_recurring_period").val();
+                data["week_days"] = week_days;
+                data["rule"] = $("#rule").val();
+
+            }
+
+            var has_time = $("#has_time").prop('checked');
+            if (has_time) {
+                data["end_time"] = $("#end_time").val();
+                data["start_time"] = $("#start_time").val();
+            }
+
+
+            $.ajax({
+                url: '{% url 'occurrence' %}',
+                type: 'post',
+                data: data,
+                success: function (data) {
+                    var message = data["message"];
+                    if (message === "error") {
+                        toastr.error('اطلاعات را درست وارد کنید.');
+                        toastr.error('فیلد های ستاره دار را وارد کنید.');
+
+                    } else if (message === "exceeded_limit") {
+                        toastr.error('تعداد دوره انتخابی زیاد می باشد.');
+
+                    } else {
+                        toastr.success('کار جدید اضافه شد.');
+                        $('#calendar').fullCalendar("refetchEvents");
+                        $("#createTaskModal").modal('hide');
+                        clearForm();
+                    }
+                    $(e).removeAttr('disabled');
+                }
+            });
+
+        }
+
+        function cancelledOccurrence(cancelled) {
+            $.ajax({
+                url: '{% url 'update_occurrence' %}',
+                type: 'post',
+                data: {
+                    "event_id": event_id,
+                    "occurrence_id": occurrence_id,
+                    "cancelled": cancelled,
+                    "csrfmiddlewaretoken": '{{ csrf_token }}'
+                },
+                success: function (data) {
+                    var message = data["message"];
+                    if (message === "error") {
+                        toastr.error('لطفا بعدا تلاش کنید.');
+                    } else {
+                        toastr.success('رویداد کنسل گردید.');
+                        $("#showTaskModal").modal('hide');
+                        $('#calendar').fullCalendar("refetchEvents");
+                    }
+                },
+                error: function (e) {
+                    toastr.error('شما دسترسی ندارید.');
+                }
+            });
+
+        }
+
+        function removeOccurrence() {
+            $.ajax({
+                url: '{% url 'remove_occurrence' %}',
+                type: 'post',
+                data: {
+                    "occurrence_id": occurrence_id,
+                    "csrfmiddlewaretoken": '{{ csrf_token }}'
+                },
+                success: function (data) {
+                    var message = data["message"];
+                    if (message === "error") {
+                        toastr.error('لطفا بعدا تلاش کنید.');
+                    } else {
+                        toastr.success('رویداد حذف گردید.');
+                        $("#showTaskModal").modal('hide');
+                        $('#calendar').fullCalendar("refetchEvents");
+                    }
+                },
+                error: function (e) {
+                    toastr.error('شما دسترسی ندارید.');
+                }
+            });
+
+        }
+
+        function removeEvent() {
+            $.ajax({
+                url: '{% url 'remove_event' %}',
+                type: 'post',
+                data: {
+                    "event_id": event_id,
+                    "csrfmiddlewaretoken": '{{ csrf_token }}'
+                },
+                success: function (data) {
+                    var message = data["message"];
+                    if (message === "error") {
+                        toastr.error('لطفا بعدا تلاش کنید.');
+                    } else {
+                        toastr.success('رویداد حذف گردید.');
+                        $("#showTaskModal").modal('hide');
+                        $('#calendar').fullCalendar("refetchEvents");
+                    }
+                },
+                error: function (e) {
+                    toastr.error('شما دسترسی ندارید.');
+                }
+            });
+
+        }
+
+        function updateOccurrence(event) {
+            $.ajax({
+                url: '{% url 'update_occurrence' %}',
+                type: 'post',
+                data: {
+                    "event": JSON.stringify(event),
+                    "csrfmiddlewaretoken": '{{ csrf_token }}'
+                },
+                success: function (data) {
+                    var message = data["message"];
+                    if (message === "error") {
+                        toastr.error('لطفا بعدا تلاش کنید.');
+                    } else {
+                        $('#calendar').fullCalendar("refetchEvents");
+                        toastr.success('رویداد ویرایش گردید.');
+                    }
+                },
+                error: function (e) {
+                    toastr.error('شما دسترسی ندارید.');
+                }
+            });
+
+        }
+
+        function clearForm() {
+
+            $("#start_date").val('');
+            $("#title").val('');
+            $("#description").val('');
+            $(".input-picker").val("").selectpicker('refresh').parent().parent().removeClass('full');
+
+            $(".select_wait option:selected").prop("selected", false);
+
+            $("#start_time").selectpicker('refresh');
+            $("#end_time").selectpicker('refresh');
+            $("#has_time").prop('checked', false);
+
+            $("#rule").selectpicker('refresh');
+            $("#has_repeat").prop('checked', false);
+
+            showRepeatTime($("#has_repeat"));
+            showTime($("#has_time"));
+        }
+
+        $('#showTaskModal').on('hidden.bs.modal', function () {
+            $("#remove_event").removeClass('hidden');
+            $("#cancelled_event").removeClass('hidden');
+        });
+
+        $("#rule").on("change", function () {
+            if ($(this).val() === "WEEKLY") {
+                $("#all-day").removeClass('fadeOut').addClass('animated fadeIn').removeClass('hidden');
+            } else {
+                $("#all-day").removeClass('fadeIn').addClass('animated fadeOut')
+            }
+        });
+
+        $("#start_time").on("change", function () {
+            var start_time = parseInt($(this).val()) + 1;
+            var options = "";
+            for (var i = start_time; i <= 24; i++) {
+                var value = pad(i, 2);
+                options += '<option value=' + value + '>' + value + '</option>'
+            }
+            $("#end_time").html(options);
+            $("#end_time").selectpicker('refresh')
+
+
+        });
+
+        // Initialize the tour
+        tour.init();
+
+        // Start the tour
+        tour.start();
+
+    </script>
+{% endblock js_code %}

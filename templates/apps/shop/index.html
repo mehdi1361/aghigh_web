@@ -1,0 +1,154 @@
+{% extends "apps/base.html" %}
+{% load static %}
+{% load main_extra %}
+{% block title %}سامانه عقیق|فروشگاه{% endblock %}
+{% block logo %}
+    {% if request.user.userbox.gender == 'male' %}
+        <img src="{% static "/asset/image/b2.png" %}" id="banner-image" alt="">
+    {% else %}
+        <img src="{% static "/asset/image_gr/b2.png" %}" id="banner-image" alt="">
+    {% endif %}
+{% endblock logo %}
+{% block page_content %}
+    <!--content-->
+    <div id="content" class="body_min_height">
+        <a href="{% url 'search_product' %}" class="btn btn-blue btn-circle btn-fix" style="bottom: 100px !important;">
+            <i class="fa fa-search"></i>
+        </a>
+        <a href="{% url 'shopping_basket' %}" class="btn btn-blue btn-circle btn-fix">
+            {% with request|get_count_product_in_basket as basket_count %}
+                <span id="basket_count" class="number persian_number" data-val="{{ basket_count }}">{{ basket_count }}</span>
+            {% endwith %}
+            <i class="fa fa-shopping-cart"></i>
+        </a>
+        <section>
+            <div class="container">
+                <div class="row row-min">
+                    <div class="col-lg-8 m-b-20">
+                        <!--slide-->
+                        <div class="slide-min style-1">
+                            <div class="owl-carousel owl-carousel-slide">
+                                {% for image in sliders %}
+                                    <div class="item">
+                                        {% if image.type == "PRODUCT" %}
+                                            <a href="{% url "single_product" product_id=image.link|to_hash_id %}" class="slide-item style-3">
+                                                <div class="image" style="background-size: contain; background-image: url('{{ image.image |server_public_url }}')"></div>
+                                                <h4 class="title">{{ image.title }}</h4>
+                                            </a>
+                                        {% else %}
+                                            <a href="{% if image.link %}{{ image.link }}{% else %}#{% endif %}" class="slide-item style-3">
+                                                <div class="image" style="background-size: contain; background-image: url('{{ image.image |server_public_url }}')"></div>
+                                                <h4 class="title">{{ image.title }}</h4>
+                                            </a>
+                                        {% endif %}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4" style="text-align: center">
+                        <!--widget-->
+                        <div class="row activity-widget-row">
+                            <div class="col-ps-6" id="shoping_cart">
+                                <a href="{% url 'shopping_basket' %}" class="activity-widget bg-color-1">
+                                    <div>
+                                        <div>
+                                            <h4 class="title" style="color: #fff !important;">
+                                                سبد خرید
+                                            </h4>
+                                        </div>
+
+                                    </div>
+                                    <span class="border border-1"></span>
+                                </a>
+                            </div>
+                            <div class="col-ps-6 " id="product_search">
+                                <a href="{% url 'search_product' %}" class="activity-widget bg-color-2">
+                                    <div>
+                                        <div>
+                                            <h4 class="title" style="color: #fff !important;">
+                                                جستجوی محصول
+                                            </h4>
+                                        </div>
+
+                                    </div>
+                                    <span class="border border-2"></span>
+                                </a>
+                            </div>
+                            <div class="col-ps-12" id="my_bills">
+                                <a href="{% url 'shopping_invoice' %}" class="activity-widget bg-color-4">
+                                    <div>
+                                        <div>
+                                            <h4 class="title" style="color: #fff !important;">
+                                                فاکتور های من
+                                            </h4>
+                                        </div>
+
+                                    </div>
+                                    <span class="border border-3"></span>
+                                </a>
+                            </div>
+{#                            <div class="col-ps-6">#}
+{#                                <a href="" class="activity-widget bg-color-5">#}
+{#                                    <div>#}
+{#                                        <div>#}
+{#                                            <h4 class="title" style="color: #fff !important;">#}
+{#                                                محصولات#}
+{#                                            </h4>#}
+{#                                        </div>#}
+{##}
+{#                                    </div>#}
+{#                                    <span class="border border-5"></span>#}
+{#                                </a>#}
+{#                            </div>#}
+                        </div>
+                        <!--end widget-->
+                    </div>
+
+                </div>
+            </div>
+        </section>
+        {% for product_box in special_categories %}
+            <section class="m-b-25">
+                <div class="container">
+                    <div class="section-title style-1">
+                        <h3 class="title">
+                            <i class="fa fa-star"></i>
+                            <span>{{ product_box.title }}</span>
+                        </h3>
+                        <div class="pull-left">
+                            <a href="{% url 'search_product' %}?{{ product_box.query_param }}"
+                               class="btn btn-sm btn-warning">بیشتر</a>
+                        </div>
+                    </div>
+
+                    <div class="activity-list-slide">
+                        {% if product_box.products %}
+                            <div class="owl-carousel owl-carousel-activity">
+                                {% for product_item in product_box.products %}
+                                    <div class="item">
+                                        {% include "blocks/product_item.html" with product=product_item %}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </section>
+        {% endfor %}
+    </div>
+    <!--end content-->
+{% endblock %}
+
+{% block js_code %}
+    <!--for this page only-->
+    <script type="text/javascript" src="{% static 'asset/script/plugin/owl.carousel.js' %}"></script>
+
+    <script>
+        // Initialize the tour
+        tour.init();
+
+        // Start the tour
+        tour.start();
+    </script>
+{% endblock %}
