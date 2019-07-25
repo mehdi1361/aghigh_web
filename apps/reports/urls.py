@@ -6,6 +6,7 @@ from apps.reports.views import (
     UserReports,
     SchoolReports,
     IndexReports,
+    SessionReports,
     AverageActivityTime,
     ActivityCatDep,
     DateDoneActivityReports,
@@ -15,6 +16,7 @@ from apps.reports.views import (
 urlpatterns = [
     url(r'^activity/date_register', DateRegisterActivityReports.as_view(), name='date_register_activity_reports'),
     url(r'^$', IndexReports.as_view(), name='index_report'),
+    url(r'^active_sessions/$', SessionReports.as_view(), name='session_reports'),
     url(r'^activity$', ActivityReports.as_view(), name='activity_reports'),
     url(r'^activity/date_done/$', DateDoneActivityReports.as_view(), name='date_done_activity_reports'),
     url(r'^activity/date_accept/$', DateAcceptActivityReports.as_view(), name='date_accept_activity_reports'),
