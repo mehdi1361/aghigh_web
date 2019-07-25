@@ -76,6 +76,7 @@ acl_view_segment_divided = {
     "reports": [
         "date_register_activity_reports",
         "index_report",
+        "session_reports",
         "activity_reports",
         "user_reports",
         "school_reports",

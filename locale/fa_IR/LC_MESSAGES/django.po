@@ -138,3 +138,22 @@ msgid "info date accept day"
 msgstr ""
 "پراکندگی زمان تایید فعالیت های دانش آموزان در روز های مختلف سال(ملاک زمان "
 "تایید نهایی فعالیت توسط مربی می باشد)"
+
+#: templates/apps/reports/active_sessions.html:25
+msgid "last login date"
+msgstr "آخرین بازدید"
+
+msgid "status"
+msgstr "وضعیت"
+
+msgid "active"
+msgstr "فعال"
+
+msgid "inactive"
+msgstr "غیر فعال"
+
+msgid "student"
+msgstr "دانش آموز"
+
+msgid "teacher"
+msgstr "مربی"

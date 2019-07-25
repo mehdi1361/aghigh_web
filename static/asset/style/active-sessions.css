@@ -1,0 +1,3 @@
+#activeSessions tbody tr td { color: red; }
+#activeSessions tbody tr.active td { color: green; }
+#activeSessions { width: 100% !important; }

@@ -180,6 +180,13 @@
                                                         </a>
                                                         <div class="sub-menu-box">
                                                             <ul class="sub-menu">
+                                                                {% if request|has_perm:"session_reports" %}
+                                                                    {% if not "session_reports" in app_list_disable %}
+                                                                        <li {% if url_name  == 'session_reports' %}class="active"{% endif %}>
+                                                                            <a href="{% url "session_reports" %}">بازدید های اخیر </a>
+                                                                        </li>
+                                                                    {% endif %}
+                                                                {% endif %}
                                                                 {% if request|has_perm:"workspace_index" %}
                                                                     {% if not "workspace_index" in app_list_disable %}
                                                                         <li {% if url_name  == 'workspace_index' %}class="active"{% endif %}>

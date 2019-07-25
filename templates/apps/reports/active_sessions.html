@@ -1,0 +1,67 @@
+{% extends "apps/base.html" %}
+{% load static %}
+{% load date_to_persian %}
+{% load main_extra %}
+{% load i18n %}
+{% block title %}سامانه عقیق|بازدید های اخیر{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'amcharts/plugins/export/export.css' %}" type="text/css" media="all"/>
+<link rel="stylesheet" href="{% static 'asset/style/active-sessions.css' %}" type="text/css" media="all"/>
+<link rel="stylesheet" href="{% static 'iranmap/map.css' %}" type="text/css" media="all"/>
+<link rel="stylesheet" href="{% static 'asset/style/datatable.min.css' %}" type="text/css" media="all"/>
+{% endblock %}
+
+{% block page_content %}
+<!--content-->
+<div id="content" class="body_min_height">
+    <div class="container">
+        <p>last views</p>
+        <table class="table" id="activeSessions">
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>Role</th>
+                <th>{% trans "last login date" %}</th>
+                <th>Status</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for active_user in users %}
+            <tr {% if active_user.state %}
+                class="active"
+                {% endif %}>
+                <td>{{ active_user.name }}</td>
+                <td>{{ active_user.role }}</td>
+                <td>{{ active_user.last_login_date | date_to_persian }}</td>
+                <td>{{ active_user.state }}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+<!--end content-->
+{% endblock %}
+{% block js_plugins %}
+<!--for this page only-->
+<script type="text/javascript" src="{% static " asset/script/plugin/owl.carousel.js" %}"></script>
+<
+script
+src = "{% static 'amcharts/amcharts.js' %}" ></script>
+<script src="{% static 'amcharts/serial.js' %}"></script>
+<script src="{% static 'amcharts/plugins/export/export.min.js' %}"></script>
+<script src="{% static 'amcharts/light.js' %}"></script>
+<script src="{% static 'asset/script/plugin/datatable.min.js' %}"></script>
+
+{% endblock %}
+{% block js_code %}
+<script>
+    $(document).ready(function () {
+        $("#activeSessions").dataTable({
+            responsive: true
+        });
+    })
+</script>
+{% endblock %}
+

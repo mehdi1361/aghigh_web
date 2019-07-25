@@ -128,6 +128,25 @@ class IndexReports(BaseViewClass):
         )
 
 
+class SessionReports(BaseViewClass):
+    def get(self, request):
+        active_users = {}
+
+        get_res = requests.get(
+            url=settings.SERVER_FULL_URL + "/api/v1/user/active/",
+            headers=self.get_http_header(request),
+        )
+        self.is_auth_valid(request, get_res)
+        if get_res.status_code == 200:
+            active_users["users"] = get_res.json()
+
+        return render(
+            request=request,
+            template_name="apps/reports/active_sessions.html",
+            context=active_users
+        )
+
+
 class UserReports(BaseViewClass):
     def get(self, request):
         context = {
